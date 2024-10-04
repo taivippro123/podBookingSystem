@@ -14,7 +14,7 @@ import RoomDetail from './components/RoomDetail.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
 import ViewBooking from './components/ViewBooking.js';
-
+import Payment from './components/Payment.js';
 function App() {
   return (
     <Router>
@@ -29,7 +29,7 @@ function App() {
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/viewbookings" element={<ViewBooking />} />
-
+        <Route path="/payment" element={<Payment />} />
 
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>

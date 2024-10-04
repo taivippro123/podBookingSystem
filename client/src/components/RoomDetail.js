@@ -42,7 +42,7 @@ function RoomDetail() {
     return (
         <div>
             <h2>{roomDetail.roomName}</h2>
-            <h2>{roomDetail.roomDescription}</h2>
+            <h2>{roomDetail.roomDetailsDescription}</h2>
             <p>Price per Slot: {roomDetail.roomPricePerSlot} VND</p>
             <p>Price per Day: {roomDetail.roomPricePerDay} VND</p>
             <p>Price per Week: {roomDetail.roomPricePerWeek} VND</p>

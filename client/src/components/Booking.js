@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function Booking() {
     const [userId, setUserId] = useState(null);
@@ -14,6 +14,10 @@ function Booking() {
     const [totalPrice, setTotalPrice] = useState(0);
     const [isRoomAvailable, setIsRoomAvailable] = useState(null);
     const [userPoints, setUserPoints] = useState([]);
+    const [error, setError] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -210,34 +214,46 @@ function Booking() {
         console.log('userPoints updated:', userPoints);
     }, [userPoints]);
 
+    const handleDateSelection = (e) => {
+        setSelectedDate(e.target.value);
+        fetchAvailableSlots(e.target.value);
+    };
 
-    // Payment
-    const handleConfirmBooking = () => {
+    const handleNavigateToPayment = () => {
+        if (bookingType === 'slot') {
+            if (!selectedDate) {
+                setError('Please select a date.');
+                return;
+            }
+            if (selectedSlots.length === 0) {
+                setError('Please select at least one time slot.');
+                return;
+            }
+        } else if (bookingType === 'range') {
+            if (!dateRange.start || !dateRange.end) {
+                setError('Please select both start and end dates.');
+                return;
+            }
+            if (!isRoomAvailable) {
+                setError('The room is not available for the selected dates.');
+                return;
+            }
+        }
+
+        // Clear any previous errors
+        setError('');
+
         const paymentData = {
             roomName: roomDetail.roomName,
-            totalPrice: totalPrice
+            totalPrice: totalPrice,
+            bookingType: bookingType,
+            dateRange: dateRange,
+            selectedSlots: selectedSlots,
+            selectedDate: selectedDate
         };
-    
-        fetch('http://localhost:5000/payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(paymentData)
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.paymentUrl) {
-                window.location.href = data.paymentUrl;  // Redirect to ZaloPay payment page
-            } else {
-                console.error("Failed to initiate payment:", data.message);
-            }
-        })
-        .catch((error) => {
-            console.error("Error initiating payment:", error);
-        });
+
+        navigate('/payment', { state: paymentData });
     };
-    
 
     return (
         <div>
@@ -265,13 +281,18 @@ function Booking() {
                 </label>
             </div>
 
+            {/* Display error message */}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
             {/* Booking by Slot */}
             {bookingType === 'slot' && (
                 <div>
                     <h3>Available Slots</h3>
                     <input
                         type="date"
-                        onChange={(e) => fetchAvailableSlots(e.target.value)}
+                        value={selectedDate}
+                        onChange={handleDateSelection}
+                        min={new Date().toISOString().split('T')[0]}
                     />
                     {availableSlots.length > 0 ? (
                         <ul>
@@ -369,7 +390,7 @@ function Booking() {
             {/* Total Price */}
             <h3>Total Price: {isNaN(totalPrice) ? 'Calculating...' : `${totalPrice} VND`}</h3>
 
-             <button onClick={handleConfirmBooking}>Confirm Booking</button>
+            <button onClick={handleNavigateToPayment}>Proceed to Payment</button>
         </div>
     );
 }

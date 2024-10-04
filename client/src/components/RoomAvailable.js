@@ -44,6 +44,7 @@ function RoomAvailable() {
                             <Link to={`/room-detail/${room.roomId}`}>
                                 <h3>{room.roomName}</h3>
                             </Link>
+                            <p>{room.roomDescription}</p>
                             <p>Type: {room.roomType}</p>
                         </li>
                     ))}
