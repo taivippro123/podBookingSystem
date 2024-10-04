@@ -9,6 +9,8 @@ require('dotenv').config();
 const axios = require('axios').default; 
 const CryptoJS = require('crypto-js'); // npm install crypto-js
 const moment = require('moment'); // npm install moment
+const qs = require('qs');
+
 
 const app = express();
 app.use(cors({ origin: '*' }));
@@ -179,7 +181,13 @@ const config = {
 };
 
 app.post("/payment", async (req, res) => {
-    const { roomName, totalPrice } = req.body; // Assuming these are passed from the frontend
+    console.log("Received payment request:", req.body);
+    const { roomName, totalPrice } = req.body;
+
+    if (!roomName || !totalPrice) {
+        console.log("Missing required fields");
+        return res.status(400).json({ message: "Missing required fields" });
+    }
 
     const embed_data = {
         redirecturl: "http://localhost:3000/viewbookings"
@@ -197,6 +205,7 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice, // Dynamic total price passed from frontend
         description: `Payment for the room: ${roomName} #${transID}`, // Dynamic room name
         bank_code: "",
+        callback_url: "https://c4bc-2402-800-63af-9f15-40bc-894f-bc1a-3981.ngrok-free.app/callback"
     };
 
     // Generate MAC for the order
@@ -204,18 +213,83 @@ app.post("/payment", async (req, res) => {
     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
     try {
+        console.log("Sending request to ZaloPay");
         const result = await axios.post(config.endpoint, null, { params: order });
+        console.log("ZaloPay response:", result.data);
         if (result.data && result.data.order_url) {
             res.json({ paymentUrl: result.data.order_url });
         } else {
+            console.log("Failed to get order_url from ZaloPay");
             res.status(400).json({ message: "Failed to initiate payment" });
         }
     } catch (error) {
-        console.error("Error initiating payment:", error);
+        console.error("Error initiating payment:", error.response ? error.response.data : error.message);
         res.status(500).json({ message: error.message });
     }
 });
 
+app.post("/callback", async (req, res) => {
+    let result = {};
+
+    try {
+      let dataStr = req.body.data;
+      let reqMac = req.body.mac;
+  
+      let mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
+      console.log("mac =", mac);
+  
+  
+      // kiểm tra callback hợp lệ (đến từ ZaloPay server)
+      if (reqMac !== mac) {
+        // callback không hợp lệ
+        result.return_code = -1;
+        result.return_message = "mac not equal";
+      }
+      else {
+        // thanh toán thành công
+        // merchant cập nhật trạng thái cho đơn hàng
+        let dataJson = JSON.parse(dataStr, config.key2);
+        console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
+  
+        result.return_code = 1;
+        result.return_message = "success";
+      }
+    } catch (ex) {
+      result.return_code = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
+      result.return_message = ex.message;
+    }
+  
+    // thông báo kết quả cho ZaloPay server
+    res.json(result);
+  });
+
+app.post("/status-booking/:app_trans_id", async (req, res) => {
+    const app_trans_id = req.params.app_trans_id;
+    let postData = {
+        app_id: config.app_id,
+        app_trans_id: app_trans_id, 
+    }
+    
+    let data = postData.app_id + "|" + postData.app_trans_id + "|" + config.key1; // appid|app_trans_id|key1
+    postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+    
+    
+    let postConfig = {
+        method: 'post',
+        url: "https://sb-openapi.zalopay.vn/v2/query",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: qs.stringify(postData)
+    };
+    
+    try {
+        const result = await axios(postConfig);
+        return res.status(200).json(result.data);
+    } catch (error) {
+        console.log(error.message);
+    }
+})
 
 
 // Start the server
