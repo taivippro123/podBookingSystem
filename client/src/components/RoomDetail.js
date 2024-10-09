@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 function RoomDetail() {
     const { id } = useParams(); // Get roomId from the URL
     const [roomDetail, setRoomDetail] = useState(null);
@@ -41,11 +40,29 @@ function RoomDetail() {
 
     return (
         <div>
+            {/* Render the images */}
+            {roomDetail.images && roomDetail.images.length > 0 ? (
+                <div>
+                    {roomDetail.images.map((imageUrl, index) => (
+                        <img
+                            key={index}
+                            src={imageUrl}
+                            alt={`Room ${roomDetail.roomName} Image ${index + 1}`}
+                            style={{ width: '300px', height: 'auto', marginRight: '10px', marginBottom: '10px' }}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <p>No images available for this room.</p>
+            )}
             <h2>{roomDetail.roomName}</h2>
-            <h2>{roomDetail.roomDetailsDescription}</h2>
+            <p>{roomDetail.roomDetailsDescription}</p>
             <p>Price per Slot: {roomDetail.roomPricePerSlot} VND</p>
             <p>Price per Day: {roomDetail.roomPricePerDay} VND</p>
             <p>Price per Week: {roomDetail.roomPricePerWeek} VND</p>
+
+
+
             <button onClick={handleBookNow}>Book Now</button>
         </div>
     );
