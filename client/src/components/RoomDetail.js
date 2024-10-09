@@ -56,7 +56,8 @@ function RoomDetail() {
                 <p>No images available for this room.</p>
             )}
             <h2>{roomDetail.roomName}</h2>
-            <p>{roomDetail.roomDetailsDescription}</p>
+            <p>Type: {roomDetail.roomType}</p>
+            <p>Description: {roomDetail.roomDetailsDescription}</p>
             <p>Price per Slot: {roomDetail.roomPricePerSlot} VND</p>
             <p>Price per Day: {roomDetail.roomPricePerDay} VND</p>
             <p>Price per Week: {roomDetail.roomPricePerWeek} VND</p>

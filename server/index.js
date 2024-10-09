@@ -38,10 +38,22 @@ db.connect((err) => {
 });
 
 // Initialize Firebase Admin SDK
-admin.initializeApp({
-    credential: admin.credential.cert(require('./serviceAccountKey.json')), // Path to your service account key
-    storageBucket: 'pod-booking-system-50fd7.appspot.com', // Replace with your bucket name
-});
+// admin.initializeApp({
+//     credential: admin.credential.cert(require('./serviceAccountKey.json')), // Path to your service account key
+//     storageBucket: 'pod-booking-system-50fd7.appspot.com', // Replace with your bucket name
+// });
+
+try {
+    const serviceAccount = require('./serviceAccountKey.json');
+    console.log(serviceAccount);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: 'pod-booking-system-50fd7.appspot.com'
+    });
+    console.log('Firebase Initialized Successfully');
+  } catch (error) {
+    console.error('Error initializing Firebase:', error);
+  }
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
@@ -243,7 +255,7 @@ app.get('/available-rooms', (req, res) => {
             console.error('Error fetching available rooms:', err);
             return res.status(500).send('Error fetching rooms');
         }
-        console.log("Query Result:", result); // Debugging line to check the result
+        // console.log("Query Result:", result); // Debugging line to check the result
 
         // Transform the results to group image URLs for each room
         const roomsWithImages = result.reduce((acc, room) => {
