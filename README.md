@@ -9,3 +9,6 @@ Payment UI using Zalopay
 
 Second BE commit include features:
 Payment page to pick payment method
+
+Third BE commit include features:
+CRUD Rooms, fetch rooms with images in Home page, Room details, Manage Rooms
