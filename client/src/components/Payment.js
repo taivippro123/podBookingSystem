@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 function Payment() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { roomName, totalPrice, bookingType, dateRange, selectedSlots, selectedDate } = location.state;
+
+    const { roomId, roomName, totalPrice, userId, bookingStartDay, bookingEndDay, selectedServices, selectedSlots, bookingType, selectedDate, discount } = location.state || {};
 
     const [selectedMethod, setSelectedMethod] = useState(null);
 
@@ -20,10 +21,19 @@ function Payment() {
 
     const handleConfirmPayment = () => {
         if (selectedMethod === 3) {
-            // ZaloPay payment logic
             const paymentData = {
-                roomName: roomName,
-                totalPrice: totalPrice
+                roomId,
+                roomName,
+                totalPrice,
+                bookingType,
+                selectedSlots,
+                selectedDate,
+                selectedServices, // Include selected services in the payment
+                bookingStartDay,
+                bookingEndDay,
+                userId,
+                discount,
+                methodId: selectedMethod
             };
 
             fetch('http://localhost:5000/payment', {
@@ -36,7 +46,7 @@ function Payment() {
             .then((response) => response.json())
             .then((data) => {
                 if (data.paymentUrl) {
-                    window.location.href = data.paymentUrl;  // Redirect to ZaloPay payment page
+                    window.location.href = data.paymentUrl;  // Redirect to payment page
                 } else {
                     console.error("Failed to initiate payment:", data.message);
                 }
@@ -49,24 +59,32 @@ function Payment() {
         }
     };
 
-    // Sort the selected slots
-    const sortedSlots = [...selectedSlots].sort((a, b) => {
-        return a.slotStartTime.localeCompare(b.slotStartTime);
-    });
-
     return (
         <div>
             <h2>Payment Details</h2>
             <p>Room: {roomName}</p>
-            
+
             {bookingType === 'range' ? (
-                <p>Date: {dateRange.start} to {dateRange.end}</p>
+                <p>Date: {bookingStartDay} to {bookingEndDay}</p>
             ) : (
                 <>
                     <p>Date: {selectedDate}</p>
-                    <p>Selected Slots: {sortedSlots.map(slot => `${slot.slotStartTime} - ${slot.slotEndTime}`).join(', ')}</p>
+                    <p>Selected Slots: {selectedSlots.map(slot => `${slot.slotStartTime} - ${slot.slotEndTime}`).join(', ')}</p>
                 </>
             )}
+
+            {/* Display selected services */}
+            {selectedServices && selectedServices.length > 0 && (
+                <div>
+                    <h3>Selected Services:</h3>
+                    <ul>
+                        {selectedServices.map(service => (
+                            <li key={service.serviceId}>{service.serviceName} ({service.servicePrice} VND)</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
             <p>Total Price: {totalPrice} VND</p>
 
             <h3>Select Payment Method</h3>
