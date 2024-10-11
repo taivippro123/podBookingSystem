@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Payment() {
@@ -7,26 +7,47 @@ function Payment() {
 
     const { roomId, roomName, totalPrice, userId, bookingStartDay, bookingEndDay, selectedServices, selectedSlots, bookingType, selectedDate, discount } = location.state || {};
 
+    const [paymentMethods, setPaymentMethods] = useState([]);
     const [selectedMethod, setSelectedMethod] = useState(null);
 
-    const paymentMethods = [
-        { id: 1, name: "Credit Card" },
-        { id: 2, name: "PayPal" },
-        { id: 3, name: "E-Wallet" }
-    ];
+    useEffect(() => {
+        // Fetch payment methods from the backend
+        fetch('http://localhost:5000/getPaymentMethods')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setPaymentMethods(data.paymentMethods); // Set payment methods dynamically
+                } else {
+                    console.error('Failed to fetch payment methods:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching payment methods:', error);
+            });
+    }, []);
 
     const handlePaymentMethodChange = (methodId) => {
         setSelectedMethod(methodId);
     };
 
     const handleConfirmPayment = () => {
-        if (selectedMethod === 3) {
+        if (selectedMethod) {
+            if (selectedMethod !== 3) { // Check if the selected method is not ZaloPay
+                alert("This payment method is coming soon!");
+                return; // Prevent further execution if the method is not ZaloPay
+            }
+    
+            // Sort the selected slots based on slotStartTime
+            const sortedSlots = selectedSlots.sort((a, b) => 
+                new Date(`1970-01-01T${a.slotStartTime}`) - new Date(`1970-01-01T${b.slotStartTime}`)
+            );
+    
             const paymentData = {
                 roomId,
                 roomName,
                 totalPrice,
                 bookingType,
-                selectedSlots,
+                selectedSlots: sortedSlots, // Use the sorted slots here
                 selectedDate,
                 selectedServices, // Include selected services in the payment
                 bookingStartDay,
@@ -35,7 +56,7 @@ function Payment() {
                 discount,
                 methodId: selectedMethod
             };
-
+    
             fetch('http://localhost:5000/payment', {
                 method: 'POST',
                 headers: {
@@ -55,9 +76,15 @@ function Payment() {
                 console.error("Error initiating payment:", error);
             });
         } else {
-            alert("This payment method is coming soon!");
+            alert("Please select a payment method!");
         }
     };
+    
+
+    // Sort slots for display
+    const sortedDisplaySlots = selectedSlots.sort((a, b) =>
+        new Date(`1970-01-01T${a.slotStartTime}`) - new Date(`1970-01-01T${b.slotStartTime}`)
+    );
 
     return (
         <div>
@@ -69,7 +96,8 @@ function Payment() {
             ) : (
                 <>
                     <p>Date: {selectedDate}</p>
-                    <p>Selected Slots: {selectedSlots.map(slot => `${slot.slotStartTime} - ${slot.slotEndTime}`).join(', ')}</p>
+                    {/* Display the sorted slots */}
+                    <p>Selected Slots: {sortedDisplaySlots.map(slot => `${slot.slotStartTime} - ${slot.slotEndTime}`).join(', ')}</p>
                 </>
             )}
 
@@ -88,20 +116,23 @@ function Payment() {
             <p>Total Price: {totalPrice} VND</p>
 
             <h3>Select Payment Method</h3>
-            {paymentMethods.map(method => (
-                <div key={method.id}>
-                    <input
-                        type="radio"
-                        id={`method-${method.id}`}
-                        name="paymentMethod"
-                        value={method.id}
-                        checked={selectedMethod === method.id}
-                        onChange={() => handlePaymentMethodChange(method.id)}
-                    />
-                    <label htmlFor={`method-${method.id}`}>{method.name}</label>
-                    {(method.id === 1 || method.id === 2) && <span> (Coming soon)</span>}
-                </div>
-            ))}
+            {paymentMethods.length === 0 ? (
+                <p>Loading payment methods...</p>
+            ) : (
+                paymentMethods.map(method => (
+                    <div key={method.methodId}>
+                        <input
+                            type="radio"
+                            id={`method-${method.methodId}`}
+                            name="paymentMethod"
+                            value={method.methodId}
+                            checked={selectedMethod === method.methodId}
+                            onChange={() => handlePaymentMethodChange(method.methodId)}
+                        />
+                        <label htmlFor={`method-${method.methodId}`}>{method.method}</label>
+                    </div>
+                ))
+            )}
 
             <button onClick={handleConfirmPayment} disabled={!selectedMethod}>
                 Confirm Payment

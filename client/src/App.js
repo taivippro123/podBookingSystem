@@ -28,8 +28,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-detail/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
-        <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/viewbookings" element={<ViewBooking />} />
+        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/viewbookings/:userId" element={<ViewBooking />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/rooms/:id" element={<ManageRoom />} />
 
