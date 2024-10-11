@@ -12,3 +12,6 @@ Payment page to pick payment method
 
 Third BE commit include features:
 CRUD Rooms, fetch rooms with images in Home page, Room details, Manage Rooms
+
+
+Fourth BE commit include: viewbooking page, profile page
