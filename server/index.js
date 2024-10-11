@@ -1001,16 +1001,14 @@ app.post("/callback", async (req, res) => {
                 }
             }
 
-            // Now that we have a bookingId, we can insert the slots
-            console.log(`Processing slot with ID: ${slotId}`);
-            
-            // Insert each slot into BookingSlots
-            const bookingSlotsQuery = `
-                INSERT INTO BookingSlots (bookingId, slotId, bookingStartDay, bookingEndDay)
-                VALUES (?, ?, ?, ?)
-            `;
-            await db.promise().query(bookingSlotsQuery, [bookingId, slotId, bookingStartDay, bookingEndDay]);
-            console.log("Inserted into BookingSlots for slotId:", slotId);
+            if (bookingType === "slot") {
+                const bookingSlotsQuery = `
+                    INSERT INTO BookingSlots (bookingId, slotId, bookingStartDay, bookingEndDay)
+                    VALUES (?, ?, ?, ?)
+                `;
+                await db.promise().query(bookingSlotsQuery, [bookingId, slotId, bookingStartDay, bookingEndDay]);
+                console.log("Inserted into BookingSlots for slotId:", slotId);
+            }
         }
 
         // Now use bookingId for Payment and Transaction insertions
@@ -1056,6 +1054,7 @@ app.post("/callback", async (req, res) => {
                 console.log(`User points updated for userId: ${userId}, discount applied: ${discount}`);
             }
 
+            console.log("Insert all information successfully!");
         } else {
             throw new Error("Booking ID is undefined, could not process payment.");
         }
