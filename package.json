@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jwt-decode": "^4.0.0",
+    "query-string": "^9.1.1"
+  }
+}

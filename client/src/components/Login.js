@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';  // Import named export
-import { auth, provider } from './config';
+import { jwtDecode } from 'jwt-decode';  // Use named import
+import { auth, provider } from './config'; // Ensure this is configured correctly
 import { signInWithPopup } from 'firebase/auth';
 
 const Login = () => {
@@ -10,36 +10,42 @@ const Login = () => {
     const [userPassword, setUserPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleGoogleSignIn = () => {
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                localStorage.setItem('email', user.email);
-                localStorage.setItem('user', JSON.stringify({
-                    userEmail: user.email,
-                    userName: user.displayName,
-                    userRole: 4 // Assuming Google sign-in users are customers by default
-                }));
-                navigate('/customer'); // Navigate to customer page after Google sign-in
-            })
-            .catch((error) => {
-                console.error('Google login error:', error);
-                alert('Google sign-in failed. Please try again.');
-            });
-    }
+    // Handle Google Sign-In
+    const handleGoogleSignIn = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
 
+            // Store user data in localStorage, including userId
+            localStorage.setItem('userId', user.uid); // Store Google userId
+            localStorage.setItem('email', user.email);
+            localStorage.setItem('user', JSON.stringify({
+                userEmail: user.email,
+                userName: user.displayName,
+                userRole: 4 // Assuming Google sign-in users are customers by default
+            }));
+
+            navigate('/customer'); // Navigate to customer page after Google sign-in
+        } catch (error) {
+            console.error('Google login error:', error);
+            alert('Google sign-in failed. Please try again.');
+        }
+    };
+
+    // Check token expiration and navigate based on role
     useEffect(() => {
         const token = localStorage.getItem('token');
 
         if (token) {
             try {
-                const decodedToken = jwtDecode(token); // Use named export jwtDecode
-                const currentTime = Date.now() / 1000; // Convert to seconds
+                const decodedToken = jwtDecode(token); // Decode JWT token
+                const currentTime = Date.now() / 1000; // Current time in seconds
 
                 if (decodedToken.exp < currentTime) {
-                    // Token is expired, clear the storage and redirect to login
+                    // Token expired
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    localStorage.removeItem('userId'); // Clear userId when token expires
                     navigate('/login');
                 } else {
                     const user = JSON.parse(localStorage.getItem('user'));
@@ -51,11 +57,13 @@ const Login = () => {
                 console.error('Error decoding token:', error);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                localStorage.removeItem('userId'); // Clear userId
                 navigate('/login');
             }
         }
     }, [navigate]);
 
+    // Navigate based on user role
     const navigateBasedOnRole = (userRole) => {
         switch (userRole) {
             case 1:
@@ -74,26 +82,26 @@ const Login = () => {
         }
     };
 
-    const handleLogin = (e) => {
+    // Handle normal login
+    const handleLogin = async (e) => {
         e.preventDefault();
         console.log('Login attempt with:', { userEmail, userPassword });
 
-        axios.post('http://localhost:5000/login', { userEmail, userPassword })
-            .then(response => {
-                console.log('Full login response:', response.data);
-                const { token, user } = response.data;
+        try {
+            const response = await axios.post('http://localhost:5000/login', { userEmail, userPassword });
+            const { token, user } = response.data;
 
-                // Store the token and user data in localStorage
-                localStorage.setItem('token', token);
-                localStorage.setItem('user', JSON.stringify(user));
-                console.log('Token and user data stored in localStorage:', JSON.parse(localStorage.getItem('user')));
+            // Store the token and user data in localStorage
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userId', user.userId); // Store userId in localStorage
+            console.log('Token and user data stored in localStorage:', JSON.parse(localStorage.getItem('user')));
 
-                navigateBasedOnRole(user.userRole);
-            })
-            .catch(err => {
-                console.error('Login error:', err);
-                alert('Login failed. Please check your email and password.');
-            });
+            navigateBasedOnRole(user.userRole);
+        } catch (err) {
+            console.error('Login error:', err);
+            alert('Login failed. Please check your email and password.');
+        }
     };
 
     return (

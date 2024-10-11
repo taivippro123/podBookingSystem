@@ -104,8 +104,8 @@ app.post('/login', (req, res) => {
 
 
 // Fetch user's profile
-app.get('/profile/:id', (req, res) => {
-    const userId = req.params.id;
+app.get('/profile/:userId', (req, res) => {
+    const userId = req.params.userId;
     const sql = `
         SELECT userName, userEmail, userPhone, userPoint FROM User WHERE userId = ?
     `;
@@ -117,8 +117,8 @@ app.get('/profile/:id', (req, res) => {
 });
 
 // Update user's profile
-app.put('/profile/:id', (req, res) => {
-    const userId = req.params.id;
+app.put('/profile/:userId', (req, res) => {
+    const userId = req.params.userId;
     const { userName, userEmail, userPassword, userPhone } = req.body; // Ensure you're receiving the body
 
     // // Ensure all fields are provided
@@ -140,7 +140,7 @@ app.put('/profile/:id', (req, res) => {
 
 
 // Delete user
-app.delete('/profile/:id', (req, res) => {
+app.delete('/profile/:userId', (req, res) => {
     const userId = req.params.id;
 
     // Delete query
@@ -860,7 +860,7 @@ app.post("/payment", async (req, res) => {
         bookingStartDay,  
         bookingEndDay,    
         discount,
-        redirecturl: "http://localhost:3000/viewbookings"
+        redirecturl: "http://localhost:3000/viewbookings/:userId"
     };
 
     // Handle items for slot or date range bookings
@@ -894,7 +894,7 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice,
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
-        callback_url: "https://a14d-2402-800-63af-9f15-546e-be33-3a62-eacf.ngrok-free.app/callback",
+        callback_url: "https://d1a0-2402-800-63af-9f15-452c-257b-f947-c36e.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -961,48 +961,56 @@ app.post("/callback", async (req, res) => {
         const items = JSON.parse(dataJson.item); // Parse the item data
 
         let bookingId; // Declare bookingId in the outer scope
-        
+        let insertedBooking = false; // Track if the booking was already inserted
+
         for (const item of items) {
             const { roomId, bookingType, slotId, slotStartTime, slotEndTime } = item;
             const bookingStartDay = selectedDate;
             const bookingEndDay = selectedDate;
 
-            if (bookingType === "slot") {
-                console.log(`Processing slot booking for roomId: ${roomId}, slotId: ${slotId}`);
+            // Insert booking only once for each unique room
+            if (!insertedBooking) {
+                if (bookingType === "slot") {
+                    console.log(`Processing slot booking for roomId: ${roomId}`);
 
-                // Insert into Booking table for slot booking
-                const bookingQuery = `
-                    INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                    VALUES (?, ?, ?, ?, ?, 'Confirmed')
-                `;
-                const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
+                    // Insert into Booking table for slot booking
+                    const bookingQuery = `
+                        INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
+                        VALUES (?, ?, ?, ?, ?, 'Confirmed')
+                    `;
+                    const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
-                bookingId = bookingResult.insertId; // Assign the bookingId here
-                console.log("Slot Booking inserted with ID:", bookingId);
+                    bookingId = bookingResult.insertId; // Assign the bookingId here
+                    console.log("Booking inserted with ID:", bookingId);
 
-                // Insert into BookingSlots table
-                const bookingSlotsQuery = `
-                    INSERT INTO BookingSlots (bookingId, slotId, bookingStartDay, bookingEndDay)
-                    VALUES (?, ?, ?, ?)
-                `;
-                await db.promise().query(bookingSlotsQuery, [bookingId, slotId, bookingStartDay, bookingEndDay]);
-                console.log("Inserted into BookingSlots");
+                    insertedBooking = true; // Mark that the booking was inserted
+                } else if (bookingType === "range") {
+                    const bookingStartDay = embedData.bookingStartDay;
+                    const bookingEndDay = embedData.bookingEndDay;
+                    console.log(`Processing date booking for roomId: ${roomId}, start: ${bookingStartDay}, end: ${bookingEndDay}`);
 
-            } else if (bookingType === "range") {
-                const bookingStartDay = embedData.bookingStartDay;
-                const bookingEndDay = embedData.bookingEndDay;
-                console.log(`Processing date booking for roomId: ${roomId}, start: ${bookingStartDay}, end: ${bookingEndDay}`);
+                    // Insert into Booking table for date booking
+                    const bookingQuery = `
+                        INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
+                        VALUES (?, ?, ?, ?, ?, 'Confirmed')
+                    `;
+                    const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
-                // Insert into Booking table for date booking
-                const bookingQuery = `
-                    INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                    VALUES (?, ?, ?, ?, ?, 'Confirmed')
-                `;
-                const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
-
-                bookingId = bookingResult.insertId; // Assign the bookingId here
-                console.log("Date Booking inserted with ID:", bookingId);
+                    bookingId = bookingResult.insertId; // Assign the bookingId here
+                    console.log("Date Booking inserted with ID:", bookingId);
+                }
             }
+
+            // Now that we have a bookingId, we can insert the slots
+            console.log(`Processing slot with ID: ${slotId}`);
+            
+            // Insert each slot into BookingSlots
+            const bookingSlotsQuery = `
+                INSERT INTO BookingSlots (bookingId, slotId, bookingStartDay, bookingEndDay)
+                VALUES (?, ?, ?, ?)
+            `;
+            await db.promise().query(bookingSlotsQuery, [bookingId, slotId, bookingStartDay, bookingEndDay]);
+            console.log("Inserted into BookingSlots for slotId:", slotId);
         }
 
         // Now use bookingId for Payment and Transaction insertions
@@ -1037,7 +1045,6 @@ app.post("/callback", async (req, res) => {
             await db.promise().query(transactionQuery, [bookingId, userId, eventDescription, totalPrice]);
             console.log("Inserted into Transaction");
 
-
             // Update User Points by subtracting discount
             const updateUserPointsQuery = `
                 UPDATE User
@@ -1067,11 +1074,6 @@ app.post("/callback", async (req, res) => {
 });
 
 
-
-
-
-
-
 app.post("/status-booking/:app_trans_id", async (req, res) => {
     const app_trans_id = req.params.app_trans_id;
     let postData = {
@@ -1098,6 +1100,115 @@ app.post("/status-booking/:app_trans_id", async (req, res) => {
         console.log(error.message);
     }
 });
+
+//View booking
+
+app.get('/viewbookings/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    
+    // Ensure userId is valid
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required." });
+    }
+    
+    console.log('Received request for bookings for user:', userId);
+    try {
+        // Fetch history bookings (Completed or Cancelled)
+        const historyQuery = `
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
+            FROM Booking b
+            JOIN Room r ON b.roomId = r.roomId
+            WHERE b.userId = ? AND (b.bookingStatus = 'Completed' OR b.bookingStatus = 'Cancelled')
+        `;
+        const [historyBookings] = await db.promise().query(historyQuery, [userId]);
+
+        // Fetch upcoming bookings (Pending, Confirmed, Using)
+        const upcomingQuery = `
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
+            FROM Booking b
+            JOIN Room r ON b.roomId = r.roomId
+            WHERE b.userId = ? AND (b.bookingStatus = 'Pending' OR b.bookingStatus = 'Confirmed' OR b.bookingStatus = 'Using')
+        `;
+        const [upcomingBookings] = await db.promise().query(upcomingQuery, [userId]);
+
+        // Combine all booking IDs from history and upcoming bookings
+        const bookingIds = [...historyBookings.map(b => b.bookingId), ...upcomingBookings.map(b => b.bookingId)];
+
+        let slots = [];
+        let services = [];
+        if (bookingIds.length > 0) {
+            // Fetch slot details
+            const slotsQuery = `
+                SELECT bs.bookingId, s.slotStartTime, s.slotEndTime
+                FROM BookingSlots bs
+                JOIN Slot s ON bs.slotId = s.slotId
+                WHERE bs.bookingId IN (?)
+            `;
+            [slots] = await db.promise().query(slotsQuery, [bookingIds]);
+
+            // Fetch service details
+            const servicesQuery = `
+                SELECT bs.bookingId, s.serviceName, bs.servicePrice
+                FROM BookingServices bs
+                JOIN Services s ON bs.serviceId = s.serviceId
+                WHERE bs.bookingId IN (?)
+            `;
+            [services] = await db.promise().query(servicesQuery, [bookingIds]);
+        }
+
+        // Function to attach slots and services to bookings
+        const addDetailsToBookings = (bookings) => {
+            return bookings.map(booking => ({
+                ...booking,
+                slots: slots.filter(slot => slot.bookingId === booking.bookingId),
+                services: services.filter(service => service.bookingId === booking.bookingId)
+            }));
+        };
+
+        // Attach slot and service details to history and upcoming bookings
+        const detailedHistoryBookings = addDetailsToBookings(historyBookings);
+        const detailedUpcomingBookings = addDetailsToBookings(upcomingBookings);
+
+        // Check if bookings are empty
+        if (!detailedHistoryBookings.length && !detailedUpcomingBookings.length) {
+            return res.status(404).json({ message: "No bookings found for this user." });
+        }
+
+        // Send the response with the bookings including slot and service details
+        res.json({
+            history: detailedHistoryBookings,
+            upcoming: detailedUpcomingBookings
+        });
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        res.status(500).json({ error: "An error occurred while fetching bookings." });
+    }
+});
+
+
+
+//Get payment method
+app.get('/getPaymentMethods', async (req, res) => {
+    try {
+        const query = 'SELECT methodId, method FROM PaymentMethod';
+        const [results] = await db.promise().query(query);
+        
+        res.json({
+            success: true,
+            paymentMethods: results
+        });
+    } catch (err) {
+        console.error('Error fetching payment methods:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching payment methods.'
+        });
+    }
+});
+
+
+
+
 
 
 // Start the server
