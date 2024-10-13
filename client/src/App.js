@@ -1,6 +1,5 @@
 import React, { Profiler } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
 import Login from './components/Login.js';
 import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.js'
@@ -16,13 +15,16 @@ import Profile from './components/Profile.js';
 import ViewBooking from './components/ViewBooking.js';
 import Payment from './components/Payment.js';
 import ManageRoom from './components/ManageRoom';
+import Home from './pages/Home/Home.jsx';
+import ComHeader from './components/ComHeader/ComHeader.jsx';
+import LoginPage from './pages/Login/LoginPage.jsx';
 function App() {
   return (
     <Router>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<ComHeader><Home /></ComHeader>} />
+        <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
