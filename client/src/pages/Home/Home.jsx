@@ -25,7 +25,7 @@ export default function Home() {
       img: "https://kientrucanviet.com/wp-content/uploads/2020/12/thi%E1%BA%BFt-k%E1%BA%BF-n%E1%BB%99i-th%E1%BA%A5t-ph%C3%B2ng-h%E1%BB%8Dp-xanh.jpg",
     },
     {
-      img: "https://cdn-static.wework.com/content/images/home/article-2-600x338.webp",
+      img: "https://cdn-static.wework.com/content/images/home/hero-banner_1920x576.webp",
     },
   ]);
 
