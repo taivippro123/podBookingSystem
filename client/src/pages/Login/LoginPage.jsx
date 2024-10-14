@@ -109,7 +109,7 @@ export default function LoginPage() {
       {/* Left side - Office Image */}
       <div className="hidden lg:block lg:w-1/2">
         <img
-          src="https://baoantelecom.com/upload/images/Tin%20t%E1%BB%A9c/mau-mo-hinh-va-giai-phap-phong-hop-thong-minh-01.jpg"
+          src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/441397399_415513347919928_604910872180293785_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFECoT_zhG3d_I6ePeP2zoYRelxFgdlAdBF6XEWB2UB0NUnw_Kt5J0xk7takqSp1SUVEMBLWGOcq7osFw6zvuu9&_nc_ohc=5An2EqYzGpMQ7kNvgG6ORLg&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=ACC77HGQ-I_NPdccq0GE_gs&oh=00_AYBjphqHK8QSBWnhZhHeeRRS-S2iLg6kVfFnIqmMYAq75w&oe=6712B40E"
           alt="Modern office space"
           className="object-cover w-full h-full"
         />
@@ -120,7 +120,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-200 mb-4">
-              <span className="text-2xl font-bold text-gray-700">WY</span>
+              <span className="text-2xl font-bold text-gray-700">POD</span>
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               Welcome back!
