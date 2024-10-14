@@ -180,7 +180,7 @@ export default function ComHeader({ children }) {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:underline">
+                  <Link to ="/contact" className="hover:underline">
                     Contact Us
                   </Link>
                 </li>
