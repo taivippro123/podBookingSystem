@@ -3,30 +3,30 @@ import React from "react";
 export default function WorkspaceShowcase() {
   const workspaces = [
     {
-      title: "Không gian F&B",
+      title: "F&B space",
       description:
-        "Không gian mở với nhiều đồ ăn, thức uống đa dạng, mang nét hiện đại, thoáng đãng, là điểm lý tưởng để gặp gỡ, trao chuyện cùng đối tác và đồng nghiệp.",
+        "Open space with a variety of food and drinks, modern and airy, is an ideal place to meet and chat with partners and colleagues.",
       image:
         "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-1.png",
     },
     {
-      title: "Không gian Membership",
+      title: "Membership Space",
       description:
-        "Khu vực làm việc chuyên nghiệp dành cho cá nhân và tổ chức. Thành viên được sử dụng bàn làm việc cố định, ghế công thái học, hệ thống check-in thông minh cùng nhiều tiện ích khác để tối ưu công việc.",
+        "Professional workspaces for individuals and organizations. Members enjoy fixed desks, ergonomic chairs, smart check-in systems, and many other amenities to optimize work.",
       image:
         "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-2.png",
     },
     {
-      title: "Pod làm việc",
+      title: "Work Pod",
       description:
-        "Không gian yên tĩnh, riêng tư với hệ thống cách âm - biệt lập với môi trường bên ngoài lên đến 70%. Thích hợp cho những việc cần sự tập trung và tĩnh tâm như: đàm phán, họp trực tuyến, thảo luận,...",
+        "Quiet, private space with soundproofing system - isolated from the outside environment up to 70%. Suitable for tasks that require concentration and tranquility such as: negotiations, online meetings, discussions,...",
       image:
         "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-3.png",
     },
     {
-      title: "Phòng họp",
+      title: "Meeting Rooms",
       description:
-        "Các phòng họp có đa dạng sức chứa (6-10 người), được trang bị cơ sở vật chất hiện đại, bao gồm bàn nhiều mảng xoay linh quang, giúp cuộc họp trở nên chuyên nghiệp và mang nhiều cảm hứng.",
+        "The meeting rooms have a variety of capacities (6-10 people), equipped with modern facilities, including flexible rotating multi-section tables, making the meeting more professional and inspiring.",
       image:
         "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-4.png",
     },
@@ -46,10 +46,10 @@ export default function WorkspaceShowcase() {
               marginBottom: 0,
             }}
           >
-            Không gian làm việc hiện đại với đa dạng dịch vụ và tiện ích
+           Modern workspace with diverse services and amenities
           </h3>
           <button className="bg-[#352220] text-white px-4 py-2 rounded-md hover:bg-brown-800 transition duration-300">
-            TRẢI NGHIỆM NGAY
+          EXPERIENCE NOW
           </button>
         </div>
 
