@@ -27,7 +27,7 @@ function App() {
         <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={ <ComHeader><AboutUs /></ComHeader>} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
         <Route path="/room-detail/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
