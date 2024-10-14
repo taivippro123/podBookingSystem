@@ -5,6 +5,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 require('dotenv').config();
 
 //Zalopay
@@ -67,6 +69,91 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
+
+//------------------------------- EMAIL OTP WHEN FORGET PASSWORD -------------------------------
+
+// Nodemailer configuration
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'taipvtse183323@fpt.edu.vn',
+        pass: 'pmorbiaqpklyuytj' // Use an app-specific password if using Gmail
+    }
+});
+
+// Generate a random OTP (6 characters)
+function generateOtp() {
+    return crypto.randomBytes(3).toString('hex').toUpperCase();
+}
+
+// Send OTP email and store OTP in the database
+async function sendOtpEmail(email) {
+    const otpCode = generateOtp();
+    const expirationTime = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
+
+    // Store the OTP in the database
+    const query = 'INSERT INTO otp_codes (email, otp_code, expires_at) VALUES (?, ?, ?)';
+    db.query(query, [email, otpCode, expirationTime], (err, result) => {
+        if (err) throw err;
+        console.log('OTP saved to the database.');
+    });
+
+    // Email options
+    const mailOptions = {
+        from: 'taipvtse183323@fpt.edu.vn',
+        to: email,
+        subject: 'Your OTP Code for POD Booking System',
+        text: `Your OTP code is ${otpCode}. This code will expire in 10 minutes.`
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+}
+
+// API route to request OTP (Forgot Password)
+app.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        await sendOtpEmail(email);
+        res.status(200).send('OTP sent successfully.');
+    } catch (error) {
+        console.error('Error sending OTP:', error);
+        res.status(500).send('Error sending OTP.');
+    }
+});
+
+
+// API route to change password if OTP is correct
+app.post('/change-password', (req, res) => {
+    const { email, otpCode, newPassword } = req.body;
+
+    // Check if the OTP is correct and valid
+    const query = 'SELECT * FROM otp_codes WHERE email = ? AND otp_code = ? AND expires_at > NOW()';
+    db.query(query, [email, otpCode], (err, results) => {
+        if (err) throw err;
+
+        if (results.length > 0) {
+            // OTP is valid, proceed to change the password
+
+            // Update the password in the 'users' table
+            const updateQuery = 'UPDATE User SET userPassword = ? WHERE userEmail = ?';
+            db.query(updateQuery, [newPassword, email], (err, result) => {
+                if (err) throw err;
+
+                // Optionally, delete the OTP after successful password change
+                const deleteOtpQuery = 'DELETE FROM otp_codes WHERE email = ?';
+                db.query(deleteOtpQuery, [email], (err, result) => {
+                    if (err) throw err;
+                });
+
+                res.status(200).send('Password changed successfully.');
+            });
+        } else {
+            res.status(400).send('Invalid or expired OTP.');
+        }
+    });
+});
 
 // ------------------------- CRUD USER -------------------------------------
 app.post('/signup', (req, res) => {
@@ -697,120 +784,7 @@ const config = {
     endpoint: "https://sb-openapi.zalopay.vn/v2/create"
 };
 
-// app.post("/payment", async (req, res) => {
-//     console.log("Received payment request:", req.body);
-//     const { roomName, totalPrice } = req.body;
 
-//     if (!roomName || !totalPrice) {
-//         console.log("Missing required fields");
-//         return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     const embed_data = {
-//         redirecturl: "http://localhost:3000/viewbookings"
-//     };
-
-//     const items = [{}];
-//     const transID = Math.floor(Math.random() * 1000000);
-//     const order = {
-//         app_id: config.app_id,
-//         app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // transaction ID
-//         app_user: "user123",
-//         app_time: Date.now(), // milliseconds
-//         item: JSON.stringify(items),
-//         embed_data: JSON.stringify(embed_data),
-//         amount: totalPrice, // Dynamic total price passed from frontend
-//         description: `Payment for the room: ${roomName} #${transID}`, // Dynamic room name
-//         bank_code: "",
-//         callback_url: "https://d613-2402-800-63af-9f15-8c6e-1328-4e65-d8f2.ngrok-free.app/callback"
-//     };
-
-//     // Generate MAC for the order
-//     const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
-//     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
-
-//     try {
-//         console.log("Sending request to ZaloPay");
-//         const result = await axios.post(config.endpoint, null, { params: order });
-//         console.log("ZaloPay response:", result.data);
-//         if (result.data && result.data.order_url) {
-//             res.json({ paymentUrl: result.data.order_url });
-//         } else {
-//             console.log("Failed to get order_url from ZaloPay");
-//             res.status(400).json({ message: "Failed to initiate payment" });
-//         }
-//     } catch (error) {
-//         console.error("Error initiating payment:", error.response ? error.response.data : error.message);
-//         res.status(500).json({ message: error.message });
-//     }
-// });
-
-
-// //Update Booking, Payment, Transaction table if payment successful
-// app.post("/callback", async (req, res) => {
-//     let result = {};
-
-//     try {
-//         let dataStr = req.body.data;
-//         let reqMac = req.body.mac;
-
-//         let mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
-//         console.log("mac =", mac);
-
-
-//         // kiểm tra callback hợp lệ (đến từ ZaloPay server)
-//         if (reqMac !== mac) {
-//             // callback không hợp lệ
-//             result.return_code = -1;
-//             result.return_message = "mac not equal";
-//         }
-//         else {
-//             // thanh toán thành công
-//             // merchant cập nhật trạng thái cho đơn hàng
-//             let dataJson = JSON.parse(dataStr, config.key2);
-//             console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
-
-//             result.return_code = 1;
-//             result.return_message = "success";
-//         }
-//     } catch (ex) {
-//         result.return_code = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
-//         result.return_message = ex.message;
-//     }
-
-//     // thông báo kết quả cho ZaloPay server
-//     res.json(result);
-// });
-
-// app.post("/status-booking/:app_trans_id", async (req, res) => {
-//     const app_trans_id = req.params.app_trans_id;
-//     let postData = {
-//         app_id: config.app_id,
-//         app_trans_id: app_trans_id,
-//     }
-
-//     let data = postData.app_id + "|" + postData.app_trans_id + "|" + config.key1; // appid|app_trans_id|key1
-//     postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
-
-
-//     let postConfig = {
-//         method: 'post',
-//         url: "https://sb-openapi.zalopay.vn/v2/query",
-//         headers: {
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         data: qs.stringify(postData)
-//     };
-
-//     try {
-//         const result = await axios(postConfig);
-//         return res.status(200).json(result.data);
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// })
-
-// Update Booking, Payment, Transaction tables if payment successful
 
 app.post("/payment", async (req, res) => {
     console.log("Received payment request:", req.body);
@@ -894,7 +868,7 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice,
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
-        callback_url: "https://d1a0-2402-800-63af-9f15-452c-257b-f947-c36e.ngrok-free.app/callback",
+        callback_url: "https://ffc3-2402-800-63af-eda1-b5f8-5aae-5950-dd62.ngrok-free.app/callback",
         selectedDate
     };
 
