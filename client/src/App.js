@@ -2,8 +2,8 @@ import React, { Profiler } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js';
 import Signup from './components/Signup.js';
-import AboutUs from './pages/AboutUs.js'
-import Contact from './pages/Contact.js';
+import AboutUs from './pages/AboutUs.jsx'
+import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
 import StaffPage from './pages/Staff';
 import AdminPage from './pages/Admin';
@@ -26,7 +26,7 @@ function App() {
         <Route path="/" element={<ComHeader><Home /></ComHeader>} />
         <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
-        <Route path="/about" element={<AboutUs />} />
+        <Route path="/about" element={ <ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-detail/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
