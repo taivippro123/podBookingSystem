@@ -75,9 +75,9 @@ export default function ComHeader({ children }) {
             <div className="bg-black text-white py-2 px-4">
               <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm">Kết nối:</span>
+                  <span className="text-sm">Connect:</span>
                   <Link
-                    to=""
+                    to="https://www.facebook.com/qv12a"
                     className="text-white hover:text-gray-200  text-lg"
                   >
                     <FaFacebookF />
@@ -91,13 +91,13 @@ export default function ComHeader({ children }) {
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
                   <Link to="" className="hover:underline">
-                    Hỗ trợ
+                  Support
                   </Link>
-                  <Link to="" className="hover:underline">
+                  {/* <Link to="" className="hover:underline">
                     Đăng Ký
-                  </Link>
+                  </Link> */}
                   <Link to="/login" className="hover:underline">
-                    Đăng Nhập
+                  Log in
                   </Link>
                 </div>
               </div>
@@ -111,26 +111,9 @@ export default function ComHeader({ children }) {
                   <CalendarIcon className="h-6 w-6" /> POD
                   <span className="text-blue-500"> Booking</span>
                 </Link>
+                
                 <div className="flex-grow mx-10  text-lg">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500">
-                      <FaSearch />
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <button className="text-gray-600 hover:text-blue-500">
-                    <FaShoppingCart size={24} />
-                  </button>
-                </div>
-              </div>
-            </div>
-            <nav className="bg-white border-t border-gray-200">
+                <nav className="bg-white border-t border-gray-200">
               <div className="container mx-auto">
                 <ul className="flex justify-center space-x-8 py-3 text-sm font-medium">
                   <li>
@@ -138,7 +121,7 @@ export default function ComHeader({ children }) {
                       to="/"
                       className="text-blue-900 hover:text-blue-700 text-center"
                     >
-                      PHÒNG HỌP
+                      MEETING ROOM
                     </Link>
                   </li>
                   <li>
@@ -146,7 +129,7 @@ export default function ComHeader({ children }) {
                       to="/"
                       className="text-blue-900 hover:text-blue-700 text-center"
                     >
-                      KÊNH CUNG CẤP
+                      SUPPLY CHANNEL
                     </Link>
                   </li>
 
@@ -155,12 +138,18 @@ export default function ComHeader({ children }) {
                       to="/"
                       className="text-blue-900 hover:text-blue-700 text-center"
                     >
-                      VỀ CHÚNG TÔI
+                      ABOUT US
                     </Link>
                   </li>
                 </ul>
               </div>
             </nav>
+                </div>
+                
+                
+              </div>
+            </div>
+            
           </header>
         </Affix>
 
