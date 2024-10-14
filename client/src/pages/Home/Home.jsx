@@ -25,7 +25,7 @@ export default function Home() {
       img: "https://kientrucanviet.com/wp-content/uploads/2020/12/thi%E1%BA%BFt-k%E1%BA%BF-n%E1%BB%99i-th%E1%BA%A5t-ph%C3%B2ng-h%E1%BB%8Dp-xanh.jpg",
     },
     {
-      img: "https://xaydungthanhthinh.com/wp-content/uploads/2020/03/33-mau-thiet-ke-phong-hop-dep-an-tuong-nhat-05.jpg",
+      img: "https://ctfassets.imgix.net/vh7r69kgcki3/6cBBTXTBLLJmb8mjB6syls/31f61b87ab767d21e031769862496023/private-office_600.webp?auto=format%20compress&fit=crop&q=50&w=565&h=318",
     },
   ]);
 
@@ -34,8 +34,8 @@ export default function Home() {
       <main className="flex-grow">
         <section className="bg-gray-100 py-2">
           <div className="container mx-auto px-4">
-            <div className="relative min-h-screen">
-              {/* Background Image */}
+            {/* <div className="relative min-h-screen">
+              
               <div className="absolute inset-0 z-0">
                 <img
                   src="https://baoantelecom.com/upload/images/Tin%20t%E1%BB%A9c/mau-mo-hinh-va-giai-phap-phong-hop-thong-minh-01.jpg"
@@ -45,7 +45,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-black opacity-40"></div>
               </div>
 
-              {/* Content */}
+              
               <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-6">
                   Working environment improves quality of life
@@ -90,7 +90,7 @@ export default function Home() {
                   </form>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className=" h-[50vh] mt-10 ">
               <Carousel autoplay arrows={true} infinite={false}>
                 {dataImg.map((value, index) => (
