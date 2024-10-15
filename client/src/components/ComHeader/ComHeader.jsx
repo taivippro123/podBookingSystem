@@ -108,8 +108,8 @@ export default function ComHeader({ children }) {
                   to="/"
                   className="text-2xl font-bold text-blue-900 flex justify-center items-center"
                 >
-                  <CalendarIcon className="h-6 w-6" /> POD
-                  <span className="text-blue-500"> Booking</span>
+                  <CalendarIcon className="h-6 w-6" /> Work
+                  <span className="text-blue-500"> Zone</span>
                 </Link>
                 
                 <div className="flex-grow mx-10  text-lg">
@@ -166,7 +166,7 @@ export default function ComHeader({ children }) {
 
         <footer className="bg-black text-white py-8">
           <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2024 POD Booking. All rights reserved.</p>
+            <p>&copy; 2024 WorkZone. All rights reserved.</p>
             <nav className="mt-4">
               <ul className="flex justify-center space-x-6">
                 <li>
