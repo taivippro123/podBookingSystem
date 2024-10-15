@@ -8,10 +8,10 @@ import { auth, provider } from "../../components/config";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-    const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -40,25 +40,25 @@ export default function LoginPage() {
         alert("Login failed. Please check your email and password.");
       });
   };
-   const handleGoogleSignIn = () => {
-     signInWithPopup(auth, provider)
-       .then((result) => {
-         const user = result.user;
-         localStorage.setItem("email", user.email);
-         localStorage.setItem(
-           "user",
-           JSON.stringify({
-             userEmail: user.email,
-             userName: user.displayName,
-             userRole: 4, // Assuming Google sign-in users are customers by default
-           })
-         );
-         navigate("/customer"); // Navigate to customer page after Google sign-in
-       })
-       .catch((error) => {
-         console.error("Google login error:", error);
-         alert("Google sign-in failed. Please try again.");
-       });
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        localStorage.setItem("email", user.email);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            userEmail: user.email,
+            userName: user.displayName,
+            userRole: 4, // Assuming Google sign-in users are customers by default
+          })
+        );
+        navigate("/customer"); // Navigate to customer page after Google sign-in
+      })
+      .catch((error) => {
+        console.error("Google login error:", error);
+        alert("Google sign-in failed. Please try again.");
+      });
   };
   const navigateBasedOnRole = (userRole) => {
     switch (userRole) {
@@ -77,33 +77,33 @@ export default function LoginPage() {
         break;
     }
   };
-    useEffect(() => {
-      const token = localStorage.getItem("token");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token); // Use named export jwtDecode
-          const currentTime = Date.now() / 1000; // Convert to seconds
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token); // Use named export jwtDecode
+        const currentTime = Date.now() / 1000; // Convert to seconds
 
-          if (decodedToken.exp < currentTime) {
-            // Token is expired, clear the storage and redirect to login
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login");
-          } else {
-            const user = JSON.parse(localStorage.getItem("user"));
-            if (user && user.userRole) {
-              navigateBasedOnRole(user.userRole);
-            }
-          }
-        } catch (error) {
-          console.error("Error decoding token:", error);
+        if (decodedToken.exp < currentTime) {
+          // Token is expired, clear the storage and redirect to login
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/login");
+        } else {
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (user && user.userRole) {
+            navigateBasedOnRole(user.userRole);
+          }
         }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
       }
-    }, [navigate]);
+    }
+  }, [navigate]);
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Left side - Office Image */}
@@ -119,8 +119,19 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-200 mb-4">
-              <span className="text-2xl font-bold text-gray-700">POD</span>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '5rem',
+                height: '5rem',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #6a5acd, #ff7f50)',
+                marginBottom: '1rem',
+              }}
+            >
+              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffffff' }}>WZ</span>
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               Welcome back!
