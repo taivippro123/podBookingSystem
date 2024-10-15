@@ -230,8 +230,9 @@ export default function LoginPage() {
               >
                 LOG IN
               </button>
+              {/* aaaaaaaa */}
             </div>
-
+                    
             <div>
               <button
                 type="button"
@@ -244,6 +245,7 @@ export default function LoginPage() {
                   alt="Google logo"
                 />
                 LOG IN WITH GOOGLE
+                
               </button>
             </div>
           </form>
