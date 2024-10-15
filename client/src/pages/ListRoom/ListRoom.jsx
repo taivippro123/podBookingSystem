@@ -115,14 +115,14 @@ export default function ListRoom() {
   return (
     <div className="container mx-auto p-4">
       <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">Tìm kiếm phòng họp</h2>
+        <h2 className="text-2xl font-bold mb-4">Search Meeting Rooms</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Tên phòng
+              Room Name
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -133,7 +133,7 @@ export default function ListRoom() {
                 value={searchParams.name}
                 onChange={handleInputChange}
                 className="pl-10 w-full p-2 border rounded-md"
-                placeholder="Nhập tên phòng"
+                placeholder="Enter room name"
               />
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function ListRoom() {
               htmlFor="price"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Khoảng giá
+              Price Range
             </label>
             <div className="flex items-center space-x-2">
               <DollarSign className="text-gray-400" />
@@ -153,7 +153,7 @@ export default function ListRoom() {
                 value={searchParams.minPrice}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-md"
-                placeholder="Từ"
+                placeholder="From"
               />
               <span>-</span>
               <input
@@ -163,7 +163,7 @@ export default function ListRoom() {
                 value={searchParams.maxPrice}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-md"
-                placeholder="Đến"
+                placeholder="To"
               />
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function ListRoom() {
               htmlFor="capacity"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Số lượng người
+              Capacity
             </label>
             <div className="relative">
               <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -183,7 +183,7 @@ export default function ListRoom() {
                 value={searchParams.capacity}
                 onChange={handleInputChange}
                 className="pl-10 w-full p-2 border rounded-md"
-                placeholder="Số người tối thiểu"
+                placeholder="Minimum capacity"
               />
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function ListRoom() {
               htmlFor="equipment"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Thiết bị
+              Equipment
             </label>
             <div className="relative">
               <Monitor className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -203,13 +203,11 @@ export default function ListRoom() {
                 onChange={handleInputChange}
                 className="pl-10 w-full p-2 border rounded-md appearance-none"
               >
-                <option value="">Tất cả thiết bị</option>
-                <option value="Projector">Máy chiếu</option>
+                <option value="">All equipment</option>
+                <option value="Projector">Projector</option>
                 <option value="TV">TV</option>
-                <option value="Whiteboard">Bảng trắng</option>
-                <option value="Video conferencing">
-                  Hệ thống hội nghị truyền hình
-                </option>
+                <option value="Whiteboard">Whiteboard</option>
+                <option value="Video conferencing">Video conferencing</option>
               </select>
             </div>
           </div>
@@ -218,7 +216,7 @@ export default function ListRoom() {
               htmlFor="type"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Loại phòng
+              Room Type
             </label>
             <div className="relative">
               <Coffee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -229,10 +227,10 @@ export default function ListRoom() {
                 onChange={handleInputChange}
                 className="pl-10 w-full p-2 border rounded-md appearance-none"
               >
-                <option value="">Tất cả loại phòng</option>
-                <option value="Conference">Phòng họp</option>
-                <option value="Training">Phòng đào tạo</option>
-                <option value="Board">Phòng hội đồng</option>
+                <option value="">All types</option>
+                <option value="Conference">Conference</option>
+                <option value="Training">Training</option>
+                <option value="Board">Board</option>
               </select>
             </div>
           </div>
@@ -241,7 +239,7 @@ export default function ListRoom() {
           onClick={handleSearch}
           className="w-full bg-black text-white py-2 px-4 rounded hover:bg-slate-800 transition duration-300"
         >
-          Tìm kiếm
+          Search
         </button>
       </div>
 
@@ -264,20 +262,20 @@ export default function ListRoom() {
               <h3 className="text-xl font-semibold mb-2">{room.name}</h3>
               <div className="flex items-center text-gray-600 mb-2">
                 <Users className="w-4 h-4 mr-1" />
-                <span>Sức chứa: {room.capacity}</span>
+                <span>Capacity: {room.capacity}</span>
               </div>
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>
-                  Có sẵn: {room.availableFrom} - {room.availableTo}
+                  Available: {room.availableFrom} - {room.availableTo}
                 </span>
               </div>
               <div className="flex items-center text-gray-600 mb-4">
                 <DollarSign className="w-4 h-4 mr-1" />
-                <span>Giá: {room.price}k/giờ</span>
+                <span>Price: {room.price} VND/hour</span>
               </div>
               <Link to={'/room/123'} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
-                Đặt ngay
+                Book Now
               </Link>
             </div>
           </div>
