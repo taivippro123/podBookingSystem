@@ -25,7 +25,6 @@ import {
   StarIcon, // Khách hàng tiềm năng (Ví dụ)
 } from "@heroicons/react/24/outline";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Auth/useAuth";
 import ErrorPage from "../../page/404/ErrorPage";
 import { getData } from "../../api/api";
 import { useStorage } from "../../hooks/useLocalStorage";
@@ -132,15 +131,15 @@ export default function ComHeaderStaff({ children }) {
     getAPI();
   }, []);
 
-  if (role !== "Staff") {
-    return <ErrorPage goTo={"/"} statusCode={"404"} />;
-  }
+  // if (role !== "Staff") {
+  //   return <ErrorPage goTo={"/"} statusCode={"404"} />;
+  // }
   return (
     <div className="bg-[#f9fafb] flex">
       <Affix offsetTop={0} className="hidden lg:block fixed-sidebar">
         <div className="bg-[#0F296D] h-screen w-[260px]  pr-2 overflow-y-auto pb-4">
           <div className="text-white px-10 py-4 text-center text-3xl">
-            POD Booking System
+            WorkZone System
           </div>
           <div className="text-white flex flex-col gap-5">
             {subCategories.map((category) => (
@@ -209,7 +208,7 @@ export default function ComHeaderStaff({ children }) {
                 <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
                   <div className="flex items-center justify-between px-4">
                     <h2 className="text-lg font-medium text-gray-900">
-                      POD Booking System
+                      WorkZone System
                     </h2>
                     <button
                       type="button"
@@ -223,7 +222,7 @@ export default function ComHeaderStaff({ children }) {
 
                   {/* Header */}
                   <form className="mt-4 border-t border-gray-200">
-                    <h3 className="sr-only">POD Booking System</h3>
+                    <h3 className="sr-only">WorkZone System</h3>
                     <ul
                       role="list"
                       className="px-2 py-3 font-medium text-gray-900 scrollbar scrollbar-thin"

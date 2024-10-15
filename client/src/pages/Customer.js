@@ -1,8 +1,9 @@
 import React from 'react'
-import Home from './Home'
+import Home from '../pages/Home/Home'
+
 function Customer() {
     return (
-        <div>Customer
+        <div>
             <Home />
         </div>
     )

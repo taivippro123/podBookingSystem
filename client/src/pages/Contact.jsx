@@ -146,7 +146,7 @@ export default function Contact() {
                 <span style={{ marginRight: '1rem', fontSize: '1.5rem', color: '#3182ce' }}>✉️</span>
                 <div>
                   <h3 style={{ fontWeight: '600' }}>Email</h3>
-                  <p style={{ color: '#4a5568' }}>info@PODBooking.com.vn</p>
+                  <p style={{ color: '#4a5568' }}>info@WorkZoneBooking.com.vn</p>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'start' }}>
