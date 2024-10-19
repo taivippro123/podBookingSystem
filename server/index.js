@@ -155,7 +155,7 @@ app.post('/change-password', (req, res) => {
     });
 });
 
-// ------------------------- CRUD USER -------------------------------------
+// -------------------------  USER ACCOUNT ROUTE -------------------------------------
 app.post('/signup', (req, res) => {
     const { userName, userEmail, userPassword, userPhone } = req.body;
     const userRole = 4; // Default role (Customer)
@@ -253,6 +253,64 @@ app.get('/user-points/:userId', (req, res) => {
         res.json(results[0]);
     });
 });
+
+//User can add service if bookingStatus is Upcoming or Using
+app.post('/booking/:bookingId/add-service', (req, res) => {
+    const { bookingId } = req.params;
+    const { serviceId } = req.body;
+
+    // First, check if the booking exists and has an 'Upcoming' or 'Using' status
+    const checkBookingSql = `
+        SELECT * FROM Booking WHERE bookingId = ? AND bookingStatus IN ('Upcoming', 'Using')
+    `;
+    
+    db.query(checkBookingSql, [bookingId], (err, bookingResults) => {
+        if (err) return res.status(500).json({ error: 'Error checking booking' });
+        
+        if (bookingResults.length === 0) {
+            return res.status(404).json({ error: 'Booking not found or cannot add service to this booking' });
+        }
+
+        // Check if the service exists and is available
+        const checkServiceSql = `
+            SELECT * FROM Services WHERE serviceId = ? AND serviceStatus = 'Available'
+        `;
+        
+        db.query(checkServiceSql, [serviceId], (err, serviceResults) => {
+            if (err) return res.status(500).json({ error: 'Error checking service' });
+            
+            if (serviceResults.length === 0) {
+                return res.status(404).json({ error: 'Service not found or not available' });
+            }
+
+            // Check if the service is already added to the booking
+            const checkBookingServiceSql = `
+                SELECT * FROM BookingServices WHERE bookingId = ? AND serviceId = ?
+            `;
+            
+            db.query(checkBookingServiceSql, [bookingId, serviceId], (err, existingServiceResults) => {
+                if (err) return res.status(500).json({ error: 'Error checking existing services' });
+                
+                if (existingServiceResults.length > 0) {
+                    return res.status(400).json({ error: 'Service already added to this booking' });
+                }
+
+                // Add the service to the booking
+                const addServiceSql = `
+                    INSERT INTO BookingServices (bookingId, serviceId, servicePrice, createdAt)
+                    SELECT ?, ?, servicePrice, NOW() FROM Services WHERE serviceId = ?
+                `;
+                
+                db.query(addServiceSql, [bookingId, serviceId, serviceId], (err, insertResults) => {
+                    if (err) return res.status(500).json({ error: 'Error adding service to booking' });
+                    res.json({ message: 'Service added to booking successfully' });
+                });
+            });
+        });
+    });
+});
+
+
 
 
 // ---------------------------- CRUD SLOT -------------------------------------
@@ -769,6 +827,297 @@ app.delete('/rooms/:roomId', (req, res) => {
             return res.status(404).send('Room not found');
         }
         res.json({ message: 'Room deleted successfully' });
+    });
+});
+
+//--------------------------------------------------------STAFF ROUTE------------------------------------------
+//STAFF
+app.get('/staff/upcoming-bookings', (req, res) => {
+    const sql = `
+        SELECT * FROM Booking WHERE bookingStatus = 'Upcoming'
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching upcoming bookings' });
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No upcoming bookings found' });
+        }
+        
+        res.json(results);
+    });
+});
+
+
+//Upcoming services
+app.get('/staff/upcoming-services', (req, res) => {
+    const sql = `
+        SELECT b.bookingId, s.serviceId, s.serviceName, s.servicePrice, s.serviceDescription 
+        FROM Booking AS b
+        JOIN BookingServices AS bs ON b.bookingId = bs.bookingId
+        JOIN Services AS s ON bs.serviceId = s.serviceId
+        WHERE b.bookingStatus IN ('Upcoming', 'Using')
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching services for upcoming bookings' });
+        
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No services found for upcoming bookings' });
+        }
+        
+        res.json(results);
+    });
+});
+
+
+//---------------------------------------------------------MANAGER ROUTE--------------------------------------------------------------
+//------------------------MANAGE USER AND STAFF ACCOUNT
+app.get('/manage/accounts', (req, res) => {
+    const sql = `
+        SELECT userId, userName, userEmail, userPhone, userRole, createdAt
+        FROM User
+        WHERE userRole IN (3, 4)
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching users and staff' });
+
+        res.json(results);
+    });
+});
+
+app.post('/manage/accounts', (req, res) => {
+    const { userName, userEmail, userPassword, userPhone, userRole } = req.body;
+
+    // Only allow userRole 3 or 4
+    if (![3, 4].includes(userRole)) {
+        return res.status(400).json({ error: 'Invalid role. Only userRole 3 (staff) or 4 (user) is allowed.' });
+    }
+
+    const sql = `
+        INSERT INTO User (userName, userEmail, userPassword, userPhone, userRole, createdAt)
+        VALUES (?, ?, ?, ?, ?, NOW())
+    `;
+
+    db.query(sql, [userName, userEmail, userPassword, userPhone, userRole], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error creating user or staff account' });
+
+        res.json({ message: 'User or staff account created successfully' });
+    });
+});
+
+app.put('/manage/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+    const { userName, userEmail, userPhone, userRole } = req.body;
+
+    // Only allow userRole 3 or 4
+    if (![3, 4].includes(userRole)) {
+        return res.status(400).json({ error: 'Invalid role. Only userRole 3 (staff) or 4 (user) is allowed.' });
+    }
+
+    const sql = `
+        UPDATE User
+        SET userName = ?, userEmail = ?, userPhone = ?, userRole = ?
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userName, userEmail, userPhone, userRole, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating user or staff account' });
+
+        res.json({ message: 'User or staff account updated successfully' });
+    });
+});
+
+app.delete('/manage/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    const sql = `
+        DELETE FROM User WHERE userId = ? AND userRole IN (3, 4)
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error deleting user or staff account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'No user or staff account found' });
+        }
+
+        res.json({ message: 'User or staff account deleted successfully' });
+    });
+});
+
+//---------------------------------MANAGE BOOKING
+//View bookings
+app.get('/manage/bookings', (req, res) => {
+    const sql = `
+        SELECT bookingId, userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus, createdAt
+        FROM Booking
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching bookings' });
+
+        res.json(results);
+    });
+});
+
+//Edit booking status
+app.put('/manage/bookings/:bookingId/status', (req, res) => {
+    const { bookingId } = req.params;
+    const { bookingStatus } = req.body;
+
+    // Validate bookingStatus
+    const validStatuses = ['Cancelled', 'Refunded', 'Upcoming', 'Using', 'Completed'];
+    if (!validStatuses.includes(bookingStatus)) {
+        return res.status(400).json({ error: 'Invalid booking status' });
+    }
+
+    const sql = `
+        UPDATE Booking
+        SET bookingStatus = ?
+        WHERE bookingId = ?
+    `;
+
+    db.query(sql, [bookingStatus, bookingId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating booking status' });
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+
+        res.json({ message: 'Booking status updated successfully' });
+    });
+});
+
+//----------------------------------------------------------------------ADMIN ROUTE--------------------------------------------------------------
+//---------------------------------------MANAGE ALL ACCOUNTS
+
+// Number of account
+app.get('/admin/number-accounts', (req, res) => {
+    const sql = `
+        SELECT 
+            (SELECT COUNT(*) FROM User WHERE userRole = 4) AS User,   -- User role 4
+            (SELECT COUNT(*) FROM User WHERE userRole = 3) AS Staff,  -- User role 3
+            (SELECT COUNT(*) FROM User WHERE userRole = 2) AS Manage, -- User role 2
+            (SELECT COUNT(*) FROM User WHERE userRole = 1) AS Admin  -- User role 1
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching account counts' });
+
+        res.json(results[0]);  // Return the first (and only) row
+    });
+});
+
+
+
+//View all account
+app.get('/admin/accounts', (req, res) => {
+    const sql = `
+        SELECT userId, userName, userEmail, userPhone, userPoint, userRole, createdAt
+        FROM User
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching accounts' });
+
+        res.json(results);
+    });
+});
+
+//Update account
+app.put('/admin/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+    const { userName, userEmail, userPassword, userPhone, userPoint, userRole} = req.body;
+
+    const sql = `
+        UPDATE User
+        SET userName = ?, userEmail = ?, userPassword = ?, userPhone = ?, userPoint = ?, userRole = ?
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userName, userEmail, userPassword, userPhone, userPoint, userRole, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'Account updated successfully' });
+    });
+});
+
+
+//Delete account
+app.delete('/admin/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    const sql = `
+        DELETE FROM User
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error deleting account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'Account deleted successfully' });
+    });
+});
+
+//--------------------------------- VIEW TRANSACTION
+app.get('/admin/transactions', (req, res) => {
+    const sql = `
+        SELECT 
+            *
+        FROM Transaction
+        ORDER BY eventDate DESC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching transactions' });
+
+        res.json(results);
+    });
+});
+
+
+//-----------------------------------------------GRAPH-------------------------
+//----------------------POPULAR ROOMS------------------------
+app.get('/admin/popular-rooms', (req, res) => {
+    const sql = `
+        SELECT roomId, COUNT(bookingId) AS bookingCount
+        FROM Booking
+        GROUP BY roomId
+        ORDER BY bookingCount DESC
+        LIMIT 3
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching popular rooms' });
+
+        res.json(results);
+    });
+});
+
+//----------------------POPULAR SERVICES------------------------
+app.get('/admin/popular-services', (req, res) => {
+    const sql = `
+        SELECT serviceId, COUNT(bookingServiceId) AS serviceCount
+        FROM BookingServices
+        GROUP BY serviceId
+        ORDER BY serviceCount DESC
+        LIMIT 3
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching popular services' });
+
+        res.json(results);
     });
 });
 
