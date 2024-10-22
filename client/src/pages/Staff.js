@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-import Home from '../pages/Home/Home'
-=======
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { FaCalendarAlt, FaClipboardList, FaSignOutAlt, FaBars } from 'react-icons/fa';
@@ -13,16 +9,8 @@ const Staff = () => {
     const toggleMenu = () => {
         setIsMenuVisible(!isMenuVisible);
     };
->>>>>>> master
 
     return (
-<<<<<<< HEAD
-        <div>
-            <Home />
-        </div>
-    )
-}
-=======
         <div className={`${styles.container}`}>
             <header className={styles.header}>
                 <h1 className={styles.managementTitle}>Staff Dashboard</h1> {/* Căn giữa tiêu đề ở đây */}
@@ -59,6 +47,5 @@ const Staff = () => {
         </div>
     );
 };
->>>>>>> master
 
 export default Staff;
