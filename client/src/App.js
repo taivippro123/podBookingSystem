@@ -1,4 +1,4 @@
-import React, { Profiler } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js';
 import Signup from './components/Signup.js';
@@ -7,7 +7,7 @@ import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
 import StaffPage from './pages/Staff';
 import AdminPage from './pages/Admin';
-import ManagerPage from './pages/Manager';
+import ManagerPage from './pages/ManageRooms.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
