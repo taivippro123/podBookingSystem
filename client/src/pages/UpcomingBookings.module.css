@@ -1,10 +1,23 @@
+body {
+    background-color: hwb(205 2% 89%); /* Màu nền cho toàn bộ trang */
+    margin: 0; /* Loại bỏ margin mặc định của body */
+    font-family: Arial, sans-serif; /* Font chữ dễ đọc */
+}
+
+.bookingsPage {
+    background-color: #041a293a; /* Màu nền mới cho trang UpcomingBookings */
+    min-height: 100vh; /* Đảm bảo chiều cao tối thiểu để nền trải dài */
+    padding: 20px; /* Thêm khoảng cách cho nội dung bên trong */
+}
+
+
+
+
 .bookingsContainer {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 1400px; /* Tăng chiều rộng tối đa của container */
-    margin: 0 auto; /* Giữ cho container ở giữa */
+    padding: 20px; /* Thêm padding cho nội dung nếu cần */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Nếu cần hiệu ứng bóng */
+    /* max-width: 100%; /* Bỏ giới hạn chiều rộng */
+    margin: 0; /* Bỏ margin để mở rộng toàn bộ chiều rộng */
 }
 
 .bookingsContainer h2 {
@@ -17,12 +30,16 @@
 }
 
 .searchContainer {
-    margin-bottom: 30px; /* Khoảng cách dưới cho thanh tìm kiếm */
+    margin-bottom: 40px; /* Khoảng cách dưới cho thanh tìm kiếm */
+    margin-top: 40px;
 }
 
 .bookingsTable {
     width: 100%; /* Đảm bảo bảng sử dụng toàn bộ chiều rộng của container */
     border-collapse: collapse; /* Gộp các đường viền bảng */
+    background-color: #fffffffa; /* Nền cho bảng */
+    border-radius: 8px; /* Thêm bo góc cho bảng */
+    overflow: hidden; /* Để bo góc hoạt động */
 }
 
 .bookingsTable th, .bookingsTable td {
@@ -59,7 +76,7 @@
 }
 
 .bookingsTable th {
-    background-color: #f2f2f2; /* Nền cho tiêu đề */
+    background-color: #aca8a8; /* Nền cho tiêu đề */
     color: #333; /* Màu chữ cho tiêu đề */
 }
 
@@ -104,4 +121,12 @@
 
 .searchButton:hover {
     background-color: #0056b3; /* Màu nền khi hover */
+}
+
+h2{
+    margin-top: 50px;
+    text-align: center;
+    font-size: 40px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: bold;
 }
