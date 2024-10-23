@@ -1,11 +1,11 @@
 import React, { Profiler } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js';
-import Signup from './components/Signup.js';
+// import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.jsx'
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import StaffPage from './pages/Staff';
+import Staff from './pages/Staff.js'
 import AdminPage from './pages/Admin';
 import ManagerPage from './pages/Manager';
 import ProtectedRoute from './components/ProtectedRoute.js';
@@ -20,6 +20,12 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
+import BookingConfirmation from './pages/RoomDetail/Bookingconfirm.jsx';
+import Signup from './pages/Signup/SignupPage.jsx'
+
+
+
+
 function App() {
   return (
     <Router>
@@ -32,13 +38,18 @@ function App() {
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={ <ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
-        <Route path="/room-detail/:id" element={<RoomDetail />} />
+        <Route path="/room-details/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/viewbookings/:userId" element={<ViewBooking />} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment" element={<ComHeader><Payment /></ComHeader>} />
         <Route path="/rooms/:id" element={<ManageRoom />} />
         <Route path="/login2" element={<Login />} />
+        <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+        {/* <Route path="/booking-success" element={<BookingSuccess />} /> */}
+        <Route path="/staff" element={<ComHeader><Staff /></ComHeader>} />
+
+
 
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
@@ -47,11 +58,11 @@ function App() {
 
         } />
 
-        <Route path="/staff" element={
+        {/* <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
-            <StaffPage />
+            <Staff />
           </ProtectedRoute>
-        } />
+        } /> */}
 
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>

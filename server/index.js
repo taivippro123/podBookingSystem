@@ -894,7 +894,7 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice,
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
-        callback_url: "https://d1a0-2402-800-63af-9f15-452c-257b-f947-c36e.ngrok-free.app/callback",
+        callback_url: "https://b7be-171-255-184-45.ngrok-free.app/callback",
         selectedDate
     };
 

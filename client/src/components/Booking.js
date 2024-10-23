@@ -293,9 +293,9 @@
                             type="radio"
                             value="range"
                             checked={bookingType === 'range'}
-                            onChange={handleBookingTypeChange}
+                            onChange={handleBookingTypeChange} 
                         />{' '}
-                        Book by Date Range
+             dateRange           Book by Date Range
                     </label>
                 </div>
 

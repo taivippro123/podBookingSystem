@@ -8,6 +8,7 @@ function RoomDetail() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
+    
     useEffect(() => {
         fetch(`http://localhost:5000/room-details/${id}`)
             .then((response) => {

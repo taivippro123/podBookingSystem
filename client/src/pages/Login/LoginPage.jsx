@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { jwtDecode } from 'jwt-decode';  // Import named export
 import axios from "axios";
+import bgImage from '../../assets/login.png';
+
 import { auth, provider } from "../../components/config";
 
 export default function LoginPage() {
@@ -109,7 +111,7 @@ export default function LoginPage() {
       {/* Left side - Office Image */}
       <div className="hidden lg:block lg:w-1/2">
         <img
-          src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/441397399_415513347919928_604910872180293785_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFECoT_zhG3d_I6ePeP2zoYRelxFgdlAdBF6XEWB2UB0NUnw_Kt5J0xk7takqSp1SUVEMBLWGOcq7osFw6zvuu9&_nc_ohc=5An2EqYzGpMQ7kNvgG6ORLg&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=ACC77HGQ-I_NPdccq0GE_gs&oh=00_AYBjphqHK8QSBWnhZhHeeRRS-S2iLg6kVfFnIqmMYAq75w&oe=6712B40E"
+          src= {bgImage}
           alt="Modern office space"
           className="object-cover w-full h-full"
         />
@@ -134,7 +136,7 @@ export default function LoginPage() {
               <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffffff' }}>WZ</span>
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              Welcome back!
+            Welcome back to Work Zone!
             </h2>
             <p className="mt-2 text-sm text-gray-600">
               Please enter your details
@@ -230,7 +232,7 @@ export default function LoginPage() {
               >
                 LOG IN
               </button>
-              {/* aaaaaaaa */}
+              
             </div>
                     
             <div>
@@ -248,6 +250,18 @@ export default function LoginPage() {
                 
               </button>
             </div>
+            <div className="text-sm ">
+              <a class= "mx-2">
+              Don't have an account?
+              </a>
+                <a
+                  href="/signup"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
+                   Rgister here
+                </a>
+              </div>      
+            
           </form>
         </div>
       </div>

@@ -118,20 +118,13 @@ export default function ComHeader({ children }) {
                 <ul className="flex justify-center space-x-8 py-3 text-sm font-medium">
                   <li>
                     <Link
-                      to="/"
+                      to="/rooms"
                       className="text-blue-900 hover:text-blue-700 text-center"
                     >
-                      MEETING ROOM
+                      ROOM
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      to="/"
-                      className="text-blue-900 hover:text-blue-700 text-center"
-                    >
-                      SUPPLY CHANNEL
-                    </Link>
-                  </li>
+                  
 
                   <li>
                     <Link
@@ -139,6 +132,14 @@ export default function ComHeader({ children }) {
                       className="text-blue-900 hover:text-blue-700 text-center"
                     >
                       ABOUT US
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="text-blue-900 hover:text-blue-700 text-center"
+                    >
+                      CONTACT US
                     </Link>
                   </li>
                 </ul>
