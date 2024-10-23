@@ -5,7 +5,7 @@ import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import StaffPage from './pages/Staff'; // Giả định đây là nơi chứa Staff và các route con
+import StaffPage from './pages/Staff/Staff.js'; // Giả định đây là nơi chứa Staff và các route con
 import AdminPage from './pages/Admin';
 import ManagerPage from './pages/Manager/Manager.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
@@ -19,8 +19,8 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
-import UpcomingBookings from './pages/UpcomingBookings';
-import UpcomingServices from './pages/UpcomingServices.js'; // Đường dẫn tới UpcomingServices
+import UpcomingBookings from './pages/Staff/UpcomingBookings';
+import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
 import ManageRooms from './pages/Manager/ManageRooms.js';
 
 function App() {
