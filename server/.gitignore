@@ -1,1 +1,2 @@
-server/serviceAccountKey.json
+serviceAccountKey.json
+git add .gitignore

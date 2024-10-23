@@ -1,0 +1,84 @@
+.pageContainer {
+    width: 100%; /* Đảm bảo container bao trùm toàn bộ trang */
+    padding: 0; /* Loại bỏ padding */
+    margin: 0; /* Loại bỏ margin */
+}
+
+.servicesTable {
+    width: 100%; /* Sử dụng toàn bộ chiều rộng của trang */
+    border-collapse: collapse; /* Gộp các đường viền bảng */
+    margin: 0;
+}
+
+.servicesTable th, .servicesTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.servicesTable th:nth-child(1),
+.servicesTable td:nth-child(1),
+.servicesTable th:nth-child(2),
+.servicesTable td:nth-child(2) {
+    width: 150px;
+}
+
+.servicesTable th:nth-child(3),
+.servicesTable td:nth-child(3) {
+    width: 300px;
+}
+
+.servicesTable th:nth-child(4),
+.servicesTable td:nth-child(4) {
+    width: 150px;
+}
+
+.servicesTable th:nth-child(5),
+.servicesTable td:nth-child(5) {
+    width: 400px;
+}
+
+.servicesTable th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.servicesTable tr:hover {
+    background-color: #e6e6e6;
+}
+
+.loading {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+}
+
+.errorMessage {
+    text-align: center;
+    color: red;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.searchContainer {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 20px;
+    padding-left: 20px; /* Tạo khoảng cách nhỏ bên trái */
+}
+
+.searchInput {
+    padding: 10px;
+    width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+body, html {
+    background-color: white; /* Màu nền cho toàn bộ màn hình */
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Đảm bảo trang chiếm toàn bộ chiều cao */
+}

@@ -1,15 +1,14 @@
-import React, { Profiler } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js';
-// import Signup from './components/Signup.js';
-import AboutUs from './pages/AboutUs.jsx'
+import Signup from './components/Signup.js';
+import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import Staff from './pages/Staff.js'
+import StaffPage from './pages/Staff/Staff.js'; // Giả định đây là nơi chứa Staff và các route con
 import AdminPage from './pages/Admin';
-import ManagerPage from './pages/Manager';
+import ManagerPage from './pages/Manager/Manager.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
-// import RoomDetail from './components/RoomDetail.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
 import ViewBooking from './components/ViewBooking.js';
@@ -20,23 +19,22 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
-import BookingConfirmation from './pages/RoomDetail/Bookingconfirm.jsx';
-import Signup from './pages/Signup/SignupPage.jsx'
 
-
+import UpcomingBookings from './pages/Staff/UpcomingBookings';
+import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
+import ManageRooms from './pages/Manager/ManageRooms.js';
 
 
 function App() {
   return (
     <Router>
-
       <Routes>
         <Route path="/" element={<ComHeader><Home /></ComHeader>} />
         <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
         <Route path="/rooms" element={<ComHeader><ListRoom /></ComHeader>} />
         <Route path="/room/:id" element={<ComHeader><RoomDetail /></ComHeader>} />
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
-        <Route path="/about" element={ <ComHeader><AboutUs /></ComHeader>} />
+        <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
         <Route path="/room-details/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
@@ -53,16 +51,29 @@ function App() {
 
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
-           <> <Customer /></>
+            <Customer />
           </ProtectedRoute>
-
         } />
 
         {/* <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
-            <Staff />
+          
+            <StaffPage /> {/* Hiển thị thanh menu và header cho Staff */}
           </ProtectedRoute>
-        } /> */}
+        }>
+          {/* Các route con cho Staff */}
+          <Route path="upcoming-bookings" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingBookings />
+            </ProtectedRoute>
+          } />
+          <Route path="upcoming-services" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingServices />
+            </ProtectedRoute>
+          } />
+        </Route>
+
 
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>
@@ -76,9 +87,14 @@ function App() {
           </ProtectedRoute>
         } />
 
+        <Route path="/manager/manageRooms" element={
+          <ProtectedRoute allowedRoles={[2]}>
+            <ManageRooms /> {/* Thêm route cho ManageRooms */}
+          </ProtectedRoute>
+        } />
+
 
       </Routes>
-
     </Router>
   );
 }

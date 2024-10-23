@@ -1,0 +1,132 @@
+body {
+    background-color: hwb(205 2% 89%); /* Màu nền cho toàn bộ trang */
+    margin: 0; /* Loại bỏ margin mặc định của body */
+    font-family: Arial, sans-serif; /* Font chữ dễ đọc */
+}
+
+.bookingsPage {
+    background-color: #041a293a; /* Màu nền mới cho trang UpcomingBookings */
+    min-height: 100vh; /* Đảm bảo chiều cao tối thiểu để nền trải dài */
+    padding: 20px; /* Thêm khoảng cách cho nội dung bên trong */
+}
+
+
+
+
+.bookingsContainer {
+    padding: 20px; /* Thêm padding cho nội dung nếu cần */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Nếu cần hiệu ứng bóng */
+    /* max-width: 100%; /* Bỏ giới hạn chiều rộng */
+    margin: 0; /* Bỏ margin để mở rộng toàn bộ chiều rộng */
+}
+
+.bookingsContainer h2 {
+    font-size: 36px; /* Kích thước chữ lớn */
+    color: #333; /* Màu chữ */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+    text-align: center; /* Căn giữa */
+    font-weight: bold; /* In đậm chữ */
+    padding-top: 20px; /* Khoảng cách trên để tách tiêu đề khỏi phần trên */
+}
+
+.searchContainer {
+    margin-bottom: 40px; /* Khoảng cách dưới cho thanh tìm kiếm */
+    margin-top: 40px;
+}
+
+.bookingsTable {
+    width: 100%; /* Đảm bảo bảng sử dụng toàn bộ chiều rộng của container */
+    border-collapse: collapse; /* Gộp các đường viền bảng */
+    background-color: #fffffffa; /* Nền cho bảng */
+    border-radius: 8px; /* Thêm bo góc cho bảng */
+    overflow: hidden; /* Để bo góc hoạt động */
+}
+
+.bookingsTable th, .bookingsTable td {
+    padding: 12px;
+    text-align: left; /* Căn trái cho nội dung */
+    border-bottom: 1px solid #ddd; /* Đường viền dưới cho các ô */
+    border-right: 1px solid #ddd; /* Đường viền bên phải cho cột */
+}
+
+/* Đặt chiều rộng cho các cột */
+.bookingsTable th:nth-child(1), /* Booking ID */
+.bookingsTable td:nth-child(1),
+.bookingsTable th:nth-child(2), /* User ID */
+.bookingsTable td:nth-child(2),
+.bookingsTable th:nth-child(3), /* Room ID */
+.bookingsTable td:nth-child(3) {
+    width: 150px; /* Giảm chiều rộng cho các cột này nếu cần */
+}
+
+.bookingsTable th:nth-child(4), /* Start Day */
+.bookingsTable td:nth-child(4),
+.bookingsTable th:nth-child(5), /* End Day */
+.bookingsTable td:nth-child(5) {
+    width: 300px; /* Tăng chiều rộng cho các cột Start Day và End Day */
+}
+
+.bookingsTable th:nth-child(6), /* Total Price */
+.bookingsTable td:nth-child(6),
+.bookingsTable th:nth-child(7), /* Status */
+.bookingsTable td:nth-child(7),
+.bookingsTable th:nth-child(8), /* Created At */
+.bookingsTable td:nth-child(8) {
+    width: 250px; /* Tăng chiều rộng cho các cột này */
+}
+
+.bookingsTable th {
+    background-color: #aca8a8; /* Nền cho tiêu đề */
+    color: #333; /* Màu chữ cho tiêu đề */
+}
+
+.bookingsTable tr:hover {
+    background-color: #e6e6e6; /* Hiệu ứng hover cho hàng */
+}
+
+.loading {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+}
+
+.errorMessage {
+    text-align: center;
+    color: red;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.tableContainer {
+    margin-top: 20px; /* Tăng khoảng cách giữa thanh tìm kiếm và bảng */
+}
+
+.searchInput {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px; /* Có thể điều chỉnh chiều rộng */
+    margin-right: 10px; /* Khoảng cách bên phải */
+}
+
+.searchButton {
+    background-color: #007bff; /* Màu nền cho nút */
+    color: white; /* Màu chữ cho nút */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer; /* Con trỏ khi hover */
+    margin-top: 10px; /* Thêm khoảng cách phía trên */
+}
+
+.searchButton:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+}
+
+h2{
+    margin-top: 50px;
+    text-align: center;
+    font-size: 40px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+}

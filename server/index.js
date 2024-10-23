@@ -5,6 +5,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 require('dotenv').config();
 
 //Zalopay
@@ -68,7 +70,92 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// ------------------------- CRUD USER -------------------------------------
+//------------------------------- EMAIL OTP WHEN FORGET PASSWORD -------------------------------
+
+// Nodemailer configuration
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'taipvtse183323@fpt.edu.vn',
+        pass: 'pmorbiaqpklyuytj' // Use an app-specific password if using Gmail
+    }
+});
+
+// Generate a random OTP (6 characters)
+function generateOtp() {
+    return crypto.randomBytes(3).toString('hex').toUpperCase();
+}
+
+// Send OTP email and store OTP in the database
+async function sendOtpEmail(email) {
+    const otpCode = generateOtp();
+    const expirationTime = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
+
+    // Store the OTP in the database
+    const query = 'INSERT INTO otp_codes (email, otp_code, expires_at) VALUES (?, ?, ?)';
+    db.query(query, [email, otpCode, expirationTime], (err, result) => {
+        if (err) throw err;
+        console.log('OTP saved to the database.');
+    });
+
+    // Email options
+    const mailOptions = {
+        from: 'taipvtse183323@fpt.edu.vn',
+        to: email,
+        subject: 'Your OTP Code for POD Booking System',
+        text: `Your OTP code is ${otpCode}. This code will expire in 10 minutes.`
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+}
+
+// API route to request OTP (Forgot Password)
+app.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        await sendOtpEmail(email);
+        res.status(200).send('OTP sent successfully.');
+    } catch (error) {
+        console.error('Error sending OTP:', error);
+        res.status(500).send('Error sending OTP.');
+    }
+});
+
+
+// API route to change password if OTP is correct
+app.post('/change-password', (req, res) => {
+    const { email, otpCode, newPassword } = req.body;
+
+    // Check if the OTP is correct and valid
+    const query = 'SELECT * FROM otp_codes WHERE email = ? AND otp_code = ? AND expires_at > NOW()';
+    db.query(query, [email, otpCode], (err, results) => {
+        if (err) throw err;
+
+        if (results.length > 0) {
+            // OTP is valid, proceed to change the password
+
+            // Update the password in the 'users' table
+            const updateQuery = 'UPDATE User SET userPassword = ? WHERE userEmail = ?';
+            db.query(updateQuery, [newPassword, email], (err, result) => {
+                if (err) throw err;
+
+                // Optionally, delete the OTP after successful password change
+                const deleteOtpQuery = 'DELETE FROM otp_codes WHERE email = ?';
+                db.query(deleteOtpQuery, [email], (err, result) => {
+                    if (err) throw err;
+                });
+
+                res.status(200).send('Password changed successfully.');
+            });
+        } else {
+            res.status(400).send('Invalid or expired OTP.');
+        }
+    });
+});
+
+// -------------------------  USER ACCOUNT ROUTE -------------------------------------
 app.post('/signup', (req, res) => {
     const { userName, userEmail, userPassword, userPhone } = req.body;
     const userRole = 4; // Default role (Customer)
@@ -166,6 +253,64 @@ app.get('/user-points/:userId', (req, res) => {
         res.json(results[0]);
     });
 });
+
+//User can add service if bookingStatus is Upcoming or Using
+app.post('/booking/:bookingId/add-service', (req, res) => {
+    const { bookingId } = req.params;
+    const { serviceId } = req.body;
+
+    // First, check if the booking exists and has an 'Upcoming' or 'Using' status
+    const checkBookingSql = `
+        SELECT * FROM Booking WHERE bookingId = ? AND bookingStatus IN ('Upcoming', 'Using')
+    `;
+    
+    db.query(checkBookingSql, [bookingId], (err, bookingResults) => {
+        if (err) return res.status(500).json({ error: 'Error checking booking' });
+        
+        if (bookingResults.length === 0) {
+            return res.status(404).json({ error: 'Booking not found or cannot add service to this booking' });
+        }
+
+        // Check if the service exists and is available
+        const checkServiceSql = `
+            SELECT * FROM Services WHERE serviceId = ? AND serviceStatus = 'Available'
+        `;
+        
+        db.query(checkServiceSql, [serviceId], (err, serviceResults) => {
+            if (err) return res.status(500).json({ error: 'Error checking service' });
+            
+            if (serviceResults.length === 0) {
+                return res.status(404).json({ error: 'Service not found or not available' });
+            }
+
+            // Check if the service is already added to the booking
+            const checkBookingServiceSql = `
+                SELECT * FROM BookingServices WHERE bookingId = ? AND serviceId = ?
+            `;
+            
+            db.query(checkBookingServiceSql, [bookingId, serviceId], (err, existingServiceResults) => {
+                if (err) return res.status(500).json({ error: 'Error checking existing services' });
+                
+                if (existingServiceResults.length > 0) {
+                    return res.status(400).json({ error: 'Service already added to this booking' });
+                }
+
+                // Add the service to the booking
+                const addServiceSql = `
+                    INSERT INTO BookingServices (bookingId, serviceId, servicePrice, createdAt)
+                    SELECT ?, ?, servicePrice, NOW() FROM Services WHERE serviceId = ?
+                `;
+                
+                db.query(addServiceSql, [bookingId, serviceId, serviceId], (err, insertResults) => {
+                    if (err) return res.status(500).json({ error: 'Error adding service to booking' });
+                    res.json({ message: 'Service added to booking successfully' });
+                });
+            });
+        });
+    });
+});
+
+
 
 
 // ---------------------------- CRUD SLOT -------------------------------------
@@ -685,6 +830,297 @@ app.delete('/rooms/:roomId', (req, res) => {
     });
 });
 
+//--------------------------------------------------------STAFF ROUTE------------------------------------------
+//STAFF
+app.get('/staff/upcoming-bookings', (req, res) => {
+    const sql = `
+        SELECT * FROM Booking WHERE bookingStatus = 'Upcoming'
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching upcoming bookings' });
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No upcoming bookings found' });
+        }
+        
+        res.json(results);
+    });
+});
+
+
+//Upcoming services
+app.get('/staff/upcoming-services', (req, res) => {
+    const sql = `
+        SELECT b.bookingId, s.serviceId, s.serviceName, s.servicePrice, s.serviceDescription 
+        FROM Booking AS b
+        JOIN BookingServices AS bs ON b.bookingId = bs.bookingId
+        JOIN Services AS s ON bs.serviceId = s.serviceId
+        WHERE b.bookingStatus IN ('Upcoming', 'Using')
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching services for upcoming bookings' });
+        
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No services found for upcoming bookings' });
+        }
+        
+        res.json(results);
+    });
+});
+
+
+//---------------------------------------------------------MANAGER ROUTE--------------------------------------------------------------
+//------------------------MANAGE USER AND STAFF ACCOUNT
+app.get('/manage/accounts', (req, res) => {
+    const sql = `
+        SELECT userId, userName, userEmail, userPhone, userRole, createdAt
+        FROM User
+        WHERE userRole IN (3, 4)
+    `;
+    
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching users and staff' });
+
+        res.json(results);
+    });
+});
+
+app.post('/manage/accounts', (req, res) => {
+    const { userName, userEmail, userPassword, userPhone, userRole } = req.body;
+
+    // Only allow userRole 3 or 4
+    if (![3, 4].includes(userRole)) {
+        return res.status(400).json({ error: 'Invalid role. Only userRole 3 (staff) or 4 (user) is allowed.' });
+    }
+
+    const sql = `
+        INSERT INTO User (userName, userEmail, userPassword, userPhone, userRole, createdAt)
+        VALUES (?, ?, ?, ?, ?, NOW())
+    `;
+
+    db.query(sql, [userName, userEmail, userPassword, userPhone, userRole], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error creating user or staff account' });
+
+        res.json({ message: 'User or staff account created successfully' });
+    });
+});
+
+app.put('/manage/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+    const { userName, userEmail, userPhone, userRole } = req.body;
+
+    // Only allow userRole 3 or 4
+    if (![3, 4].includes(userRole)) {
+        return res.status(400).json({ error: 'Invalid role. Only userRole 3 (staff) or 4 (user) is allowed.' });
+    }
+
+    const sql = `
+        UPDATE User
+        SET userName = ?, userEmail = ?, userPhone = ?, userRole = ?
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userName, userEmail, userPhone, userRole, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating user or staff account' });
+
+        res.json({ message: 'User or staff account updated successfully' });
+    });
+});
+
+app.delete('/manage/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    const sql = `
+        DELETE FROM User WHERE userId = ? AND userRole IN (3, 4)
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error deleting user or staff account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'No user or staff account found' });
+        }
+
+        res.json({ message: 'User or staff account deleted successfully' });
+    });
+});
+
+//---------------------------------MANAGE BOOKING
+//View bookings
+app.get('/manage/bookings', (req, res) => {
+    const sql = `
+        SELECT bookingId, userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus, createdAt
+        FROM Booking
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching bookings' });
+
+        res.json(results);
+    });
+});
+
+//Edit booking status
+app.put('/manage/bookings/:bookingId/status', (req, res) => {
+    const { bookingId } = req.params;
+    const { bookingStatus } = req.body;
+
+    // Validate bookingStatus
+    const validStatuses = ['Cancelled', 'Refunded', 'Upcoming', 'Using', 'Completed'];
+    if (!validStatuses.includes(bookingStatus)) {
+        return res.status(400).json({ error: 'Invalid booking status' });
+    }
+
+    const sql = `
+        UPDATE Booking
+        SET bookingStatus = ?
+        WHERE bookingId = ?
+    `;
+
+    db.query(sql, [bookingStatus, bookingId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating booking status' });
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+
+        res.json({ message: 'Booking status updated successfully' });
+    });
+});
+
+//----------------------------------------------------------------------ADMIN ROUTE--------------------------------------------------------------
+//---------------------------------------MANAGE ALL ACCOUNTS
+
+// Number of account
+app.get('/admin/number-accounts', (req, res) => {
+    const sql = `
+        SELECT 
+            (SELECT COUNT(*) FROM User WHERE userRole = 4) AS User,   -- User role 4
+            (SELECT COUNT(*) FROM User WHERE userRole = 3) AS Staff,  -- User role 3
+            (SELECT COUNT(*) FROM User WHERE userRole = 2) AS Manage, -- User role 2
+            (SELECT COUNT(*) FROM User WHERE userRole = 1) AS Admin  -- User role 1
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching account counts' });
+
+        res.json(results[0]);  // Return the first (and only) row
+    });
+});
+
+
+
+//View all account
+app.get('/admin/accounts', (req, res) => {
+    const sql = `
+        SELECT userId, userName, userEmail, userPhone, userPoint, userRole, createdAt
+        FROM User
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching accounts' });
+
+        res.json(results);
+    });
+});
+
+//Update account
+app.put('/admin/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+    const { userName, userEmail, userPassword, userPhone, userPoint, userRole} = req.body;
+
+    const sql = `
+        UPDATE User
+        SET userName = ?, userEmail = ?, userPassword = ?, userPhone = ?, userPoint = ?, userRole = ?
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userName, userEmail, userPassword, userPhone, userPoint, userRole, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error updating account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'Account updated successfully' });
+    });
+});
+
+
+//Delete account
+app.delete('/admin/accounts/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    const sql = `
+        DELETE FROM User
+        WHERE userId = ?
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error deleting account' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'Account deleted successfully' });
+    });
+});
+
+//--------------------------------- VIEW TRANSACTION
+app.get('/admin/transactions', (req, res) => {
+    const sql = `
+        SELECT 
+            *
+        FROM Transaction
+        ORDER BY eventDate DESC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching transactions' });
+
+        res.json(results);
+    });
+});
+
+
+//-----------------------------------------------GRAPH-------------------------
+//----------------------POPULAR ROOMS------------------------
+app.get('/admin/popular-rooms', (req, res) => {
+    const sql = `
+        SELECT roomId, COUNT(bookingId) AS bookingCount
+        FROM Booking
+        GROUP BY roomId
+        ORDER BY bookingCount DESC
+        LIMIT 3
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching popular rooms' });
+
+        res.json(results);
+    });
+});
+
+//----------------------POPULAR SERVICES------------------------
+app.get('/admin/popular-services', (req, res) => {
+    const sql = `
+        SELECT serviceId, COUNT(bookingServiceId) AS serviceCount
+        FROM BookingServices
+        GROUP BY serviceId
+        ORDER BY serviceCount DESC
+        LIMIT 3
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching popular services' });
+
+        res.json(results);
+    });
+});
+
 
 
 
@@ -697,120 +1133,7 @@ const config = {
     endpoint: "https://sb-openapi.zalopay.vn/v2/create"
 };
 
-// app.post("/payment", async (req, res) => {
-//     console.log("Received payment request:", req.body);
-//     const { roomName, totalPrice } = req.body;
 
-//     if (!roomName || !totalPrice) {
-//         console.log("Missing required fields");
-//         return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     const embed_data = {
-//         redirecturl: "http://localhost:3000/viewbookings"
-//     };
-
-//     const items = [{}];
-//     const transID = Math.floor(Math.random() * 1000000);
-//     const order = {
-//         app_id: config.app_id,
-//         app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // transaction ID
-//         app_user: "user123",
-//         app_time: Date.now(), // milliseconds
-//         item: JSON.stringify(items),
-//         embed_data: JSON.stringify(embed_data),
-//         amount: totalPrice, // Dynamic total price passed from frontend
-//         description: `Payment for the room: ${roomName} #${transID}`, // Dynamic room name
-//         bank_code: "",
-//         callback_url: "https://d613-2402-800-63af-9f15-8c6e-1328-4e65-d8f2.ngrok-free.app/callback"
-//     };
-
-//     // Generate MAC for the order
-//     const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
-//     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
-
-//     try {
-//         console.log("Sending request to ZaloPay");
-//         const result = await axios.post(config.endpoint, null, { params: order });
-//         console.log("ZaloPay response:", result.data);
-//         if (result.data && result.data.order_url) {
-//             res.json({ paymentUrl: result.data.order_url });
-//         } else {
-//             console.log("Failed to get order_url from ZaloPay");
-//             res.status(400).json({ message: "Failed to initiate payment" });
-//         }
-//     } catch (error) {
-//         console.error("Error initiating payment:", error.response ? error.response.data : error.message);
-//         res.status(500).json({ message: error.message });
-//     }
-// });
-
-
-// //Update Booking, Payment, Transaction table if payment successful
-// app.post("/callback", async (req, res) => {
-//     let result = {};
-
-//     try {
-//         let dataStr = req.body.data;
-//         let reqMac = req.body.mac;
-
-//         let mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
-//         console.log("mac =", mac);
-
-
-//         // kiểm tra callback hợp lệ (đến từ ZaloPay server)
-//         if (reqMac !== mac) {
-//             // callback không hợp lệ
-//             result.return_code = -1;
-//             result.return_message = "mac not equal";
-//         }
-//         else {
-//             // thanh toán thành công
-//             // merchant cập nhật trạng thái cho đơn hàng
-//             let dataJson = JSON.parse(dataStr, config.key2);
-//             console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
-
-//             result.return_code = 1;
-//             result.return_message = "success";
-//         }
-//     } catch (ex) {
-//         result.return_code = 0; // ZaloPay server sẽ callback lại (tối đa 3 lần)
-//         result.return_message = ex.message;
-//     }
-
-//     // thông báo kết quả cho ZaloPay server
-//     res.json(result);
-// });
-
-// app.post("/status-booking/:app_trans_id", async (req, res) => {
-//     const app_trans_id = req.params.app_trans_id;
-//     let postData = {
-//         app_id: config.app_id,
-//         app_trans_id: app_trans_id,
-//     }
-
-//     let data = postData.app_id + "|" + postData.app_trans_id + "|" + config.key1; // appid|app_trans_id|key1
-//     postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
-
-
-//     let postConfig = {
-//         method: 'post',
-//         url: "https://sb-openapi.zalopay.vn/v2/query",
-//         headers: {
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         data: qs.stringify(postData)
-//     };
-
-//     try {
-//         const result = await axios(postConfig);
-//         return res.status(200).json(result.data);
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// })
-
-// Update Booking, Payment, Transaction tables if payment successful
 
 app.post("/payment", async (req, res) => {
     console.log("Received payment request:", req.body);
@@ -894,7 +1217,8 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice,
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
-        callback_url: "https://b7be-171-255-184-45.ngrok-free.app/callback",
+
+        callback_url: "https://ffc3-2402-800-63af-eda1-b5f8-5aae-5950-dd62.ngrok-free.app/callback",
         selectedDate
     };
 
