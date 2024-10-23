@@ -11,12 +11,15 @@ const Staff = () => {
     };
 
     return (
-        <div className={`${styles.container}`}>
+        <div className={styles.container}>
             <header className={styles.header}>
-                <h1 className={styles.managementTitle}>Staff Dashboard</h1> {/* Căn giữa tiêu đề ở đây */}
+                <h1 className={styles.managementTitle}>Staff Dashboard</h1>
             </header>
             <nav className={`${styles.nav} ${isMenuVisible ? styles.visible : styles.hidden}`}>
-                <h1 className={styles.staffTitle}>Staff</h1> {/* Căn giữa tiêu đề ở đây */}
+                {/* Sử dụng Link để bấm vào chữ "Staff" và quay về trang /staff */}
+                <Link to="/staff" className={styles.staffTitle}>
+                    <h1>Staff</h1>
+                </Link>
                 <ul>
                     <li>
                         <Link to="/staff/upcoming-bookings" className={styles.navLink}>
@@ -42,7 +45,7 @@ const Staff = () => {
                 <FaBars />
             </button>
             <div className={`${styles.mainContent} ${isMenuVisible ? '' : styles.menuHidden}`}>
-                <Outlet />
+                <Outlet /> {/* Nội dung các trang con sẽ hiển thị ở đây */}
             </div>
         </div>
     );

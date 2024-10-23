@@ -48,13 +48,13 @@ const UpcomingBookings = () => {
     }
 
     return (
-        <div className={styles.bookingsContainer}>
+        <div>
             <h2>Upcoming Bookings</h2>
             <div className={styles.searchContainer}>
                 <input
                     type="text"
                     value={searchTerm}
-                    onChange={handleSearch} // Gọi hàm tìm kiếm khi có sự thay đổi
+                    onChange={handleSearch}
                     placeholder="Search by Booking ID, User ID, or Room ID"
                     className={styles.searchInput}
                 />
@@ -81,12 +81,10 @@ const UpcomingBookings = () => {
                                 <td>{booking.bookingId}</td>
                                 <td>{booking.userId}</td>
                                 <td>{booking.roomId}</td>
-                                {/* Chỉ hiển thị ngày mà không hiển thị giờ */}
                                 <td>{new Date(booking.bookingStartDay).toLocaleDateString()}</td>
                                 <td>{new Date(booking.bookingEndDay).toLocaleDateString()}</td>
                                 <td>{booking.totalPrice} VND</td>
                                 <td>{booking.bookingStatus}</td>
-                                {/* Chỉ hiển thị ngày mà không hiển thị giờ */}
                                 <td>{new Date(booking.createdAt).toLocaleDateString()}</td>
                             </tr>
                         ))}
@@ -95,6 +93,7 @@ const UpcomingBookings = () => {
             )}
         </div>
     );
+    
 };
 
 export default UpcomingBookings;

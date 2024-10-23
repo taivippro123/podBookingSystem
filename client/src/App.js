@@ -5,9 +5,9 @@ import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import StaffPage from './pages/Staff';
+import StaffPage from './pages/Staff/Staff.js'; // Giả định đây là nơi chứa Staff và các route con
 import AdminPage from './pages/Admin';
-import ManagerPage from './pages/ManageRooms.js';
+import ManagerPage from './pages/Manager/Manager.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
@@ -19,6 +19,9 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
+import UpcomingBookings from './pages/Staff/UpcomingBookings';
+import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
+import ManageRooms from './pages/Manager/ManageRooms.js';
 
 function App() {
   return (
@@ -41,16 +44,27 @@ function App() {
 
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
-            <> <Customer /></>
+            <Customer />
           </ProtectedRoute>
         } />
 
         <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
-            <StaffPage />
+            <StaffPage /> {/* Hiển thị thanh menu và header cho Staff */}
           </ProtectedRoute>
-        } />
-
+        }>
+          {/* Các route con cho Staff */}
+          <Route path="upcoming-bookings" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingBookings />
+            </ProtectedRoute>
+          } />
+          <Route path="upcoming-services" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingServices />
+            </ProtectedRoute>
+          } />
+        </Route>
 
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>
@@ -63,6 +77,14 @@ function App() {
             <ManagerPage />
           </ProtectedRoute>
         } />
+
+        <Route path="/manager/manageRooms" element={
+          <ProtectedRoute allowedRoles={[2]}>
+            <ManageRooms /> {/* Thêm route cho ManageRooms */}
+          </ProtectedRoute>
+        } />
+
+
       </Routes>
     </Router>
   );

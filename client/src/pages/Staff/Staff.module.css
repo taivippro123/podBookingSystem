@@ -61,6 +61,7 @@ body {
     left: 0; /* Vị trí khi cột ẩn */
 }
 
+
 .menuToggle:hover {
     background-color: rgba(248, 248, 248, 1); /* Nền trắng khi hover */
 }
