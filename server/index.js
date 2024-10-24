@@ -1529,6 +1529,91 @@ app.get('/getPaymentMethods', async (req, res) => {
 });
 
 
+//----------------------------CRUD FEEDBACK------------------------------
+// Create a new feedback
+app.post('/feedback', (req, res) => {
+    const { bookingId, userId, rating, feedback } = req.body;
+
+    // Validate required fields
+    if (!bookingId || !userId || !rating || !feedback) {
+        return res.status(400).json({ error: 'bookingId, userId, rating, and feedback are required' });
+    }
+
+    const sql = `
+        INSERT INTO Feedback (bookingId, userId, rating, feedback)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(sql, [bookingId, userId, rating, feedback], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error creating feedback' });
+        res.status(201).json({ message: 'Sent feedback successfully', feedbackId: results.insertId });
+    });
+});
+
+// Update a feedback
+app.put('/feedback/:feedbackId', (req, res) => {
+    const feedbackId = req.params.feedbackId;
+    const { rating, feedback } = req.body;
+
+    // Validate required fields
+    if (!rating || !feedback) {
+        return res.status(400).json({ error: 'rating and feedback are required' });
+    }
+
+    const sql = `
+        UPDATE Feedback
+        SET rating = ?, feedback = ?
+        WHERE feedbackId = ?
+    `;
+
+    db.query(sql, [rating, feedback, feedbackId], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error updating feedback' });
+        if (results.affectedRows === 0) return res.status(404).json({ error: 'Feedback not found' });
+        res.json({ message: 'Updated feedback successfully' });
+    });
+});
+
+// Delete a feedback
+app.delete('/feedback/:feedbackId', (req, res) => {
+    const feedbackId = req.params.feedbackId;
+
+    const sql = `
+        DELETE FROM Feedback WHERE feedbackId = ?
+    `;
+
+    db.query(sql, [feedbackId], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error deleting feedback' });
+        if (results.affectedRows === 0) return res.status(404).json({ error: 'Feedback not found' });
+        res.json({ message: 'Deleted feedback successfully' });
+    });
+});
+
+// Fetch feedback by bookingId
+app.get('/feedback/booking/:bookingId', (req, res) => {
+    const bookingId = req.params.bookingId;
+
+    const sql = `
+        SELECT * FROM Feedback WHERE bookingId = ?
+    `;
+
+    db.query(sql, [bookingId], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching feedback' });
+        res.json(results);
+    });
+});
+
+
+//--------------- FOR ADMIN ROUTE: Fetch all feedback
+app.get('/admin/feedback', (req, res) => {
+    const sql = `
+        SELECT * FROM Feedback
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching all feedback' });
+        res.json(results);
+    });
+});
 
 
 
