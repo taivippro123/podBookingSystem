@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { FaPlus, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit, FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import styles from './ManageRooms.module.css';
 
 function ManageRooms() {
@@ -20,24 +20,29 @@ function ManageRooms() {
     const [image, setImage] = useState(null);
     const [imageUrls, setImageUrls] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    
+    // New state for delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [roomToDelete, setRoomToDelete] = useState(null);
 
-    // Fetch rooms on component mount
     useEffect(() => {
         fetchRooms();
     }, []);
 
-    // Fetch rooms from API
     const fetchRooms = async () => {
         try {
             const response = await axios.get('http://localhost:5000/rooms');
             setRooms(response.data);
             fetchImageUrls(response.data);
         } catch (error) {
-            console.error('Error fetching rooms:', error);
+            setErrorMessage('Error fetching rooms. Please try again.');
+            setIsErrorModalOpen(true);
         }
     };
 
-    // Fetch room images using Firebase storage
     const fetchImageUrls = async (rooms) => {
         const urls = {};
         const storage = getStorage();
@@ -64,18 +69,22 @@ function ManageRooms() {
         setImageUrls(urls);
     };
 
-    // Handle input changes
     const handleInputChange = (e) => {
         setNewRoom({ ...newRoom, [e.target.name]: e.target.value });
     };
 
-    // Handle image selection
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
     };
 
-    // Handle room creation
     const handleCreateRoom = async () => {
+        if (!newRoom.roomName || !newRoom.roomType || !newRoom.roomDescription || !newRoom.roomDetailsDescription ||
+            newRoom.roomPricePerSlot < 0 || newRoom.roomPricePerDay < 0 || newRoom.roomPricePerWeek < 0) {
+            setErrorMessage('Please fill all fields and ensure price values are not negative.');
+            setIsErrorModalOpen(true);
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('roomName', newRoom.roomName);
@@ -91,21 +100,21 @@ function ManageRooms() {
                 formData.append('roomImage', image);
             }
 
-            // Send POST request to API to create room
             await axios.post('http://localhost:5000/rooms', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            alert('Room created successfully');
+            setIsSuccessModalOpen(true);
             resetForm();
             fetchRooms();
             setIsModalOpen(false);
         } catch (error) {
+            setErrorMessage('Error creating room. Please try again.');
+            setIsErrorModalOpen(true);
             console.error('Error creating room:', error);
         }
     };
 
-    // Reset form after submission
     const resetForm = () => {
         setNewRoom({
             roomName: '',
@@ -120,16 +129,45 @@ function ManageRooms() {
         setImage(null);
     };
 
-    // Handle room deletion
-    const handleDeleteRoom = async (roomId) => {
-        if (window.confirm('Are you sure you want to delete this room?')) {
+    // New function to open delete confirmation modal
+    const openDeleteModal = (roomId) => {
+        setRoomToDelete(roomId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteRoom = async () => {
+        if (roomToDelete) {
             try {
-                await axios.delete(`http://localhost:5000/rooms/${roomId}`);
-                fetchRooms(); // Refresh room list
+                await axios.delete(`http://localhost:5000/rooms/${roomToDelete}`);
+                fetchRooms();
+                setIsDeleteModalOpen(false); // Close modal after deletion
+                setRoomToDelete(null); // Reset roomToDelete
             } catch (error) {
+                setErrorMessage('Error deleting room. Please try again.');
+                setIsErrorModalOpen(true);
                 console.error('Error deleting room:', error);
             }
         }
+    };
+
+    const closeErrorModal = () => {
+        setIsErrorModalOpen(false);
+        setErrorMessage('');
+    };
+
+    const closeSuccessModal = () => {
+        setIsSuccessModalOpen(false);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        resetForm();
+    };
+
+    // Close delete confirmation modal
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setRoomToDelete(null); // Reset roomToDelete
     };
 
     return (
@@ -157,7 +195,7 @@ function ManageRooms() {
                                     <Link to={`/rooms/${room.roomId}`}>
                                         <FaEdit color="black" size={30} />
                                     </Link>
-                                    <FaTrash color="red" size={30} onClick={() => handleDeleteRoom(room.roomId)} />
+                                    <FaTrash color="red" size={30} onClick={() => openDeleteModal(room.roomId)} />
                                 </div>
                             </td>
                         </tr>
@@ -165,7 +203,6 @@ function ManageRooms() {
                 </tbody>
             </table>
 
-            {/* Add Room Button */}
             <div className={styles.addRoomButton} onClick={() => setIsModalOpen(true)}>
                 <FaPlus size={30} color="white" />
             </div>
@@ -174,7 +211,7 @@ function ManageRooms() {
             {isModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={() => setIsModalOpen(false)}>×</span>
+                        <span className={styles.closeIcon} onClick={closeModal}>×</span>
                         <h2>Add Room</h2>
                         <input
                             type="text"
@@ -234,13 +271,46 @@ function ManageRooms() {
                             name="roomStatus"
                             value={newRoom.roomStatus}
                             onChange={handleInputChange}
-                            className={styles.selectField}
+                            className={styles.inputField}
                         >
                             <option value="Available">Available</option>
                             <option value="Maintenance">Maintenance</option>
                         </select>
-                        <input type="file" onChange={handleImageChange} accept="image/*" className={styles.fileInput} />
-                        <button onClick={handleCreateRoom} className={styles.createButton}>Create Room</button>
+                        <input type="file" onChange={handleImageChange} />
+                        <button onClick={handleCreateRoom} className={styles.submitButton}>Create Room</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Confirm Deletion</h2>
+                        <p>Are you sure you want to delete this room?</p>
+                        <button onClick={handleDeleteRoom} className={styles.confirmButton}>Yes</button>
+                        <button onClick={closeDeleteModal} className={styles.cancelButton}>No</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Success and Error Modals */}
+            {isSuccessModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Success</h2>
+                        <p>Room created successfully!</p>
+                        <button onClick={closeSuccessModal} className={styles.closeButton}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {isErrorModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Error</h2>
+                        <p>{errorMessage}</p>
+                        <button onClick={closeErrorModal} className={styles.closeButton}>Close</button>
                     </div>
                 </div>
             )}

@@ -10,6 +10,10 @@ const ManageServices = () => {
     const [serviceStatus, setServiceStatus] = useState('');
     const [editingServiceId, setEditingServiceId] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [notification, setNotification] = useState('');
+    const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
+    const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+    const [serviceToDelete, setServiceToDelete] = useState(null);
 
     useEffect(() => {
         fetchServices();
@@ -39,7 +43,10 @@ const ManageServices = () => {
 
         if (response.ok) {
             fetchServices();
+            showNotification('Service added successfully!');
             closePopup();
+        } else {
+            showNotification('Failed to add service.');
         }
     };
 
@@ -70,23 +77,46 @@ const ManageServices = () => {
 
         if (response.ok) {
             fetchServices();
+            showNotification('Service updated successfully!');
             closePopup();
+        } else {
+            showNotification('Failed to update service.');
         }
     };
 
-    const handleDeleteService = async (serviceId) => {
-        const response = await fetch(`http://localhost:5000/services/${serviceId}`, {
+    const confirmDeleteService = (serviceId) => {
+        setServiceToDelete(serviceId);
+        setIsDeleteConfirmationOpen(true);
+    };
+
+    const handleDeleteService = async () => {
+        const response = await fetch(`http://localhost:5000/services/${serviceToDelete}`, {
             method: 'DELETE',
         });
 
         if (response.ok) {
             fetchServices();
+            showNotification('Service deleted successfully!');
+        } else {
+            showNotification('Failed to delete service.');
         }
+        setIsDeleteConfirmationOpen(false);
+        setServiceToDelete(null);
+    };
+
+    const showNotification = (message) => {
+        setNotification(message);
+        setIsNotificationPopupOpen(true);
+        setTimeout(() => {
+            setIsNotificationPopupOpen(false);
+            setNotification('');
+        }, 3000);
     };
 
     const closePopup = () => {
         clearForm();
         setIsPopupOpen(false);
+        setIsDeleteConfirmationOpen(false); // Đảm bảo đóng cửa sổ xác nhận xóa khi đóng pop-up
     };
 
     const clearForm = () => {
@@ -128,7 +158,7 @@ const ManageServices = () => {
                                         </button>
                                         <button
                                             className={styles['manageservices-icon-button']}
-                                            onClick={() => handleDeleteService(service.serviceId)}
+                                            onClick={() => confirmDeleteService(service.serviceId)} // Gọi hàm xác nhận xóa
                                         >
                                             <FaTrash color="red" size={30} />
                                         </button>
@@ -177,9 +207,26 @@ const ManageServices = () => {
                 </div>
             )}
 
+            {isDeleteConfirmationOpen && (
+                <div className={styles['manageservices-popup-overlay2']}>
+                    <div className={styles['confirmation-popup']}>
+                        <p>Are you sure you want to delete this service?</p>
+                        <button onClick={handleDeleteService}>Yes</button>
+                        <button onClick={() => setIsDeleteConfirmationOpen(false)}>No</button>
+                    </div>
+                </div>
+            )}
+
             <button className={styles['manageservices-add-service-button']} onClick={() => setIsPopupOpen(true)}>
                 +
             </button>
+
+            {/* Popup thông báo */}
+            {isNotificationPopupOpen && (
+                <div className={styles['notification-popup']}>
+                    <p>{notification}</p>
+                </div>
+            )}
         </div>
     );
 };

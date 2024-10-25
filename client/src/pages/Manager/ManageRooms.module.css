@@ -7,6 +7,22 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.submitButton {
+    background-color: #add8e6; /* Màu xanh dương nhạt */
+    color: white; /* Chữ màu trắng */
+    border: none; /* Không viền */
+    padding: 10px 20px; /* Khoảng cách bên trong */
+    border-radius: 5px; /* Bo góc cho nút */
+    cursor: pointer; /* Đổi con trỏ khi di chuột qua nút */
+    font-size: 16px; /* Kích thước chữ */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền */
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.submitButton:hover {
+    background-color: #87cefa; /* Màu xanh dương đậm hơn khi di chuột qua */
+}
+
 .title {
     font-size: 24px;
     margin-bottom: 20px;
@@ -79,6 +95,7 @@
     background-color: #45a049;
 }
 
+/* Modal Styles */
 .modal {
     position: fixed;
     top: 0;
@@ -101,10 +118,7 @@
     max-height: 80%; /* Để ngăn modal quá cao */
     overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
     position: relative;
-    margin-top: 40px; /* Thay đổi giá trị này để điều chỉnh vị trí xuống dưới */
 }
-
-
 
 .closeIcon {
     position: absolute;
@@ -130,6 +144,7 @@
     border-radius: 4px;
 }
 
+/* Styles for Create Button */
 .createButton {
     width: 100%;
     padding: 10px;
@@ -146,6 +161,63 @@
     background-color: #45a049;
 }
 
-h2{
+/* Styles for Success and Error Modals */
+.successModal, .errorModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.successModalContent, .errorModalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 400px; /* Chiều rộng của modal thông báo */
+}
+
+h2 {
     text-align: center;
+}
+
+/* Button Styles for Modal */
+.confirmButton, .cancelButton, .closeButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.confirmButton {
+    background-color: #4CAF50; /* Màu nút xác nhận */
+    color: white;
+}
+
+.cancelButton {
+    background-color: #f44336; /* Màu nút hủy */
+    color: white;
+}
+
+.closeButton {
+    background-color: #2196F3; /* Màu nút đóng */
+    color: white;
+}
+
+.confirmButton:hover {
+    background-color: #45a049; /* Hiệu ứng hover */
+}
+
+.cancelButton:hover {
+    background-color: #d32f2f; /* Hiệu ứng hover */
+}
+
+.closeButton:hover {
+    background-color: #1976D2; /* Hiệu ứng hover */
 }

@@ -6,9 +6,10 @@ import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
 import StaffPage from './pages/Staff/Staff.js';
-import AdminPage from './pages/Admin';
+import AdminPage from './pages/Admin/AdminPages/Admin.js';
+import ManageAllAccounts from './pages/Admin/ManageAccounts/ManageAllAccount.js';
 import Manager from './pages/Manager/Manager.js';
-import ManageServices from './pages/Manager/ManageServices.js'; // Import ManageServices
+import ManageServices from './pages/Manager/ManageServices.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
@@ -23,9 +24,13 @@ import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
 import UpcomingBookings from './pages/Staff/UpcomingBookings';
 import UpcomingServices from './pages/Staff/UpcomingServices';
 import ManageRooms from './pages/Manager/ManageRooms.js';
-import ManageSlots from './pages/Manager/ManageSlots.js'; // Import ManageSlots
-import ManageAccounts from './pages/Manager/ManageAccounts.js'; // Import ManageAccounts
-import ManageBookings from './pages/Manager/ManageBookings.js'; // Import ManageBookings
+import ManageSlots from './pages/Manager/ManageSlots.js';
+import ManageAccounts from './pages/Manager/ManageAccounts.js';
+import ManageBookings from './pages/Manager/ManageBookings.js';
+import ViewTransactions from './pages/Admin/ViewTransactions/ViewTransactions.js';
+import ViewNumberAccounts from './pages/Admin/ViewNumberAccounts/ViewNumberAccounts.js';
+import ViewPopularRooms from './pages/Admin/ViewPopularRooms/ViewPopularRooms.js';
+import ViewPopularServices from './pages/Admin/ViewPopularServices/ViewPopularServices.js';
 
 function App() {
   return (
@@ -38,7 +43,6 @@ function App() {
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
-        <Route path="/room-detail/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/viewbookings/:userId" element={<ViewBooking />} />
@@ -76,7 +80,33 @@ function App() {
           <ProtectedRoute allowedRoles={[1]}>
             <AdminPage />
           </ProtectedRoute>
-        } />
+        }>
+          <Route path="accounts" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ManageAllAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="transactions" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewTransactions />
+            </ProtectedRoute>
+          } />
+          <Route path="number-accounts" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewNumberAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="popular-rooms" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewPopularRooms />
+            </ProtectedRoute>
+          } />
+          <Route path="popular-services" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewPopularServices />
+            </ProtectedRoute>
+          } /> {/* Đường dẫn mới cho ViewPopularServices */}
+        </Route>
 
         {/* Đường dẫn cho Manager */}
         <Route path="/manager" element={
@@ -89,25 +119,21 @@ function App() {
               <ManageRooms />
             </ProtectedRoute>
           } />
-          {/* Đường dẫn đến ManageSlots */}
           <Route path="manageSlots" element={
             <ProtectedRoute allowedRoles={[2]}>
               <ManageSlots />
             </ProtectedRoute>
           } />
-          {/* Đường dẫn đến ManageServices */}
           <Route path="manageServices" element={
             <ProtectedRoute allowedRoles={[2]}>
               <ManageServices />
             </ProtectedRoute>
           } />
-          {/* Đường dẫn đến ManageAccounts */}
           <Route path="manageAccounts" element={
             <ProtectedRoute allowedRoles={[2]}>
               <ManageAccounts />
             </ProtectedRoute>
           } />
-          {/* Đường dẫn đến ManageBookings */}
           <Route path="manageBookings" element={
             <ProtectedRoute allowedRoles={[2]}>
               <ManageBookings />

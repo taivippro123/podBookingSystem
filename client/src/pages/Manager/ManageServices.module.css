@@ -1,5 +1,6 @@
 /* ManageServices.module.css */
 
+/* Tiêu đề chính */
 .manageservices-h1 {
     text-align: center;
     margin-top: 80px; /* Thêm khoảng cách trên tiêu đề */
@@ -7,24 +8,28 @@
     color: #333; /* Màu chữ tối hơn */
 }
 
+/* Danh sách dịch vụ */
 .manageservices-servicesList {
     overflow-x: auto; /* Thêm cuộn ngang nếu cần */
     display: flex; /* Sử dụng flexbox để căn giữa */
     justify-content: center; /* Căn giữa bảng */
 }
 
+/* Bảng dịch vụ */
 .manageservices-table {
     width: 100%; /* Chiếm toàn bộ chiều rộng */
     max-width: 1500px; /* Đặt chiều rộng tối đa cho bảng */
     border-collapse: collapse; /* Xóa khoảng cách giữa các ô */
 }
 
+/* Ô tiêu đề và ô nội dung */
 .manageservices-th, .manageservices-td {
     padding: 15px; /* Khoảng cách trong ô */
     text-align: left;
     border: 2px solid #ddd; /* Tăng độ dày đường viền cho ô */
 }
 
+/* Tiêu đề bảng */
 .manageservices-th {
     background-color: #ffb3b3; /* Màu hồng nhạt nhất */
     color: white; /* Màu chữ trắng */
@@ -33,10 +38,12 @@
     text-align: center; /* Căn trái chữ */
 }
 
+/* Hiệu ứng hover cho hàng */
 .manageservices-tr:hover {
     background-color: #ffe6e6; /* Hiệu ứng hover cho hàng */
 }
 
+/* Popup khi thêm dịch vụ */
 .manageservices-popup-overlay {
     position: fixed; /* Định vị cố định */
     top: 0;
@@ -49,13 +56,27 @@
     align-items: center;
 }
 
-.manageservices-popup-form {
+.manageservices-popup-overlay2 {
+    position: fixed; /* Định vị cố định */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đặt z-index cao để nằm trên các thành phần khác */
+}
+
+.confirmation-popup {
     background-color: #fff; /* Nền trắng cho popup */
     padding: 20px;
-    border-radius: 8px; /* Bo góc cho popup */
+    border-radius: 10px; /* Bo góc cho popup */
     width: 400px; /* Đặt độ rộng cho popup */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng cho popup */
     animation: fadeIn 0.3s; /* Hiệu ứng hiện popup */
+    text-align: center; /* Căn giữa văn bản */
 }
 
 @keyframes fadeIn {
@@ -69,11 +90,70 @@
     }
 }
 
+/* Đoạn văn trong popup */
+.confirmation-popup p {
+    margin-bottom: 20px; /* Khoảng cách giữa đoạn văn và nút */
+    color: #333; /* Màu chữ tối hơn */
+    font-size: 1.1em; /* Kích thước chữ lớn hơn */
+}
+
+/* Nút trong popup */
+.confirmation-popup button {
+    background-color: #007bff; /* Màu nền nút chính */
+    color: white; /* Màu chữ nút */
+    padding: 10px 15px; /* Khoảng cách trong nút */
+    border: none; /* Không viền */
+    border-radius: 5px; /* Bo góc cho nút */
+    cursor: pointer; /* Con trỏ dạng tay */
+    margin: 0 10px; /* Khoảng cách giữa các nút */
+    transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu nền và co giãn */
+}
+
+/* Hiệu ứng hover cho nút */
+.confirmation-popup button:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+    transform: translateY(-2px); /* Nâng lên một chút khi hover */
+}
+
+/* Nút 'No' với màu sắc khác */
+.confirmation-popup button:last-child {
+    background-color: #dc3545; /* Màu nền cho nút 'No' */
+}
+
+/* Hiệu ứng hover cho nút 'No' */
+.confirmation-popup button:last-child:hover {
+    background-color: #c82333; /* Màu nền khi hover cho nút 'No' */
+}
+
+/* Giao diện của popup */
+.manageservices-popup-form {
+    background-color: #fff; /* Nền trắng cho popup */
+    padding: 20px;
+    border-radius: 8px; /* Bo góc cho popup */
+    width: 400px; /* Đặt độ rộng cho popup */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng cho popup */
+    animation: fadeIn 0.3s; /* Hiệu ứng hiện popup */
+}
+
+/* Hiệu ứng fade cho popup */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px); /* Di chuyển lên một chút */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tiêu đề trong popup */
 .manageservices-popup-form h1 {
     margin-bottom: 20px;
     text-align: center;
 }
 
+/* Các ô nhập liệu trong popup */
 .manageservices-popup-form input,
 .manageservices-popup-form textarea,
 .manageservices-popup-form select {
@@ -85,10 +165,12 @@
     font-size: 16px; /* Kích thước chữ */
 }
 
+/* Cho phép thay đổi kích thước chiều cao của textarea */
 .manageservices-popup-form textarea {
     resize: vertical; /* Cho phép thay đổi kích thước chiều cao */
 }
 
+/* Nút trong popup */
 .manageservices-popup-form button {
     background-color: #007bff; /* Màu nền nút */
     color: white; /* Màu chữ nút */
@@ -100,15 +182,18 @@
     transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu nền và co giãn */
 }
 
+/* Hiệu ứng hover cho nút */
 .manageservices-popup-form button:hover {
     background-color: #0056b3; /* Màu nền khi hover */
     transform: translateY(-2px); /* Nâng lên một chút khi hover */
 }
 
+/* Nút Close */
 .manageservices-popup-form button:last-child {
     background-color: #dc3545; /* Màu nền cho nút Close */
 }
 
+/* Hiệu ứng hover cho nút Close */
 .manageservices-popup-form button:last-child:hover {
     background-color: #c82333; /* Màu nền khi hover cho nút Close */
 }
@@ -130,6 +215,7 @@
     transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu nền và co giãn */
 }
 
+/* Hiệu ứng hover cho nút thêm dịch vụ */
 .manageservices-add-service-button:hover {
     background-color: #e25a5a; /* Màu nền khi hover */
     transform: translateY(-2px); /* Nâng lên một chút khi hover */
@@ -141,21 +227,52 @@
     transition: transform 0.2s; /* Hiệu ứng phóng to */
 }
 
+/* Hiệu ứng hover cho nút icon */
 .manageservices-icon-button:hover {
     transform: scale(1.2); /* Phóng to nút icon khi hover */
 }
+
+/* Các ô hành động trong bảng */
 .actions-td {
     display: flex; /* Sử dụng flex để căn giữa */
     justify-content: center; /* Căn giữa nội dung */
     align-items: center; /* Căn giữa theo chiều dọc */
 }
 
+/* Container cho các nút hành động */
 .actions-container {
     display: flex; /* Sử dụng flexbox để căn giữa các nút */
     justify-content: center; /* Căn giữa theo chiều ngang */
     gap: 10px; /* Khoảng cách giữa các nút */
 }
 
+/* Tiêu đề của cột hành động */
 .actions-th {
     width: 100px; /* Hoặc chiều rộng mà bạn muốn */
+}
+
+/* Popup thông báo */
+.notification-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 30px; /* Tăng kích thước padding cho popup */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 50%; /* Đặt chiều rộng lớn hơn */
+    max-width: 600px; /* Giới hạn chiều rộng tối đa */
+    text-align: center;
+    font-weight: bold; /* Chữ in đậm */
+    font-size: 1.2em; /* Tăng kích thước chữ */
+    animation: fadeInOut 3s forwards; /* Hiệu ứng fade in/out */
+}
+
+/* Hiệu ứng fade cho popup thông báo */
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
 }

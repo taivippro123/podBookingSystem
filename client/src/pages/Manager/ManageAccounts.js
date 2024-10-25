@@ -26,18 +26,37 @@ const ManageAccounts = () => {
         }
     };
 
+    // Validate inputs
+    const validateInputs = () => {
+        if (!userName) {
+            alert('Please enter a user name.');
+            return false;
+        }
+        if (!userEmail.includes('@')) {
+            alert('Please enter a valid email address containing @.');
+            return false;
+        }
+        if (!/^\d{1,10}$/.test(userPhone)) {
+            alert('Phone number must be numeric and up to 10 digits.');
+            return false;
+        }
+        if (!userRole) {
+            alert('Please select a role.');
+            return false;
+        }
+        return true;
+    };
+
     // Add a new account
     const handleAddAccount = async () => {
-        if (!userName || !userEmail || !userPhone || !userRole) {
-            alert('Please fill out all fields.');
-            return;
-        }
+        if (!validateInputs()) return;
 
         const newAccount = {
             userName,
             userEmail,
+            userPassword: 'defaultPassword', // Mật khẩu tạm thời (nên băm mật khẩu)
             userPhone,
-            userRole,
+            userRole: parseInt(userRole), // Chuyển đổi thành số
         };
 
         try {
@@ -50,13 +69,16 @@ const ManageAccounts = () => {
             });
 
             if (response.ok) {
-                fetchAccounts();
+                await fetchAccounts(); // Use await to ensure data is fetched
+                alert('Account added successfully!'); // Thông báo thành công
                 closePopup();
             } else {
-                alert('Error adding account. Please try again.');
+                const errorData = await response.json(); // Parse error response
+                alert(`Error adding account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error adding account:', error);
+            alert('An unexpected error occurred. Please try again.');
         }
     };
 
@@ -65,23 +87,20 @@ const ManageAccounts = () => {
         setUserName(account.userName);
         setUserEmail(account.userEmail);
         setUserPhone(account.userPhone);
-        setUserRole(account.userRole);
+        setUserRole(account.userRole.toString()); // Chuyển đổi thành chuỗi để hiển thị trong select
         setEditingAccountId(account.userId);
         setIsPopupOpen(true);
     };
 
     // Update an account
     const handleUpdateAccount = async () => {
-        if (!userName || !userEmail || !userPhone || !userRole) {
-            alert('Please fill out all fields.');
-            return;
-        }
+        if (!validateInputs()) return;
 
         const updatedAccount = {
             userName,
             userEmail,
             userPhone,
-            userRole,
+            userRole: parseInt(userRole), // Chuyển đổi thành số
         };
 
         try {
@@ -94,20 +113,25 @@ const ManageAccounts = () => {
             });
 
             if (response.ok) {
-                fetchAccounts();
+                await fetchAccounts();
+                alert('Account updated successfully!'); // Thông báo thành công
                 closePopup();
             } else {
-                alert('Error updating account. Please try again.');
+                const errorData = await response.json();
+                alert(`Error updating account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error updating account:', error);
+            alert('An unexpected error occurred. Please try again.');
         }
     };
 
-    // Delete an account
+    // Delete an account with confirmation
     const handleDeleteAccount = async (accountId) => {
-        if (!window.confirm('Are you sure you want to delete this account?')) {
-            return;
+        const confirmDelete = window.confirm('Are you sure you want to delete this account? This action cannot be undone.');
+
+        if (!confirmDelete) {
+            return; // Nếu không xác nhận, thoát khỏi hàm
         }
 
         try {
@@ -116,9 +140,11 @@ const ManageAccounts = () => {
             });
 
             if (response.ok) {
-                fetchAccounts();
+                await fetchAccounts();
+                alert('Account deleted successfully!'); // Thông báo thành công
             } else {
-                alert('Error deleting account. Please try again.');
+                const errorData = await response.json();
+                alert(`Error deleting account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error deleting account:', error);

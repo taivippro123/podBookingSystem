@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaEdit, FaTrash } from 'react-icons/fa'; 
-import { AiOutlinePlus } from 'react-icons/ai'; 
-import styles from './ManageSlots.module.css'; 
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import { AiOutlinePlus } from 'react-icons/ai';
+import styles from './ManageSlots.module.css';
 
 function ManageSlots() {
     const [slots, setSlots] = useState([]);
@@ -14,6 +14,11 @@ function ManageSlots() {
         slotEndTime: '00:00:00',
         slotStatus: 'Available'
     });
+    const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
+    const [slotToDelete, setSlotToDelete] = useState(null);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [hoveredSlotId, setHoveredSlotId] = useState(null);
 
     useEffect(() => {
         fetchSlots();
@@ -24,6 +29,8 @@ function ManageSlots() {
             const response = await axios.get('http://localhost:5000/slots');
             setSlots(response.data);
         } catch (error) {
+            setPopupMessage('Error fetching slots');
+            setIsPopupVisible(true);
             console.error('Error fetching slots:', error);
         }
     };
@@ -36,6 +43,7 @@ function ManageSlots() {
             slotStatus: slot.slotStatus.charAt(0).toUpperCase() + slot.slotStatus.slice(1)
         });
         setIsEditMode(true);
+        setHoveredSlotId(slot.slotId);
     };
 
     const handleAddSlot = async () => {
@@ -47,7 +55,8 @@ function ManageSlots() {
             const thirtyMinutes = 30 * 60 * 1000;
 
             if (newStartTime < lastEndTime.getTime() + thirtyMinutes) {
-                alert(`Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!`);
+                setPopupMessage(`Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!`);
+                setIsPopupVisible(true);
                 return;
             }
         }
@@ -67,7 +76,8 @@ function ManageSlots() {
         });
 
         if (isDuplicate) {
-            alert("Slot exists or time overlap with at least 30 minutes!");
+            setPopupMessage("Slot already exists or overlaps with at least 30 minutes!");
+            setIsPopupVisible(true);
             return;
         }
 
@@ -79,7 +89,11 @@ function ManageSlots() {
             setSlots([...slots, { ...formData, slotId: response.data.slotId }]);
             setIsAddingSlot(false);
             resetForm();
+            setPopupMessage("Add Slot Successfully!");
+            setIsPopupVisible(true);
         } catch (error) {
+            setPopupMessage('Error adding slot');
+            setIsPopupVisible(true);
             console.error('Error adding slot:', error);
         }
     };
@@ -97,18 +111,39 @@ function ManageSlots() {
             ));
             setIsEditMode(false);
             resetForm();
+            setPopupMessage("Update Successfully");
+            setIsPopupVisible(true);
         } catch (error) {
+            setPopupMessage('Error updating slot');
+            setIsPopupVisible(true);
             console.error('Error updating slot:', error);
         }
     };
 
-    const handleDeleteClick = async (slotId) => {
+    const handleDeleteClick = (slotId) => {
+        setSlotToDelete(slotId);
+        setIsDeleteConfirmVisible(true);
+        setHoveredSlotId(slotId);
+    };
+
+    const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:5000/slots/${slotId}`);
-            setSlots(slots.filter(slot => slot.slotId !== slotId));
+            await axios.delete(`http://localhost:5000/slots/${slotToDelete}`);
+            setSlots(slots.filter(slot => slot.slotId !== slotToDelete));
+            setIsDeleteConfirmVisible(false);
+            setPopupMessage("Delete Successfully");
+            setIsPopupVisible(true);
         } catch (error) {
+            setPopupMessage('Error deleting slot');
+            setIsPopupVisible(true);
             console.error('Error deleting slot:', error);
         }
+    };
+
+    const cancelDelete = () => {
+        setIsDeleteConfirmVisible(false);
+        setSlotToDelete(null);
+        setHoveredSlotId(null);
     };
 
     const handleInputChange = (e) => {
@@ -126,6 +161,12 @@ function ManageSlots() {
             slotStatus: 'Available'
         });
         setCurrentSlot(null);
+        setHoveredSlotId(null);
+        setIsEditMode(false);
+    };
+
+    const closePopup = () => {
+        setIsPopupVisible(false);
     };
 
     return (
@@ -144,7 +185,7 @@ function ManageSlots() {
                 </thead>
                 <tbody>
                     {slots.map(slot => (
-                        <tr key={slot.slotId}>
+                        <tr key={slot.slotId} className={hoveredSlotId === slot.slotId ? styles.hoveredRow : ''}>
                             <td>{slot.slotId}</td>
                             <td>{slot.slotStartTime}</td>
                             <td>{slot.slotEndTime}</td>
@@ -175,7 +216,7 @@ function ManageSlots() {
             {isAddingSlot && (
                 <div className={styles.manageSlotsPopup}>
                     <div className={styles.manageSlotsPopupContent}>
-                        <h2>Add Slot</h2>
+                        <h2>Add New Slot</h2>
                         <form onSubmit={(e) => { e.preventDefault(); handleAddSlot(); }}>
                             <label>
                                 Start Time:
@@ -205,20 +246,19 @@ function ManageSlots() {
                                     name="slotStatus"
                                     value={formData.slotStatus}
                                     onChange={handleInputChange}
-                                    required
                                 >
                                     <option value="Available">Available</option>
                                     <option value="Booked">Booked</option>
                                 </select>
                             </label>
-                            <button type="submit" className={`${styles.addButton} ${styles.addSlot}`}>Add Slot</button>
-                            <button type="button" onClick={() => setIsAddingSlot(false)} className={`${styles.closeButton} ${styles.close}`}>Close</button>
+                            <button type="submit" className={styles.submitButton}>Add Slot</button>
+                            <button type="button" onClick={() => setIsAddingSlot(false)} className={styles.closeButton}>Close</button>
                         </form>
                     </div>
                 </div>
             )}
 
-            {isEditMode && currentSlot && (
+            {isEditMode && (
                 <div className={styles.manageSlotsPopup}>
                     <div className={styles.manageSlotsPopupContent}>
                         <h2>Edit Slot</h2>
@@ -251,15 +291,32 @@ function ManageSlots() {
                                     name="slotStatus"
                                     value={formData.slotStatus}
                                     onChange={handleInputChange}
-                                    required
                                 >
                                     <option value="Available">Available</option>
                                     <option value="Booked">Booked</option>
                                 </select>
                             </label>
-                            <button type="submit" className={`${styles.addButton} ${styles.addSlot}`}>Update Slot</button>
-                            <button type="button" onClick={() => setIsEditMode(false)} className={`${styles.closeButton} ${styles.close}`}>Close</button>
+                            <button type="submit" className={styles.submitButton}>Update Slot</button>
+                            <button type="button" onClick={resetForm} className={styles.closeButton}>Close</button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isDeleteConfirmVisible && (
+                <div className={styles.deleteConfirmPopup}>
+                    <h2>Confirm Deletion</h2>
+                    <p>Are you sure you want to delete this slot?</p>
+                    <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
+                    <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
+                </div>
+            )}
+
+            {isPopupVisible && (
+                <div className={styles.popup}>
+                    <div className={styles.popupContent}>
+                        <p>{popupMessage}</p>
+                        <button onClick={closePopup} className={styles.popupCloseButton}>Close</button>
                     </div>
                 </div>
             )}
