@@ -218,7 +218,7 @@ export default function ListRoom() {
                 <DollarSign className="w-4 h-4 mr-1" />
                 <span>Price: {room.roomPricePerSlot} VND/hour</span>
               </div>
-              <Link to={`/room-details/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
+              <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
                 Book Now
               </Link>
             </div>

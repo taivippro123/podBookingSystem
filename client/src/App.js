@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js';
-import Signup from './components/Signup.js';
+import Signup from './pages/Signup/SignupPage.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
@@ -16,6 +16,8 @@ import Payment from './components/Payment.js';
 import ManageRoom from './components/ManageRoom';
 import Home from './pages/Home/Home.jsx';
 import ComHeader from './components/ComHeader/ComHeader.jsx';
+import ComHeaderCostomer from './components/ComHeaderCustomer/ComheaderCustome.jsx';
+
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
@@ -32,11 +34,11 @@ function App() {
         <Route path="/" element={<ComHeader><Home /></ComHeader>} />
         <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
         <Route path="/rooms" element={<ComHeader><ListRoom /></ComHeader>} />
-        <Route path="/room/:id" element={<ComHeader><RoomDetail /></ComHeader>} />
+        <Route path="/room/:id" element={<ComHeaderCostomer><RoomDetail /></ComHeaderCostomer>} />
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
-        <Route path="/room-details/:id" element={<RoomDetail />} />
+        {/* <Route path="/room-details/:id" element={<RoomDetail />} /> */}
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/viewbookings/:userId" element={ <ComHeader> <ViewBooking /> </ComHeader>} />
@@ -44,11 +46,20 @@ function App() {
         <Route path="/rooms/:id" element={<ManageRoom />} />  
         <Route path="/login2" element={<Login />} />
 
-        <Route path="/customer" element={
+         {/* Customer Protected Routes */}
+         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
-            <Customer />
+            <ComHeaderCostomer><Customer /></ComHeaderCostomer>
           </ProtectedRoute>
-        } />
+        }>
+          <Route path="/customer/room/:id" element={
+            <ProtectedRoute allowedRoles={[4]}>
+              <ComHeaderCostomer><RoomDetail /></ComHeaderCostomer>
+            </ProtectedRoute>
+          } />
+        </Route>
+
+
 
         <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>

@@ -139,10 +139,10 @@ export default function EnhancedAboutUs() {
         </h2>
         <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
           {[
-            { name: 'Nguyen Van A', role: 'CEO', image: 'https://i.pravatar.cc/300?img=1' },
-            { name: 'Tran Thi B', role: 'CTO', image: 'https://i.pravatar.cc/300?img=2' },
-            { name: 'Le Van C', role: 'COO', image: 'https://i.pravatar.cc/300?img=3' },
-            { name: 'Pham Thi D', role: 'CFO', image: 'https://i.pravatar.cc/300?img=4' },
+            { name: 'Ngo Dang Khoa', role: 'CEO', image: 'https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/387814835_2073352139691152_6825952868184174048_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=W_3YyEzrMa8Q7kNvgEzzEpS&_nc_zt=23&_nc_ht=scontent.fhan3-2.fna&_nc_gid=A-6dmfO68omY8I522uPT75L&oh=00_AYA8dy4aI-evNxK61pncJmTAR5Aej8-iB186YdoBianlAQ&oe=6721AFB5' },
+            { name: 'Phan Vo Thanh Tai', role: 'CTO', image: 'https://scontent.xx.fbcdn.net/v/t1.15752-9/462544088_1281568609694674_6629086467066014754_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=0024fc&_nc_ohc=WRjq4vXfJfkQ7kNvgEYSxTE&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&_nc_gid=AJW6ktZSMO2eMXwvq68xPnv&oh=03_Q7cD1QFKOHdWeQnJ58tsZCa6UoI37B3EnOdslmgHwffJgNc6Cw&oe=67436566' },
+            { name: 'Nguyen Tan Thuan', role: 'COO', image: 'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.15752-9/462584110_547398751227173_8309664508823726202_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=FpYGk-Twty4Q7kNvgFvuVPs&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=AyjrIxozdWoQgnceyycK4O1&oh=03_Q7cD1QHjjUnfdBYcKEv9HfBKT4OsghuNlLncyptZCzZIqLr-oA&oe=674365EE' },
+            
           ].map((member, index) => (
             <div key={index} style={{ textAlign: 'center' }}>
               <div

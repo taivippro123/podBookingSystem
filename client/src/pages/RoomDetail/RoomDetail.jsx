@@ -241,12 +241,17 @@ export default function RoomDetail() {
     fetchAvailableSlots(e.target.value);
   };
 
-  const handleNavigateToPayment = () => {
-
+  const handleNavigateToPayment = (e) => {
+    e.preventDefault();
+    if (!userId) {
+      setError('You must be logged in to book a room.');
+      navigate('/login'); // Redirect to login if not logged in
+      return;
+    }
+  
     let bookingStartDay, bookingEndDay;
-
     const discount = useUserPoints ? Math.min(userPoints, totalPrice * 0.1) : 0;
-
+  
     if (bookingType === 'slot') {
       if (!selectedDate) {
         setError('Please select a date.');
@@ -258,7 +263,7 @@ export default function RoomDetail() {
       }
       bookingStartDay = selectedDate;
       bookingEndDay = selectedDate;
-
+  
     } else if (bookingType === 'range') {
       if (!dateRange.start || !dateRange.end) {
         setError('Please select both start and end dates.');
@@ -271,11 +276,12 @@ export default function RoomDetail() {
       bookingStartDay = dateRange.start;
       bookingEndDay = dateRange.end;
     }
-    setError('');
-
+  
+    setError(''); // Clear error if all checks pass
+  
     // Collect selected services
     const selectedServices = services.filter(service => service.selected);
-
+  
     const paymentData = {
       roomId: id,
       roomName: roomDetail.roomName,
@@ -289,7 +295,7 @@ export default function RoomDetail() {
       discount,
       userId
     };
-
+  
     navigate('/payment', { state: paymentData });
   };
 
@@ -352,246 +358,225 @@ export default function RoomDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="flex items-center">
               <Users className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Capacity:  people</span>
+              <span>Capacity:5 people</span>
             </div>
             <div className="flex items-center">
               <Maximize className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Size:  m²</span>
+              <span>Size: 30m²</span>
             </div>
             <div className="flex items-center">
               <Clock className="w-6 h-6 text-gray-400 mr-2" />
               <span>
-                Available hours:
+                Available hours: 9:00AM - 5:00 PM
               </span>
             </div>
             <div className="flex items-center">
               <DollarSign className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Price: {room?.roomPricePerSlot} VND/Slot</span>
+              <span>Price: {room?.roomPricePerSlot.toLocaleString()} VND/Slot</span>
             </div>
           </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Equipment</h2>
-            {/* <div className="grid grid-cols-2 gap-2">
-              {room?.equipment.map((item, index) => (
-                <div key={index} className="flex items-center">
-                  {item.includes("Wifi") && <Wifi className="w-5 h-5 text-blue-500 mr-2" />}
-                  {item.includes("Projector") && <Monitor className="w-5 h-5 text-blue-500 mr-2" />}
-                  {item.includes("Video conferencing") && <Video className="w-5 h-5 text-blue-500 mr-2" />}
-                  {item.includes("Whiteboard") && <Coffee className="w-5 h-5 text-blue-500 mr-2" />}
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div> */}
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Additional Amenities</h2>
-            {/* <div className="flex flex-wrap gap-2">
-              {room?.amenities.map((amenity, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
-                >
-                  {amenity}
-                </span>
-              ))}
-            </div> */}
-          </div>
+
           <form onSubmit={handleNavigateToPayment} className="bg-gray-50 p-6 rounded-lg mb-6">
-            <h2 className="text-xl font-semibold mb-4">Book the Room</h2>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  value="slot"
-                  checked={bookingType === 'slot'}
-                  onChange={handleBookingTypeChange}
-                />{' '}
-                Book by Slot
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="range"
-                  checked={bookingType === 'range'}
-                  onChange={handleBookingTypeChange}
-                />{' '}
-                Book by Date Range
-              </label>
-            </div>
+  <h2 className="text-xl font-semibold mb-4 text-gray-800">Book the Room</h2>
 
-            {/* Display error message */}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+  {/* Total Price Section */}
+  <div className="flex justify-between items-center mb-4">
+    <p className="text-red-500 text-2xl font-bold">₫{totalPrice.toLocaleString()}</p>
+  </div>
 
-            {/* Booking by Slot */}
-            {bookingType === 'slot' && (
-              <div>
-                <h3>Available Slots</h3>
+  {/* Booking Type Radio Buttons */}
+  <div className="flex space-x-4 mb-6">
+    <label className="flex items-center space-x-2 cursor-pointer">
+      <input
+        type="radio"
+        value="slot"
+        checked={bookingType === 'slot'}
+        onChange={handleBookingTypeChange}
+        className="text-blue-600 focus:ring-blue-500"
+      />
+      <span className="text-gray-700">Book by Slot</span>
+    </label>
+    <label className="flex items-center space-x-2 cursor-pointer">
+      <input
+        type="radio"
+        value="range"
+        checked={bookingType === 'range'}
+        onChange={handleBookingTypeChange}
+        className="text-blue-600 focus:ring-blue-500"
+      />
+      <span className="text-gray-700">Book by Date Range</span>
+    </label>
+  </div>
+
+  {/* Display error message */}
+  {error && <p className="text-red-500 mb-4">{error}</p>}
+
+  {/* Booking by Slot */}
+  {bookingType === 'slot' && (
+    <div className="mb-6">
+      <h3 className="text-lg font-medium mb-2 text-gray-800">Available Slots</h3>
+      <input
+        type="date"
+        value={selectedDate}
+        onChange={handleDateSelection}
+        min={new Date().toISOString().split('T')[0]}
+        className="border border-gray-300 p-2 rounded-md mb-4"
+      />
+      {availableSlots.length > 0 ? (
+        <ul className="space-y-2">
+          {availableSlots.map((slot) => (
+            <li key={slot.slotId} className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 cursor-pointer">
                 <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={handleDateSelection}
-                  min={new Date().toISOString().split('T')[0]}
+                  type="checkbox"
+                  checked={selectedSlots.some(s => s.slotId === slot.slotId)}
+                  onChange={() => handleSlotSelection(slot)}
+                  className="text-blue-600 focus:ring-blue-500"
                 />
-                {availableSlots.length > 0 ? (
-                  <ul>
-                    {availableSlots.map((slot) => (
-                      <li key={slot.slotId}>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={selectedSlots.some(s => s.slotId === slot.slotId)}
-                            onChange={() => handleSlotSelection(slot)}
-                          />
-                          {slot.slotStartTime} - {slot.slotEndTime}
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No available slots</p>
-                )}
-              </div>
-            )}
+                <span className="text-gray-700">{slot.slotStartTime} - {slot.slotEndTime}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-600">No available slots</p>
+      )}
+    </div>
+  )}
 
-            {/* Booking by Date Range */}
-            {bookingType === 'range' && (
-              <div>
-                <h3>Select Date Range</h3>
-                <label>
-                  Start Date:
-                  <input
-                    type="date"
-                    name="start"
-                    value={dateRange.start}
-                    onChange={handleDateChange}
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                </label>
-                <label>
-                  End Date:
-                  <input
-                    type="date"
-                    name="end"
-                    value={dateRange.end}
-                    onChange={handleDateChange}
-                    min={dateRange.start || new Date().toISOString().split('T')[0]}
-                  />
-                </label>
-                {isRoomAvailable !== null && (
-                  <p>
-                    {isRoomAvailable
-                      ? "Room is available for the selected dates."
-                      : "Room is not available for the selected dates. Please choose different dates."}
-                  </p>
-                )}
-              </div>
-            )}
+  {/* Booking by Date Range */}
+  {bookingType === 'range' && (
+    <div className="mb-6">
+      <h3 className="text-lg font-medium mb-2 text-gray-800">Select Date Range</h3>
+      <div className="space-y-2">
+        <label className="block text-gray-700">
+          Start Date:
+          <input
+            type="date"
+            name="start"
+            value={dateRange.start}
+            onChange={handleDateChange}
+            min={new Date().toISOString().split('T')[0]}
+            className="border border-gray-300 p-2 rounded-md mt-1"
+          />
+        </label>
+        <label className="block text-gray-700">
+          End Date:
+          <input
+            type="date"
+            name="end"
+            value={dateRange.end}
+            onChange={handleDateChange}
+            min={dateRange.start || new Date().toISOString().split('T')[0]}
+            className="border border-gray-300 p-2 rounded-md mt-1"
+          />
+        </label>
+      </div>
+      {isRoomAvailable !== null && (
+        <p className={`mt-4 ${isRoomAvailable ? 'text-green-500' : 'text-red-500'}`}>
+          {isRoomAvailable
+            ? "Room is available for the selected dates."
+            : "Room is not available for the selected dates. Please choose different dates."}
+        </p>
+      )}
+    </div>
+  )}
 
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Available Services</h2>
-              {services.length > 0 ? (
-                services.map((service) => (
-                  <label key={service.serviceId}>
-                    <input
-                      type="checkbox"
-                      checked={service.selected}
-                      onChange={(e) => {
-                        const updatedServices = services.map((s) =>
-                          s.serviceId === service.serviceId
-                            ? { ...s, selected: e.target.checked }
-                            : s
-                        );
-                        setServices(updatedServices);
-                      }}
-                    />
-                    {service.serviceName} ({service.servicePrice} VND)
-                  </label>
-                ))
-              ) : (
-                <p>No available services</p>
-              )}
-            </div>
-            <div>
-              {/* Display Total Price with original price and discount */}
-              <h3>
-                Total Price: <span style={{ color: 'red' }}>₫{totalPrice.toLocaleString()}</span>&nbsp;
+  {/* Available Services Section */}
+  <div className="p-2 bg-white shadow-lg rounded-lg mb-6">
+    <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Services</h2>
+    {services.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {services.map((service) => (
+          <div
+            key={service.serviceId}
+            onClick={() => {
+              const updatedServices = services.map((s) =>
+                s.serviceId === service.serviceId
+                  ? { ...s, selected: !s.selected }
+                  : s
+              );
+              setServices(updatedServices);
+            }}
+            className={`cursor-pointer border-2 rounded-md px-4 py-2 text-center transition-colors ${
+              service.selected
+                ? 'border-red-600 text-red-600 bg-red-50'
+                : 'border-gray-300 text-gray-800 bg-white'
+            }`}
+          >
+            {service.serviceName} (₫{service.servicePrice.toLocaleString()})
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-gray-600">No available services</p>
+    )}
+  </div>
 
+  {/* Submit Button */}
+  <button
+      type="submit"
+      disabled={
+        (bookingType === 'slot' && !selectedDate) ||
+        (bookingType === 'range' && (!dateRange.start || !dateRange.end))
+      }
+      className={`w-full py-2 px-4 rounded-md transition duration-300 ${
+        (bookingType === 'slot' && !selectedDate) ||
+        (bookingType === 'range' && (!dateRange.start || !dateRange.end))
+          ? 'bg-gray-400 cursor-not-allowed'
+          : 'bg-black text-white hover:bg-gray-800'
+      }`}
+    >
+      Book the Room
+    </button>
+</form>
 
-              </h3>
-
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300"
-            >
-              Book the Room
-            </button>
-          </form>
         </div>
       </div>
 
-      <h3>Additional Information Section</h3>
-      <div className="mb-6">
+
+      <div className="mb-4">
         <h2 className="text-xl font-semibold mb-2">Additional Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center">
             <Airplay className="w-5 h-5 text-gray-500 mr-2" />
-            <span>Lighting: </span>
+            <span>Lighting:Adjustable lighting </span>
           </div>
           <div className="flex items-center">
             <Music className="w-5 h-5 text-gray-500 mr-2" />
-            <span>Sound System: </span>
+            <span>Sound System:Easy to install, it replaces low quality on-board audio with high quality connectivity options. </span>
           </div>
           <div className="flex items-center">
             <Zap className="w-5 h-5 text-gray-500 mr-2" />
-            <span>Power Outlets: </span>
+            <span>Power Outlets: International standard power socket </span>
           </div>
           <div className="flex items-center">
             <Droplet className="w-5 h-5 text-gray-500 mr-2" />
-            <span>Water Dispenser: </span>
+            <span>Water Dispenser:Three water spouts hot, room temperature, cold </span>
           </div>
         </div>
       </div>
 
-      {/* Reviews Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Reviews</h2>
-        {/* {room?.reviews.map((review) => (
-            <div key={review.id} className="bg-gray-50 p-4 rounded-lg mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold">{review.user}</span>
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="ml-1">{review.rating}/5</span>
-                </div>
-              </div>
-              <p className="text-gray-600">{review.comment}</p>
-            </div>
-          ))} */}
-
-      </div>
 
       {/* Location Section */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-2">Location</h2>
-        {/* <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <MapPin className="w-5 h-5 text-gray-500 mr-2" />
-              <span>{room?.location?.address}</span>
-            </div>
-            <div className="aspect-w-16 aspect-h-9">
-              <iframe
-                src={room?.location?.mapUrl}
-                width="600"
-                height="450"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-full rounded-lg"
-              ></iframe>
-            </div>
-          </div> */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex items-center mb-2">
+            <MapPin className="w-5 h-5 text-gray-500 mr-2" />
+            <p>  Số 10, Lô 26, Đường số 3, Khu phần mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành phố Hồ Chí Minh </p>
+          </div>
+          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '0.5rem', boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)' }}>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4946681007846!2d106.70093601533417!3d10.773374962177693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3330bcc7%3A0x4db964d76bf6e18e!2sIndependence%20Palace!5e0!3m2!1sen!2s!4v1635774243689!5m2!1sen!2s"
+              width="100%"
+              height="100%"
+              style={{ position: 'absolute', top: 0, left: 0, border: 0 }}
+              allowFullScreen
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
       </div>
 
       <RoomListDetail />
