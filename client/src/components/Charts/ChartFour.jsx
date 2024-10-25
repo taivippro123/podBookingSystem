@@ -12,6 +12,7 @@ const options = {
         autoScaleYaxis: true,
       },
     },
+    // Test the code
     // annotations: {
     //   yaxis: [
     //     {

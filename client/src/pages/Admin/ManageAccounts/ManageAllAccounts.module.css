@@ -1,0 +1,108 @@
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 8px; /* Bo tròn góc của bảng */
+    overflow: hidden; /* Đảm bảo góc bo tròn có hiệu lực */
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer; /* Con trỏ pointer khi di chuột đến các hàng */
+}
+
+.table td button {
+    cursor: pointer; /* Con trỏ pointer cho các nút */
+}
+
+.table td button:hover svg {
+    transform: scale(1.1); /* Phóng to nhẹ các biểu tượng */
+    transition: transform 0.2s ease;
+}
+
+/* Styles for the pop-up modal */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it is above other elements */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 400px; /* Width of the modal */
+    max-width: 100%; /* Responsive width */
+}
+
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: #007bff;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.modal-content button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+.modal-content button:last-child {
+    background-color: #dc3545;
+}
+
+.modal-content button:last-child:hover {
+    background-color: #c82333;
+}
+
+/* Styles to hide the modal */
+.hide {
+    display: none;
+}

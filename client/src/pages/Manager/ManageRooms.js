@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { FaPlus, FaEye, FaEdit, FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import styles from './ManageRooms.module.css';
-import { FaPlus } from 'react-icons/fa'; // Import biểu tượng dấu cộng từ react-icons
 
 function ManageRooms() {
     const [rooms, setRooms] = useState([]);
@@ -19,7 +19,14 @@ function ManageRooms() {
     });
     const [image, setImage] = useState(null);
     const [imageUrls, setImageUrls] = useState({});
-    const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái cho modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    
+    // New state for delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [roomToDelete, setRoomToDelete] = useState(null);
 
     useEffect(() => {
         fetchRooms();
@@ -31,7 +38,8 @@ function ManageRooms() {
             setRooms(response.data);
             fetchImageUrls(response.data);
         } catch (error) {
-            console.error('Error fetching rooms:', error);
+            setErrorMessage('Error fetching rooms. Please try again.');
+            setIsErrorModalOpen(true);
         }
     };
 
@@ -70,6 +78,13 @@ function ManageRooms() {
     };
 
     const handleCreateRoom = async () => {
+        if (!newRoom.roomName || !newRoom.roomType || !newRoom.roomDescription || !newRoom.roomDetailsDescription ||
+            newRoom.roomPricePerSlot < 0 || newRoom.roomPricePerDay < 0 || newRoom.roomPricePerWeek < 0) {
+            setErrorMessage('Please fill all fields and ensure price values are not negative.');
+            setIsErrorModalOpen(true);
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('roomName', newRoom.roomName);
@@ -89,58 +104,115 @@ function ManageRooms() {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            alert('Room created successfully');
-            setNewRoom({
-                roomName: '',
-                roomType: '',
-                roomDescription: '',
-                roomDetailsDescription: '',
-                roomPricePerSlot: 0,
-                roomPricePerDay: 0,
-                roomPricePerWeek: 0,
-                roomStatus: 'Available',
-            });
-            setImage(null);
+            setIsSuccessModalOpen(true);
+            resetForm();
             fetchRooms();
-            setIsModalOpen(false); // Đóng modal sau khi tạo phòng
+            setIsModalOpen(false);
         } catch (error) {
+            setErrorMessage('Error creating room. Please try again.');
+            setIsErrorModalOpen(true);
             console.error('Error creating room:', error);
         }
     };
 
+    const resetForm = () => {
+        setNewRoom({
+            roomName: '',
+            roomType: '',
+            roomDescription: '',
+            roomDetailsDescription: '',
+            roomPricePerSlot: 0,
+            roomPricePerDay: 0,
+            roomPricePerWeek: 0,
+            roomStatus: 'Available',
+        });
+        setImage(null);
+    };
+
+    // New function to open delete confirmation modal
+    const openDeleteModal = (roomId) => {
+        setRoomToDelete(roomId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteRoom = async () => {
+        if (roomToDelete) {
+            try {
+                await axios.delete(`http://localhost:5000/rooms/${roomToDelete}`);
+                fetchRooms();
+                setIsDeleteModalOpen(false); // Close modal after deletion
+                setRoomToDelete(null); // Reset roomToDelete
+            } catch (error) {
+                setErrorMessage('Error deleting room. Please try again.');
+                setIsErrorModalOpen(true);
+                console.error('Error deleting room:', error);
+            }
+        }
+    };
+
+    const closeErrorModal = () => {
+        setIsErrorModalOpen(false);
+        setErrorMessage('');
+    };
+
+    const closeSuccessModal = () => {
+        setIsSuccessModalOpen(false);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        resetForm();
+    };
+
+    // Close delete confirmation modal
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setRoomToDelete(null); // Reset roomToDelete
+    };
+
     return (
-        <div className={styles.manageRoomsContainer}>
+        <div>
             <h2 className={styles.title}>Room Management</h2>
 
-            <div className={styles.roomList}>
-                {rooms.map((room) => (
-                    <div key={room.roomId} className={styles.roomCard}>
-                        {imageUrls[room.roomId] ? (
-                            <img
-                                src={imageUrls[room.roomId]}
-                                alt={`Room ${room.roomId}`}
-                                className={styles.roomImage}
-                            />
-                        ) : (
-                            <p className={styles.noImageText}>No image available</p>
-                        )}
-                        <h4>{room.roomName}</h4>
-                        <Link to={`/rooms/${room.roomId}`} className={styles.viewDetailsLink}>View Details</Link>
-                    </div>
-                ))}
-            </div>
+            <table className={styles.roomTable}>
+                <thead>
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Room Status</th>
+                        <th className={styles.actionsHeader}>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rooms.map((room) => (
+                        <tr key={room.roomId}>
+                            <td>{room.roomName}</td>
+                            <td>{room.roomStatus}</td>
+                            <td>
+                                <div className={styles.actions}>
+                                    <a href={imageUrls[room.roomId]} target="_blank" rel="noopener noreferrer">
+                                        <FaEye color="blue" size={30} />
+                                    </a>
+                                    <Link to={`/rooms/${room.roomId}`}>
+                                        <FaEdit color="black" size={30} />
+                                    </Link>
+                                    <FaTrash color="red" size={30} onClick={() => openDeleteModal(room.roomId)} />
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
 
-            {/* Biểu tượng dấu cộng */}
             <div className={styles.addRoomButton} onClick={() => setIsModalOpen(true)}>
                 <FaPlus size={30} color="white" />
             </div>
 
-            {/* Modal cho form tạo phòng */}
+            {/* Room Creation Modal */}
             {isModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={() => setIsModalOpen(false)}>×</span>
-                        <h2 className={styles.modalTitle}>Create Room Form</h2>
+                        <span className={styles.closeIcon} onClick={closeModal}>×</span>
+                        <h2>Add Room</h2>
                         <input
                             type="text"
                             name="roomName"
@@ -195,12 +267,50 @@ function ManageRooms() {
                             onChange={handleInputChange}
                             className={styles.inputField}
                         />
-                        <select name="roomStatus" value={newRoom.roomStatus} onChange={handleInputChange} className={styles.selectField}>
+                        <select
+                            name="roomStatus"
+                            value={newRoom.roomStatus}
+                            onChange={handleInputChange}
+                            className={styles.inputField}
+                        >
                             <option value="Available">Available</option>
                             <option value="Maintenance">Maintenance</option>
                         </select>
-                        <input type="file" onChange={handleImageChange} accept="image/*" className={styles.fileInput} />
-                        <button onClick={handleCreateRoom} className={styles.createButton}>Create Room</button>
+                        <input type="file" onChange={handleImageChange} />
+                        <button onClick={handleCreateRoom} className={styles.submitButton}>Create Room</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Confirm Deletion</h2>
+                        <p>Are you sure you want to delete this room?</p>
+                        <button onClick={handleDeleteRoom} className={styles.confirmButton}>Yes</button>
+                        <button onClick={closeDeleteModal} className={styles.cancelButton}>No</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Success and Error Modals */}
+            {isSuccessModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Success</h2>
+                        <p>Room created successfully!</p>
+                        <button onClick={closeSuccessModal} className={styles.closeButton}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {isErrorModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Error</h2>
+                        <p>{errorMessage}</p>
+                        <button onClick={closeErrorModal} className={styles.closeButton}>Close</button>
                     </div>
                 </div>
             )}

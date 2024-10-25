@@ -5,9 +5,11 @@ import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import StaffPage from './pages/Staff/Staff.js'; // Giả định đây là nơi chứa Staff và các route con
-import AdminPage from './pages/Admin';
-import ManagerPage from './pages/Manager/Manager.js';
+import StaffPage from './pages/Staff/Staff.js';
+import AdminPage from './pages/Admin/AdminPages/Admin.js';
+import ManageAllAccounts from './pages/Admin/ManageAccounts/ManageAllAccount.js';
+import Manager from './pages/Manager/Manager.js';
+import ManageServices from './pages/Manager/ManageServices.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
@@ -20,10 +22,16 @@ import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
 import UpcomingBookings from './pages/Staff/UpcomingBookings';
-import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
+import UpcomingServices from './pages/Staff/UpcomingServices';
 import ManageRooms from './pages/Manager/ManageRooms.js';
 import sidenav from './components/sidenav/sidenav.jsx';
-
+import ManageSlots from './pages/Manager/ManageSlots.js';
+import ManageAccounts from './pages/Manager/ManageAccounts.js';
+import ManageBookings from './pages/Manager/ManageBookings.js';
+import ViewTransactions from './pages/Admin/ViewTransactions/ViewTransactions.js';
+import ViewNumberAccounts from './pages/Admin/ViewNumberAccounts/ViewNumberAccounts.js';
+import ViewPopularRooms from './pages/Admin/ViewPopularRooms/ViewPopularRooms.js';
+import ViewPopularServices from './pages/Admin/ViewPopularServices/ViewPopularServices.js';
 
 function App() {
   return (
@@ -44,18 +52,19 @@ function App() {
         <Route path="/rooms/:id" element={<ManageRoom />} />  
         <Route path="/login2" element={<Login />} />
 
+        {/* Đường dẫn cho Customer */}
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
             <Customer />
           </ProtectedRoute>
         } />
 
+        {/* Đường dẫn cho Staff */}
         <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
-            <StaffPage /> {/* Hiển thị thanh menu và header cho Staff */}
+            <StaffPage />
           </ProtectedRoute>
         }>
-          {/* Các route con cho Staff */}
           <Route path="upcoming-bookings" element={
             <ProtectedRoute allowedRoles={[3]}>
               <UpcomingBookings />
@@ -68,25 +77,71 @@ function App() {
           } />
         </Route>
 
+        {/* Đường dẫn cho Admin */}
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>
             <AdminPage />
           </ProtectedRoute>
-        } />
+        }>
+          <Route path="accounts" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ManageAllAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="transactions" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewTransactions />
+            </ProtectedRoute>
+          } />
+          <Route path="number-accounts" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewNumberAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="popular-rooms" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewPopularRooms />
+            </ProtectedRoute>
+          } />
+          <Route path="popular-services" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewPopularServices />
+            </ProtectedRoute>
+          } /> {/* Đường dẫn mới cho ViewPopularServices */}
+        </Route>
 
+        {/* Đường dẫn cho Manager */}
         <Route path="/manager" element={
           <ProtectedRoute allowedRoles={[2]}>
-            <ManagerPage />
+            <Manager />
           </ProtectedRoute>
-        } />
-
-        <Route path="/manager/manageRooms" element={
-          <ProtectedRoute allowedRoles={[2]}>
-            <ManageRooms /> {/* Thêm route cho ManageRooms */}
-          </ProtectedRoute>
-        } />
-
-
+        }>
+          <Route path="manageRooms" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageRooms />
+            </ProtectedRoute>
+          } />
+          <Route path="manageSlots" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageSlots />
+            </ProtectedRoute>
+          } />
+          <Route path="manageServices" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageServices />
+            </ProtectedRoute>
+          } />
+          <Route path="manageAccounts" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageAccounts />
+            </ProtectedRoute>
+          } />
+          <Route path="manageBookings" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageBookings />
+            </ProtectedRoute>
+          } />
+        </Route>
       </Routes>
     </Router>
   );

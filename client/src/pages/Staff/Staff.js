@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { FaCalendarAlt, FaClipboardList, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import styles from './Staff.module.css';
+import LogoutButton from '../../components/LogoutButton/LogoutButton'; // Import nút Logout
 
 const Staff = () => {
     const [isMenuVisible, setIsMenuVisible] = useState(true);
@@ -16,7 +17,6 @@ const Staff = () => {
                 <h1 className={styles.managementTitle}>Staff Dashboard</h1>
             </header>
             <nav className={`${styles.nav} ${isMenuVisible ? styles.visible : styles.hidden}`}>
-                {/* Sử dụng Link để bấm vào chữ "Staff" và quay về trang /staff */}
                 <Link to="/staff" className={styles.staffTitle}>
                     <h1>Staff</h1>
                 </Link>
@@ -35,17 +35,15 @@ const Staff = () => {
                     </li>
                 </ul>
                 <div className={styles.logoutContainer}>
-                    <Link to="/logout" className={styles.navLink}>
-                        <FaSignOutAlt className={styles.icon} />
-                        <span>Log Out</span>
-                    </Link>
+                    {/* Thay thế Link sang LogoutButton */}
+                    <LogoutButton />
                 </div>
             </nav>
             <button className={`${styles.menuToggle} ${isMenuVisible ? styles.menuToggleVisible : styles.menuToggleHidden}`} onClick={toggleMenu}>
                 <FaBars />
             </button>
             <div className={`${styles.mainContent} ${isMenuVisible ? '' : styles.menuHidden}`}>
-                <Outlet /> {/* Nội dung các trang con sẽ hiển thị ở đây */}
+                <Outlet />
             </div>
         </div>
     );

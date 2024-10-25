@@ -18,7 +18,7 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: start; /* Căn đều không gian giữa các nút */
+    justify-content: space-between; /* Căn đều không gian giữa các nút */
     align-items: center; /* Căn giữa cho các nút */
     color: black;
     position: fixed;
@@ -61,7 +61,6 @@ body {
     left: 0; /* Vị trí khi cột ẩn */
 }
 
-
 .manager-menuToggle:hover {
     background-color: rgba(248, 248, 248, 1); /* Nền trắng khi hover */
 }
@@ -95,12 +94,12 @@ h1 {
     text-align: center; /* Căn giữa cho tất cả các h1 */
 }
 
-.manager-logoutContainer {
+.logoutContainer {
     margin-top: auto; /* Đẩy nút đăng xuất xuống cuối */
     padding-top: 20px; /* Padding trên cùng của logoutContainer */
 }
 
-.manager-logoutContainer a {
+.logoutContainer a {
     text-decoration: none; /* Bỏ gạch chân cho link */
     font-size: 18px; /* Kích thước chữ cho link */
     color: black; /* Màu chữ cho link */
@@ -131,7 +130,7 @@ h1 {
 }
 
 .manager-nav ul li {
-    margin: 15px 0; /* Tăng khoảng cách giữa các nút */
+    margin: 20px 0; /* Tăng khoảng cách giữa các nút (đã tăng từ 15px thành 20px) */
     display: flex; /* Để căn giữa icon và text */
     justify-content: center; /* Căn giữa icon và text */
     align-items: center; /* Căn giữa theo chiều dọc */
@@ -144,6 +143,7 @@ h1 {
     padding: 10px; /* Padding cho các link */
     text-decoration: none; /* Bỏ gạch chân cho link */
     color: black; /* Màu chữ cho link */
+    font-weight: bold; /* Đặt chữ đậm cho các link */
     transition: background-color 0.3s ease; /* Thêm hiệu ứng cho link */
     width: 100%; /* Chiếm toàn bộ chiều rộng cho link */
 }

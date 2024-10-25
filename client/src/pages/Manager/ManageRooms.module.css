@@ -1,112 +1,136 @@
+/* ManageRooms.module.css */
+
 .manageRoomsContainer {
     padding: 20px;
-    background-color: white; /* Thêm dòng này để đổi màu nền thành trắng */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.submitButton {
+    background-color: #add8e6; /* Màu xanh dương nhạt */
+    color: white; /* Chữ màu trắng */
+    border: none; /* Không viền */
+    padding: 10px 20px; /* Khoảng cách bên trong */
+    border-radius: 5px; /* Bo góc cho nút */
+    cursor: pointer; /* Đổi con trỏ khi di chuột qua nút */
+    font-size: 16px; /* Kích thước chữ */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền */
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.submitButton:hover {
+    background-color: #87cefa; /* Màu xanh dương đậm hơn khi di chuột qua */
 }
 
 .title {
-    text-align: center;
-    margin-bottom: 20px;
     font-size: 24px;
-    font-weight: bold;
-}
-
-.roomList {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; /* Đảm bảo các card được xếp bên trái, tạo ra dòng mới khi không còn chỗ */
-    margin: -10px; /* Để bù trừ cho margin của các card */
-}
-
-.roomCard {
-    width: 200px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin: 10px; /* Giữ khoảng cách giữa các card */
-    padding: 10px;
+    margin-bottom: 20px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
+    color: #333;
+}
+
+.roomTable {
+    width: 80%;
+    border-collapse: collapse;
+    margin: auto; /* Căn giữa bảng */
+}
+
+.roomTable th,
+.roomTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.roomTable th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center; /* Căn giữa tiêu đề */
+    width: 200px; /* Giảm chiều rộng của cột */
+}
+
+.roomTable th.actionsHeader {
+    width: 100px; /* Giảm chiều rộng của cột Actions */
+}
+
+.roomTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.roomTable tr:hover {
+    background-color: #9bffa3;
+}
+
+.actions {
     display: flex;
-    flex-direction: column; /* Để các phần tử bên trong xếp theo chiều dọc */
-    justify-content: space-between; /* Giúp căn chỉnh chiều cao đồng nhất */
-    height: 300px; /* Thiết lập chiều cao cố định cho thẻ phòng */
-    flex-shrink: 0; /* Ngăn card co lại khi không gian không đủ */
+    justify-content: center; /* Center icons horizontally */
+    gap: 20px; /* Space between icons */
 }
 
-.roomCard:hover {
-    transform: scale(1.05); /* Hiệu ứng phóng to khi hover */
-}
-
-.roomImage {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    flex-grow: 1; /* Để hình ảnh có thể mở rộng chiều cao */
-}
-
-.noImageText {
-    color: #888;
-}
-
-.viewDetailsLink {
-    color: #007bff;
-    text-decoration: none;
-    padding: 10px; /* Thêm padding để nút có chiều cao đủ lớn */
-    display: block; /* Đảm bảo nút chiếm toàn bộ chiều ngang của thẻ */
-    margin-top: auto; /* Đẩy nút xuống cuối thẻ */
+.actions svg {
+    width: 30px; /* Increase icon size */
+    height: 30px; /* Increase icon size */
+    cursor: pointer; /* Change cursor on hover */
 }
 
 .addRoomButton {
-    cursor: pointer;
-    background-color: #28a745; /* Màu nền cho nút */
-    border-radius: 50%;
-    padding: 10px;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
 }
 
-/* Các phần CSS khác không thay đổi */
+.addRoomButton:hover {
+    background-color: #45a049;
+}
 
-
+/* Modal Styles */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
 }
 
 .modalContent {
-    background: white;
-    border-radius: 8px;
+    background-color: white;
     padding: 20px;
-    width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    position: relative; /* Để đặt vị trí của nút X */
-}
-
-.modalTitle {
-    margin-bottom: 15px;
-    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 500px; /* Chiều rộng của modal */
+    height: auto;
+    max-height: 80%; /* Để ngăn modal quá cao */
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    position: relative;
 }
 
 .closeIcon {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 15px;
     cursor: pointer;
-    font-size: 18px;
-    color: #dc3545; /* Màu đỏ cho nút X */
+    font-size: 20px;
+}
+
+.modalTitle {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .inputField,
@@ -115,69 +139,85 @@
 .fileInput {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px; /* Tăng kích thước chữ */
 }
 
+/* Styles for Create Button */
 .createButton {
-    background-color: #007bff;
-    color: white;
+    width: 100%;
     padding: 10px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 100%;
-    font-size: 16px; /* Tăng kích thước chữ */
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .createButton:hover {
-    background-color: #0056b3;
+    background-color: #45a049;
+}
+
+/* Styles for Success and Error Modals */
+.successModal, .errorModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.successModalContent, .errorModalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 400px; /* Chiều rộng của modal thông báo */
+}
+
+h2 {
+    text-align: center;
+}
+
+/* Button Styles for Modal */
+.confirmButton, .cancelButton, .closeButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.confirmButton {
+    background-color: #4CAF50; /* Màu nút xác nhận */
+    color: white;
+}
+
+.cancelButton {
+    background-color: #f44336; /* Màu nút hủy */
+    color: white;
 }
 
 .closeButton {
-    background-color: #dc3545;
+    background-color: #2196F3; /* Màu nút đóng */
     color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
 }
 
-.closeIcon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 30px; /* Tăng kích thước chữ */
-    color: black; /* Màu cho nút X */
-    transition: transform 0.2s; /* Thêm hiệu ứng chuyển đổi */
+.confirmButton:hover {
+    background-color: #45a049; /* Hiệu ứng hover */
 }
 
-.closeIcon:hover {
-    transform: scale(1.1); /* Phóng to nhẹ khi hover */
+.cancelButton:hover {
+    background-color: #d32f2f; /* Hiệu ứng hover */
 }
 
-.modalContent {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    position: relative; /* Để đặt vị trí của nút X */
-    transform: scale(0.9); /* Bắt đầu nhỏ hơn */
-    animation: fadeIn 0.3s forwards; /* Hiệu ứng fade in */
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8); /* Bắt đầu từ kích thước nhỏ */
-    }
-    to {
-        opacity: 1;
-        transform: scale(1); /* Kết thúc ở kích thước bình thường */
-    }
+.closeButton:hover {
+    background-color: #1976D2; /* Hiệu ứng hover */
 }

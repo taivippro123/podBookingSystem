@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { FaClock, FaUserShield, FaClipboardList, FaSignOutAlt, FaBars } from 'react-icons/fa';
-import { GrTask } from 'react-icons/gr'; 
-import { LuDoorOpen } from 'react-icons/lu'; 
+import { FaClock, FaUserShield, FaClipboardList, FaBars } from 'react-icons/fa';
+import { GrTask } from 'react-icons/gr';
+import { LuDoorOpen } from 'react-icons/lu';
 import styles from './Manager.module.css';
+import LogoutButton from '../../components/LogoutButton/LogoutButton';
 
 const Manager = () => {
     const [isMenuVisible, setIsMenuVisible] = useState(true);
@@ -29,7 +30,7 @@ const Manager = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/manager/manageSlot" className={styles['manager-navLink']}>
+                        <Link to="/manager/manageSlots" className={styles['manager-navLink']}>
                             <FaClock className={styles['manager-icon']} />
                             <span>Manage Slots</span>
                         </Link>
@@ -53,15 +54,12 @@ const Manager = () => {
                         </Link>
                     </li>
                 </ul>
-                <div className={styles['manager-logoutContainer']}>
-                    <Link to="/manager/logout" className={styles['manager-navLink']}>
-                        <FaSignOutAlt className={styles['manager-icon']} />
-                        <span>Logout</span>
-                    </Link>
+                <div className={styles.logoutContainer}>
+                    <LogoutButton />
                 </div>
             </nav>
-            <button 
-                className={`${styles['manager-menuToggle']}`} 
+            <button
+                className={`${styles['manager-menuToggle']}`}
                 onClick={toggleMenu}
                 style={{ left: isMenuVisible ? '200px' : '20px' }} // Điều chỉnh vị trí khi menu ẩn/hiện
             >

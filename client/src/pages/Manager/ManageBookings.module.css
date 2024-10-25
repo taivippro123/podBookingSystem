@@ -1,0 +1,85 @@
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .statusMessage {
+    color: green;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .table th {
+    background-color: #f2f2f2;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .statusSelect {
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .updateButton {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .updateButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .modal {
+    padding: 20px;
+    border-radius: 12px; /* Bo tròn góc cho modal */
+    background: #fff;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; /* Giảm chiều rộng cho modal */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Thêm bóng cho modal */
+    transition: all 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+  }
+  
+  h2 {
+    font-size: 20px; /* Kích thước tiêu đề nhỏ hơn */
+    margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+    color: #333; /* Màu tiêu đề */
+    text-align: center; /* Căn giữa tiêu đề */
+  }
+  
+  p {
+    font-size: 14px; /* Kích thước văn bản thông điệp nhỏ hơn */
+    margin-bottom: 15px; /* Khoảng cách dưới thông điệp */
+    text-align: center; /* Căn giữa văn bản */
+    color: #666; /* Màu văn bản */
+  }
+  

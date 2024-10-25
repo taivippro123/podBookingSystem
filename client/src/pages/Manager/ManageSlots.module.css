@@ -1,0 +1,186 @@
+.pageTitle {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 120px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.slotTable {
+    width: 100%;
+    border-collapse: collapse; /* Gộp các đường viền */
+    margin-bottom: 20px;
+}
+
+.slotTable th,
+.slotTable td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd; /* Đường viền cho ô */
+}
+
+.slotTable th {
+    background-color: #4a90e2; /* Màu nền cho tiêu đề */
+    color: white;
+    font-weight: bold;
+}
+
+.slotTable tr:nth-child(even) {
+    background-color: #f2f2f2; /* Màu nền cho dòng chẵn */
+}
+
+.slotTable tr:nth-child(odd) {
+    background-color: #ffffff; /* Màu nền cho dòng lẻ */
+}
+
+.slotTable tr:hover {
+    background-color: #e7f1ff; /* Màu nền khi hover qua dòng */
+}
+
+.slotTable th,
+.slotTable td {
+    border: 2px solid #bac2ca; /* Đường viền cho tiêu đề và ô */
+    padding: 10px; /* Tăng padding cho ô */
+    font-size: 1.1rem; /* Kích thước font lớn hơn */
+}
+
+.actionIcons {
+    display: flex;
+    gap: 10px;
+}
+
+.editIcon,
+.deleteIcon {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.editIcon:hover,
+.deleteIcon:hover {
+    transform: scale(1.1);
+}
+
+.addSlotButton {
+    position: fixed; /* Đặt vị trí cố định */
+    bottom: 20px; /* Cách từ đáy 20px */
+    right: 20px; /* Cách từ bên phải 20px */
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%; /* Bo tròn hoàn toàn */
+    padding: 0; /* Không có padding để căn giữa chính xác */
+    cursor: pointer;
+    font-size: 1.5rem; /* Kích thước font lớn hơn */
+    width: 60px; /* Chiều rộng cố định */
+    height: 60px; /* Chiều cao cố định */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex; /* Sử dụng flexbox */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    transition: background-color 0.2s, transform 0.2s; /* Thêm hiệu ứng cho hover */
+}
+
+.addSlotButton:hover {
+    background-color: #218838; /* Thay đổi màu khi hover */
+    transform: scale(1.1); /* Tăng kích thước khi hover */
+}
+
+.manageSlotsPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.manageSlotsPopupContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 400px;
+}
+
+.manageSlotsPopup h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.manageSlotsPopup form {
+    display: flex;
+    flex-direction: column;
+}
+
+.manageSlotsPopup label {
+    margin-bottom: 10px;
+}
+
+.manageSlotsPopup input,
+.manageSlotsPopup select {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.manageSlotsPopup button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.manageSlotsPopup button:hover {
+    background-color: #0056b3;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popupContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+}
+
+.popupContent button {
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.popupContent button:hover {
+    background-color: #0056b3;
+}
+
+.hoveredRow {
+    background-color: #e7f1ff;
+}
+
+
