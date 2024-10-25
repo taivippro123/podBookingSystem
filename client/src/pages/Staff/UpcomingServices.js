@@ -49,7 +49,7 @@ const UpcomingServices = () => {
     }
 
     return (
-        <div className={styles.servicesContainer}>
+        <div className={styles.pageContainer}> {/* Container toàn trang */}
             <h2>Upcoming Services</h2>
             <div className={styles.searchContainer}>
                 <input
@@ -59,7 +59,6 @@ const UpcomingServices = () => {
                     placeholder="Search by Booking ID, Service ID, or Service Name"
                     className={styles.searchInput}
                 />
-            
             </div>
             {filteredServices.length === 0 ? (
                 <p>No upcoming services found.</p>

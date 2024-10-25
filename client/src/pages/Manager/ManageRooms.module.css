@@ -1,0 +1,151 @@
+/* ManageRooms.module.css */
+
+.manageRoomsContainer {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.roomTable {
+    width: 80%;
+    border-collapse: collapse;
+    margin: auto; /* Căn giữa bảng */
+}
+
+.roomTable th,
+.roomTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.roomTable th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center; /* Căn giữa tiêu đề */
+    width: 200px; /* Giảm chiều rộng của cột */
+}
+
+.roomTable th.actionsHeader {
+    width: 100px; /* Giảm chiều rộng của cột Actions */
+}
+
+.roomTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.roomTable tr:hover {
+    background-color: #9bffa3;
+}
+
+.actions {
+    display: flex;
+    justify-content: center; /* Center icons horizontally */
+    gap: 20px; /* Space between icons */
+}
+
+.actions svg {
+    width: 30px; /* Increase icon size */
+    height: 30px; /* Increase icon size */
+    cursor: pointer; /* Change cursor on hover */
+}
+
+.addRoomButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.addRoomButton:hover {
+    background-color: #45a049;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 500px; /* Chiều rộng của modal */
+    height: auto;
+    max-height: 80%; /* Để ngăn modal quá cao */
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    position: relative;
+    margin-top: 40px; /* Thay đổi giá trị này để điều chỉnh vị trí xuống dưới */
+}
+
+
+
+.closeIcon {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.modalTitle {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.inputField,
+.textAreaField,
+.selectField,
+.fileInput {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.createButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.createButton:hover {
+    background-color: #45a049;
+}
+
+h2{
+    text-align: center;
+}

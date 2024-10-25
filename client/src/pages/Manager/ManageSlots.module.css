@@ -1,0 +1,190 @@
+/* Container chính cho trang quản lý Slots */
+.manageSlotsContainer {
+    width: 100%; /* Đặt chiều rộng container là 100% */
+    margin: 0; /* Xóa margin */
+    padding: 20px;
+    display: flex; /* Sử dụng flexbox */
+    flex-direction: column; /* Đặt hướng của các phần tử là cột */
+    align-items: center; /* Căn giữa theo chiều ngang */
+    justify-content: center; /* Căn giữa theo chiều dọc */
+    min-height: 50vh; /* Đảm bảo chiều cao tối thiểu là 50% viewport */
+}
+
+/* Bảng hiển thị các slot */
+.slotTable {
+    width: 100%;
+    max-width: 2000px; /* Đặt chiều rộng tối đa cho bảng */
+    border-collapse: collapse; /* Giảm khoảng cách giữa các ô */
+    margin-top: 20px; /* Khoảng cách trên bảng */
+}
+
+/* Các kiểu cho tiêu đề và ô trong bảng */
+.slotTable th, .slotTable td {
+    border: 1px solid #ddd;
+    padding: 10px; /* Tăng padding cho ô */
+    text-align: center; /* Căn giữa nội dung trong ô */
+}
+
+/* Hiệu ứng khi hover qua các ô trong bảng */
+.slotTable tr:hover td {
+    background-color: rgba(46, 139, 204, 0.2); /* Màu nền nhạt khi hover */
+}
+
+.slotTable th {
+    background-color: #2E8BC0; /* Màu nền xanh biển nhạt cho tiêu đề bảng */
+    color: white; /* Màu chữ trắng cho tiêu đề bảng */
+    font-weight: bold;
+}
+
+/* Các biểu tượng hành động */
+.actionIcons {
+    display: flex;
+    justify-content: center; /* Căn giữa các biểu tượng */
+    gap: 10px; /* Khoảng cách giữa các biểu tượng */
+}
+
+.editIcon, .deleteIcon {
+    cursor: pointer; /* Thay đổi con trỏ thành pointer khi hover */
+    transition: transform 0.2s; /* Thêm hiệu ứng chuyển tiếp khi hover */
+}
+
+.editIcon:hover, .deleteIcon:hover {
+    transform: scale(1.1); /* Phóng to icon khi hover */
+}
+
+/* Kiểu cho biểu tượng */
+.icon {
+    cursor: pointer; /* Thay đổi con trỏ thành ngón tay */
+    font-size: 18px;
+}
+
+/* Hiệu ứng khi hover */
+.icon:hover {
+    color: #007bff; /* Màu khi hover */
+}
+
+/* Nút thêm slot */
+.addSlotButton {
+    position: fixed;
+    bottom: 20px; /* Căn chỉnh vị trí dưới cùng */
+    right: 20px; /* Căn chỉnh bên phải */
+    background-color: #007bff; /* Màu xanh biển */
+    color: white;
+    width: 50px; /* Đặt chiều rộng */
+    height: 50px; /* Đặt chiều cao */
+    border-radius: 50%; /* Đường viền hình tròn */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px; /* Kích thước font cho icon */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+}
+
+/* Hiệu ứng khi hover cho nút thêm */
+.addSlotButton:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+}
+
+/* Các kiểu cho Popup */
+.manageSlotsPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền tối với độ mờ */
+    display: flex;
+    justify-content: center; /* Căn giữa popup */
+    align-items: center;
+}
+
+/* Nội dung của Popup */
+.manageSlotsPopupContent {
+    background-color: white;
+    padding: 30px; /* Tăng padding cho nội dung */
+    border-radius: 15px; /* Bo tròn các góc mạnh hơn */
+    width: 450px; /* Kích thước rộng hơn */
+    max-width: 90%; /* Chiều rộng tối đa 90% viewport */
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Hiệu ứng bóng mạnh hơn */
+}
+
+/* Tiêu đề của nội dung popup */
+.manageSlotsPopupContent h2 {
+    margin-top: 0; /* Giảm khoảng cách trên */
+    font-size: 26px; /* Kích thước font tiêu đề lớn hơn */
+    text-align: center; /* Căn giữa tiêu đề */
+    color: #2E8BC0; /* Màu cho tiêu đề */
+    font-weight: bold; /* In đậm tiêu đề */
+    border-bottom: 2px solid #2E8BC0; /* Đường dưới tiêu đề */
+    padding-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+}
+
+/* Định dạng form trong popup */
+.manageSlotsPopupContent form {
+    display: flex;
+    flex-direction: column; /* Căn chỉnh dọc */
+    gap: 20px; /* Khoảng cách giữa các trường lớn hơn */
+}
+
+/* Kiểu cho label trong form */
+.manageSlotsPopupContent form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555; /* Màu chữ cho label tối hơn */
+}
+
+/* Kiểu cho các trường input trong form */
+.manageSlotsPopupContent form input {
+    padding: 15px; /* Tăng padding cho trường input */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px; /* Bo tròn các góc */
+    transition: border 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển tiếp cho border */
+}
+
+/* Hiệu ứng khi focus vào trường input */
+.manageSlotsPopupContent form input:focus {
+    border-color: #007bff; /* Đổi màu border khi focus */
+    outline: none; /* Xóa outline mặc định */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Thêm hiệu ứng bóng khi focus */
+}
+
+/* Nút trong form */
+.manageSlotsPopupContent button {
+    padding: 15px; /* Tăng padding cho nút */
+    background-color: #007bff; /* Màu xanh biển */
+    color: white;
+    border: none; /* Không có viền */
+    border-radius: 8px; /* Bo tròn các góc */
+    cursor: pointer;
+    font-weight: bold; /* In đậm chữ nút */
+    transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển tiếp cho background */
+}
+
+/* Hiệu ứng khi hover cho nút trong form */
+.manageSlotsPopupContent button:hover {
+    background-color: #0056b3; /* Đổi màu nút khi hover */
+    transform: translateY(-2px); /* Đẩy nút lên nhẹ khi hover */
+}
+
+/* Biểu tượng đóng popup */
+.closeButton {
+    background-color: red; /* Màu đỏ cho nút Close */
+    color: white; /* Màu chữ trắng cho nút Close */
+}
+
+/* Hiệu ứng khi hover cho biểu tượng đóng */
+.closeIcon:hover {
+    color: #ff4d4d; /* Màu khi hover, vẫn giữ màu sáng hơn */
+}
+
+/* Tiêu đề trang */
+.pageTitle {
+    font-size: x-large;
+    margin-top: 50px;
+    text-align: center;
+    color: #333;
+    font-weight: bolder;
+}

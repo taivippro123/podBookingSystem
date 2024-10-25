@@ -1,0 +1,153 @@
+/* Căn chỉnh tổng thể cho thân thiện người dùng */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* Màu hơi xám cho toàn bộ trang */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh; /* Chiều dài cột kéo dài xuống hết trang */
+    position: relative; /* Để đặt nút menu một cách tương đối */
+}
+
+.nav {
+    flex: 1; /* Đảm bảo chiều rộng phù hợp cho navigation */
+    background-color: white; /* Màu trắng cho thanh navigation */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Căn đều không gian giữa các nút */
+    align-items: center; /* Căn giữa cho các nút */
+    color: black;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%; /* Đảm bảo cột kéo dài hết trang */
+    z-index: 20; /* Đặt z-index cao hơn header */
+    transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển động */
+}
+
+.hidden {
+    transform: translateX(-100%); /* Ẩn cột */
+}
+
+.visible {
+    transform: translateX(0); /* Hiện cột */
+}
+
+.menuToggle {
+    background-color: rgba(248, 248, 248, 0.8); /* Nền trắng với độ trong suốt */
+    color: black; /* Màu chữ */
+    border: none; /* Không có viền */
+    cursor: pointer; /* Con trỏ khi hover */
+    font-size: 30px; /* Kích thước icon */
+    position: fixed; /* Đặt ở vị trí cố định */
+    top: 20px; /* Khoảng cách từ trên cùng */
+    left: 100px; /* Khoảng cách từ bên trái để sát cột */
+    z-index: 30; /* Đặt z-index cao hơn header */
+    border-radius: 10px; /* Bo góc cho nút */
+    padding: 10px; /* Thêm padding cho nút */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ cho nút */
+    transition: background-color 0.3s ease, left 0.3s ease; /* Hiệu ứng chuyển màu và hiệu ứng di chuyển */
+}
+
+.menuToggleVisible {
+    left: 250px; /* Vị trí khi cột hiện */
+}
+
+.menuToggleHidden {
+    left: 0; /* Vị trí khi cột ẩn */
+}
+
+
+.menuToggle:hover {
+    background-color: rgba(248, 248, 248, 1); /* Nền trắng khi hover */
+}
+
+.header {
+    background-color: white; /* Màu trắng cho header */
+    padding: 10px 20px; /* Padding cho header */
+    width: 100%; /* Kéo dài hết chiều ngang */
+    position: fixed; /* Giữ header cố định ở trên cùng */
+    top: 0; /* Đưa lên trên cùng */
+    left: 0; /* Đảm bảo không có khoảng cách ở bên trái */
+    z-index: 10; /* Đặt z-index thấp hơn navigation */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ cho header */
+}
+
+.mainContent {
+    flex: 3; /* Chiếm 3 phần của không gian còn lại */
+    margin-left: 250px; /* Dành không gian cho cột bên trái */
+    padding: 60px 40px 40px; /* Thêm padding trên cùng để không bị che bởi header */
+    background-color: #f4f4f9; /* Màu hơi xám cho phần còn lại của trang */
+    transition: margin-left 0.3s ease; /* Thêm hiệu ứng cho main-content */
+}
+
+.menuHidden {
+    margin-left: 0; /* Khi ẩn, không có khoảng cách bên trái */
+}
+
+h1 {
+    font-size: 32px; /* Kích thước chữ tiêu đề */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+    text-align: center; /* Căn giữa cho tất cả các h1 */
+}
+
+.logoutContainer {
+    margin-top: auto; /* Đẩy nút đăng xuất xuống cuối */
+    padding-top: 20px; /* Padding trên cùng của logoutContainer */
+}
+
+.logoutContainer a {
+    text-decoration: none; /* Bỏ gạch chân cho link */
+    font-size: 18px; /* Kích thước chữ cho link */
+    color: black; /* Màu chữ cho link */
+    display: flex; /* Sử dụng flexbox để căn chỉnh */
+    align-items: center; /* Căn giữa icon và text theo chiều dọc */
+    padding: 10px; /* Padding cho các link */
+    border-radius: 5px; /* Bo góc cho các link */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Hiệu ứng cho các link */
+}
+
+.logoutContainer a:hover {
+    background-color: #e74c3c; /* Màu đỏ cho nút khi hover */
+    color: white; /* Màu chữ trắng khi hover */
+}
+
+.icon {
+    margin-right: 10px; /* Khoảng cách giữa icon và text */
+    font-size: 30px; /* Kích thước icon */
+}
+
+/* Căn chỉnh cho các link trong navigation */
+.nav ul {
+    display: flex;
+    flex-direction: column; /* Sắp xếp các link theo cột */
+    padding: 0; /* Bỏ padding cho ul */
+    width: 100%; /* Chiếm toàn bộ chiều rộng cột */
+    align-items: center; /* Căn giữa các link trong ul */
+}
+
+.nav ul li {
+    margin: 15px 0; /* Tăng khoảng cách giữa các nút */
+    display: flex; /* Để căn giữa icon và text */
+    justify-content: center; /* Căn giữa icon và text */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+}
+
+.navLink {
+    display: flex; /* Để căn giữa icon và text */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 10px; /* Padding cho các link */
+    text-decoration: none; /* Bỏ gạch chân cho link */
+    color: black; /* Màu chữ cho link */
+    transition: background-color 0.3s ease; /* Thêm hiệu ứng cho link */
+    width: 100%; /* Chiếm toàn bộ chiều rộng cho link */
+}
+
+.navLink:hover {
+    background-color: #e0e0e0; /* Màu nền khi hover */
+}

@@ -1,0 +1,96 @@
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+}
+
+.table {
+    width: 90%; /* Set width to 90% for better visibility */
+    border-collapse: collapse;
+    margin: 20px 0; /* Add margin for spacing */
+}
+
+.table th {
+    background-color: #858585; /* Set header color to gray */
+    color: white; /* Change text color to white */
+    padding: 12px; /* Increase padding for better spacing */
+}
+
+.table th, .table td {
+    border: 2px solid #fffffff6; /* Thicker border for better visibility */
+    padding: 12px; /* Increase padding for better spacing */
+    text-align: center;
+}
+
+.table tr:hover {
+    background-color: #d3d3d3; /* Highlight row on hover */
+}
+
+.actions button {
+    margin-right: 5px;
+    cursor: pointer;
+    transition: transform 0.2s; /* Smooth transition */
+}
+
+.actions button:hover {
+    transform: scale(1.1); /* Slightly enlarge button on hover */
+}
+
+.addAccountButton {
+    position: fixed; /* Fix position to bottom right */
+    bottom: 20px; /* Distance from bottom */
+    right: 20px; /* Distance from right */
+    padding: 10px 15px;
+    background-color: gray; /* Change background color to gray */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%; /* Make button round */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow */
+}
+
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popupForm {
+    background-color: white;
+    padding: 30px; /* Increase padding for the form */
+    border-radius: 10px; /* Round the corners of the popup */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Add shadow for popup */
+    width: 500px; /* Fixed width for the form */
+}
+
+.popupForm input, .popupForm select {
+    display: block;
+    margin-bottom: 15px; /* Increase margin for spacing */
+    padding: 12px; /* Increase padding for better input area */
+    width: 100%;
+    border: 1px solid #ddd; /* Add border to inputs */
+    border-radius: 5px; /* Round the input corners */
+    font-size: 1em; /* Set font size */
+}
+
+.popupForm button {
+    padding: 12px 20px; /* Increase padding for buttons */
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: #007bff; /* Change button color */
+    color: white;
+    border-radius: 5px; /* Round button corners */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.popupForm button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}

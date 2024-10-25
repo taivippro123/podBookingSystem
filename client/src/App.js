@@ -5,9 +5,10 @@ import Signup from './components/Signup.js';
 import AboutUs from './pages/AboutUs.jsx';
 import Contact from './pages/Contact.jsx';
 import Customer from './pages/Customer.js';
-import StaffPage from './pages/Staff';
+import StaffPage from './pages/Staff/Staff.js';
 import AdminPage from './pages/Admin';
-import ManagerPage from './pages/ManageRooms.js';
+import Manager from './pages/Manager/Manager.js';
+import ManageServices from './pages/Manager/ManageServices.js'; // Import ManageServices
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
@@ -19,6 +20,12 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
+import UpcomingBookings from './pages/Staff/UpcomingBookings';
+import UpcomingServices from './pages/Staff/UpcomingServices';
+import ManageRooms from './pages/Manager/ManageRooms.js';
+import ManageSlots from './pages/Manager/ManageSlots.js'; // Import ManageSlots
+import ManageAccounts from './pages/Manager/ManageAccounts.js'; // Import ManageAccounts
+import ManageBookings from './pages/Manager/ManageBookings.js'; // Import ManageBookings
 
 function App() {
   return (
@@ -39,30 +46,74 @@ function App() {
         <Route path="/rooms/:id" element={<ManageRoom />} />
         <Route path="/login2" element={<Login />} />
 
+        {/* Đường dẫn cho Customer */}
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
-            <> <Customer /></>
+            <Customer />
           </ProtectedRoute>
         } />
 
+        {/* Đường dẫn cho Staff */}
         <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
             <StaffPage />
           </ProtectedRoute>
-        } />
+        }>
+          <Route path="upcoming-bookings" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingBookings />
+            </ProtectedRoute>
+          } />
+          <Route path="upcoming-services" element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <UpcomingServices />
+            </ProtectedRoute>
+          } />
+        </Route>
 
-
+        {/* Đường dẫn cho Admin */}
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>
             <AdminPage />
           </ProtectedRoute>
         } />
 
+        {/* Đường dẫn cho Manager */}
         <Route path="/manager" element={
           <ProtectedRoute allowedRoles={[2]}>
-            <ManagerPage />
+            <Manager />
           </ProtectedRoute>
-        } />
+        }>
+          <Route path="manageRooms" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageRooms />
+            </ProtectedRoute>
+          } />
+          {/* Đường dẫn đến ManageSlots */}
+          <Route path="manageSlots" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageSlots />
+            </ProtectedRoute>
+          } />
+          {/* Đường dẫn đến ManageServices */}
+          <Route path="manageServices" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageServices />
+            </ProtectedRoute>
+          } />
+          {/* Đường dẫn đến ManageAccounts */}
+          <Route path="manageAccounts" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageAccounts />
+            </ProtectedRoute>
+          } />
+          {/* Đường dẫn đến ManageBookings */}
+          <Route path="manageBookings" element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <ManageBookings />
+            </ProtectedRoute>
+          } />
+        </Route>
       </Routes>
     </Router>
   );
