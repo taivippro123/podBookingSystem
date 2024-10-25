@@ -19,10 +19,10 @@ import ComHeader from './components/ComHeader/ComHeader.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
 import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
-
 import UpcomingBookings from './pages/Staff/UpcomingBookings';
 import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
 import ManageRooms from './pages/Manager/ManageRooms.js';
+import sidenav from './components/sidenav/sidenav.jsx';
 
 
 function App() {
@@ -39,15 +39,10 @@ function App() {
         <Route path="/room-details/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
-        <Route path="/viewbookings/:userId" element={<ViewBooking />} />
-        <Route path="/payment" element={<ComHeader><Payment /></ComHeader>} />
-        <Route path="/rooms/:id" element={<ManageRoom />} />
+        <Route path="/viewbookings/:userId" element={ <ComHeader> <ViewBooking /> </ComHeader>} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/rooms/:id" element={<ManageRoom />} />  
         <Route path="/login2" element={<Login />} />
-        <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-        {/* <Route path="/booking-success" element={<BookingSuccess />} /> */}
-        <Route path="/staff" element={<ComHeader><Staff /></ComHeader>} />
-
-
 
         <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
@@ -55,9 +50,8 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* <Route path="/staff" element={
+        <Route path="/staff" element={
           <ProtectedRoute allowedRoles={[3]}>
-          
             <StaffPage /> {/* Hiển thị thanh menu và header cho Staff */}
           </ProtectedRoute>
         }>
@@ -73,7 +67,6 @@ function App() {
             </ProtectedRoute>
           } />
         </Route>
-
 
         <Route path="/admin" element={
           <ProtectedRoute allowedRoles={[1]}>

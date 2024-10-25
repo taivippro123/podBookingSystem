@@ -23,62 +23,23 @@ import { useNavigate, useParams } from 'react-router-dom';
 import RoomListDetail from "./RoomListDetail";
 
 export default function RoomDetail() {
+  const [userId, setUserId] = useState(null);
   const { id } = useParams(); // Get roomId from the URL
+  const [bookingType, setBookingType] = useState('slot'); // 'slot' or 'range'
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [services, setServices] = useState([]);
+  const [useUserPoints, setUseUserPoints] = useState(false);
   const [roomDetail, setRoomDetail] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [isRoomAvailable, setIsRoomAvailable] = useState(null);
+  const [userPoints, setUserPoints] = useState([]);
+  const [error, setError] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const navigate = useNavigate();
-
-  //////////////
-  const [userId, setUserId] = useState(null);
-  const [userPoints, setUserPoints] = useState([]);
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
-
-  const [selectedSlots, setSelectedSlots] = useState([]);
-  const [services, setServices] = useState([]);
-  const [isRoomAvailable, setIsRoomAvailable] = useState(null);
-  const [useUserPoints, setUseUserPoints] = useState(false);
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-
-
-  const [bookingType, setBookingType] = useState('slot'); // 'slot' or 'range'
-  const handleBookingTypeChange = (e) => {
-    setBookingType(e.target.value);
-    setSelectedSlots([]);
-  };
-  const handleDateSelection = (e) => {
-    setSelectedDate(e.target.value);
-    fetchAvailableSlots(e.target.value);
-  };
-
-
-
-  ////////////////
-
-
-  useEffect(() => {
-    // Fetch room details from the API using the id
-    fetch(`http://localhost:5000/room-details/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch room details');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setRoomDetail(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
-  }, [id]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
@@ -159,6 +120,127 @@ export default function RoomDetail() {
       setUserPoints(0); // Handle case where userId is missing
     }
   };
+
+
+  const handleBookingTypeChange = (e) => {
+    setBookingType(e.target.value);
+    setSelectedSlots([]);
+  };
+
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    let newDateRange = { ...dateRange, [name]: value };
+
+    if (name === 'start') {
+      // If changing start date, ensure end date is not before start date
+      if (newDateRange.end && new Date(value) > new Date(newDateRange.end)) {
+        newDateRange.end = value;
+      }
+    } else if (name === 'end') {
+      // If changing end date, ensure it's not before start date
+      if (newDateRange.start && new Date(value) < new Date(newDateRange.start)) {
+        return; // Don't update if end date is before start date
+      }
+    }
+
+    setDateRange(newDateRange);
+  };
+
+  const handleSlotSelection = (slot) => {
+    setSelectedSlots(prevSelectedSlots => {
+      if (prevSelectedSlots.some(s => s.slotId === slot.slotId)) {
+        return prevSelectedSlots.filter(s => s.slotId !== slot.slotId);
+      } else {
+        return [...prevSelectedSlots, slot];
+      }
+    });
+  };
+
+  const calculateDaysBetween = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
+  };
+
+  const calculateTotalPrice = () => {
+    if (!roomDetail) {
+      console.log('Room details not loaded yet');
+      return;
+    }
+
+    console.log('Room Detail:', roomDetail);
+    console.log('Booking Type:', bookingType);
+    console.log('Selected Slots:', selectedSlots);
+    console.log('Date Range:', dateRange);
+    console.log('Services:', services);
+
+    let price = 0;
+    if (bookingType === 'slot') {
+      price = selectedSlots.length * (roomDetail?.roomPricePerSlot || 0);
+      console.log('Slot Price:', price);
+    } else if (bookingType === 'range') {
+      const days = calculateDaysBetween(dateRange.start, dateRange.end);
+      console.log('Days:', days);
+      const weeksCount = Math.floor(days / 7);
+      const remainingDays = days % 7;
+
+      if (days < 7) {
+        price = days * (roomDetail?.roomPricePerDay || 0);
+      } else {
+        price = (weeksCount * (roomDetail?.roomPricePerWeek || 0)) + (remainingDays * (roomDetail?.roomPricePerDay || 0));
+      }
+      console.log('Range Price:', price);
+    }
+
+    const selectedServicePrice = services.reduce((sum, service) => {
+      console.log(`Service: ${service.serviceName}, Price: ${service.servicePrice}, Selected: ${service.selected}`);
+      return service.selected ? sum + (Number(service.servicePrice) || 0) : sum;
+    }, 0);
+    console.log('Total Service Price:', selectedServicePrice);
+
+    const discount = useUserPoints ? Math.min(userPoints, price * 0.1) : 0;
+    console.log('Discount:', discount);
+
+    const finalPrice = price + selectedServicePrice - discount;
+    console.log('Final Price:', finalPrice);
+
+    setTotalPrice(finalPrice);
+  };
+
+  useEffect(() => {
+    if (roomDetail) {
+      calculateTotalPrice();
+    }
+  }, [roomDetail, bookingType, useUserPoints, services, selectedSlots, dateRange]);
+
+  const checkRoomAvailability = () => {
+    if (dateRange.start && dateRange.end) {
+      fetch(`http://localhost:5000/available-rooms/${id}?startDate=${dateRange.start}&endDate=${dateRange.end}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Room availability:', data);
+          setIsRoomAvailable(data.available);
+        })
+        .catch((error) => console.error('Error checking room availability:', error));
+    }
+  };
+
+  useEffect(() => {
+    if (bookingType !== 'slot' && dateRange.start && dateRange.end) {
+      checkRoomAvailability();
+    }
+  }, [bookingType, dateRange]);
+
+  useEffect(() => {
+    console.log('userPoints updated:', userPoints);
+  }, [userPoints]);
+
+  const handleDateSelection = (e) => {
+    setSelectedDate(e.target.value);
+    fetchAvailableSlots(e.target.value);
+  };
+
   const handleNavigateToPayment = () => {
 
     let bookingStartDay, bookingEndDay;
@@ -211,92 +293,7 @@ export default function RoomDetail() {
     navigate('/payment', { state: paymentData });
   };
 
-  const handleSlotSelection = (slot) => {
-    setSelectedSlots(prevSelectedSlots => {
-      if (prevSelectedSlots.some(s => s.slotId === slot.slotId)) {
-        return prevSelectedSlots.filter(s => s.slotId !== slot.slotId);
-      } else {
-        return [...prevSelectedSlots, slot];
-      }
-    });
-  };
-
-  const calculateDaysBetween = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
-  };
-  
-  const calculateTotalPrice = () => {
-    if (!roomDetail) {
-      console.log('Room details not loaded yet');
-      return;
-    }
-
-    console.log('Room Detail:', roomDetail);
-    console.log('Booking Type:', bookingType);
-    console.log('Selected Slots:', selectedSlots);
-    console.log('Date Range:', dateRange);
-    console.log('Services:', services);
-
-    let price = 0;
-    if (bookingType === 'slot') {
-      price = selectedSlots.length * (roomDetail?.roomPricePerSlot || 0);
-      console.log('Slot Price:', price);
-    } else if (bookingType === 'range') {
-      const days = calculateDaysBetween(dateRange.start, dateRange.end);
-      console.log('Days:', days);
-      const weeksCount = Math.floor(days / 7);
-      const remainingDays = days % 7;
-
-      if (days < 7) {
-        price = days * (roomDetail?.roomPricePerDay || 0);
-      } else {
-        price = (weeksCount * (roomDetail?.roomPricePerWeek || 0)) + (remainingDays * (roomDetail?.roomPricePerDay || 0));
-      }
-      console.log('Range Price:', price);
-    }
-
-    const selectedServicePrice = services.reduce((sum, service) => {
-      console.log(`Service: ${service.serviceName}, Price: ${service.servicePrice}, Selected: ${service.selected}`);
-      return service.selected ? sum + (Number(service.servicePrice) || 0) : sum;
-    }, 0);
-    console.log('Total Service Price:', selectedServicePrice);
-
-    const discount = useUserPoints ? Math.min(userPoints, price * 0.1) : 0;
-    console.log('Discount:', discount);
-
-    const finalPrice = price + selectedServicePrice - discount;
-    console.log('Final Price:', finalPrice);
-
-    setTotalPrice(finalPrice);
-  };
-  useEffect(() => {
-    if (roomDetail) {
-        calculateTotalPrice();
-    }
-}, [roomDetail, bookingType, useUserPoints, services, selectedSlots, dateRange]);
-
-
-  // const handleBooking = (e) => {
-  //   e.preventDefault();
-
-  //   // Handle booking logic
-  //   const bookingDetails = {
-  //     date: selectedDate,
-  //     startTime: selectedTimeSlot.startTime,
-  //     endTime: selectedTimeSlot.endTime,
-  //     roomName: roomDetail?.name,
-  //     roomType: roomDetail?.type,
-  //     price: roomDetail?.price,
-  //     note: "Additional instructions or comments",
-  //   };
-
-  //   // Redirect to the confirmation page with booking details
-  //   navigate('/booking-confirmation', { state: bookingDetails });
-  // };
-
+  const room = roomDetail;
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === roomDetail?.images.length - 1 ? 0 : prevIndex + 1
@@ -308,43 +305,6 @@ export default function RoomDetail() {
       prevIndex === 0 ? roomDetail?.images.length - 1 : prevIndex - 1
     );
   };
-
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    let newDateRange = { ...dateRange, [name]: value };
-
-    if (name === 'start') {
-      // If changing start date, ensure end date is not before start date
-      if (newDateRange.end && new Date(value) > new Date(newDateRange.end)) {
-        newDateRange.end = value;
-      }
-    } else if (name === 'end') {
-      // If changing end date, ensure it's not before start date
-      if (newDateRange.start && new Date(value) < new Date(newDateRange.start)) {
-        return; // Don't update if end date is before start date
-      }
-    }
-
-    setDateRange(newDateRange);
-  };
-
-  const handleTimeSlotChange = (e) => {
-    setSelectedTimeSlot(e.target.value);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  const room = roomDetail;
-  console.log("room:", roomDetail);
-
-
-
 
 
   return (
@@ -550,6 +510,15 @@ export default function RoomDetail() {
               ) : (
                 <p>No available services</p>
               )}
+            </div>
+            <div>
+              {/* Display Total Price with original price and discount */}
+              <h3>
+                Total Price: <span style={{ color: 'red' }}>₫{totalPrice.toLocaleString()}</span>&nbsp;
+
+
+              </h3>
+
             </div>
             <button
               type="submit"
