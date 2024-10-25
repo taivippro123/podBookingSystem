@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Users,
   Clock,
@@ -13,111 +13,307 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
-  ThumbsUp,
-  ThumbsDown,
   Airplay,
   Music,
   Zap,
   Droplet,
 } from "lucide-react";
+import { useNavigate, useParams } from 'react-router-dom';
+
 import RoomListDetail from "./RoomListDetail";
 
-const room = {
-  id: 1,
-  name: "Sao Mai Meeting Room",
-  capacity: 10,
-  size: 30, // in square meters
-  availableFrom: "9:00 AM",
-  availableTo: "5:00 PM",
-  price: 50,
-  rating: 4.5,
-  equipment: [
-    "Projector",
-    "Whiteboard",
-    "Video conferencing system",
-    "High-speed Wifi",
-  ],
-  type: "Meeting Room",
-  description:
-    "Sao Mai Meeting Room is an ideal space for professional meetings and seminars. With a modern design and full amenities, this meeting room ensures that all your needs are met.",
-  images: [
-    "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-1.png",
-    "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-2.png",
-    "https://workflow.com.vn/wp-content/uploads/2024/05/z5404832229897_c592108c054d4505476d97f2bbd6f86e-4.png",
-  ],
-  amenities: ["Air conditioning", "Free drinking water", "Parking", "24/7 Security"],
-  reviews: [
-    {
-      id: 1,
-      user: "Nguyen Van A",
-      rating: 5,
-      comment: "Excellent meeting room, fully equipped and very professional.",
-    },
-    {
-      id: 2,
-      user: "Tran Thi B",
-      rating: 4,
-      comment:
-        "Spacious, modern equipment. Just a little lacking in sound system.",
-    },
-    {
-      id: 3,
-      user: "Le Van C",
-      rating: 5,
-      comment: "Excellent service, very helpful staff.",
-    },
-  ],
-  location: {
-    address: "123 Le Loi Street, District 1, Ho Chi Minh City",
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4946681007846!2d106.69766797486745!3d10.775777989376853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3330bcc7%3A0x4db964d76bf6e18e!2zMTIzIEzDqiBM4bujaSwgQuG6v24gTmdow6ksIFF14bqtbiAxLCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1686565833736!5m2!1svi!2s",
-  },
-  additionalInfo: {
-    lighting: "Adjustable LED lighting",
-    soundSystem: "5.1 surround sound system",
-    powerOutlets: "Multiple power outlets on tables and walls",
-    waterDispenser: "Hot and cold water dispenser",
-  },
-};
-
 export default function RoomDetail() {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [userId, setUserId] = useState(null);
+  const { id } = useParams(); // Get roomId from the URL
+  const [bookingType, setBookingType] = useState('slot'); // 'slot' or 'range'
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [services, setServices] = useState([]);
+  const [useUserPoints, setUseUserPoints] = useState(false);
+  const [roomDetail, setRoomDetail] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [isRoomAvailable, setIsRoomAvailable] = useState(null);
+  const [userPoints, setUserPoints] = useState([]);
+  const [error, setError] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+      setUserId(userData.userId);
+    }
+    console.log("Current userId in localStorage:", userData ? userData.userId : null);
+    // Fetch room details
+    fetch(`http://localhost:5000/room-details/${id}`)
+      .then((res) => res.json())
+      .then((data) => setRoomDetail(data));
+
+    // Fetch available slots
+    if (bookingType === 'slot') {
+      const today = new Date().toISOString().split('T')[0];
+      fetchAvailableSlots(today);
+    }
+
+    // Fetch services
+    fetchServices();
+
+    // Fetch user points
+    fetchUserPoints();
+  }, [id, bookingType]);
+
+  const fetchAvailableSlots = (date) => {
+    fetch(`http://localhost:5000/available-slots/${id}?date=${date}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Available slots:', data);
+        setAvailableSlots(data);
+      })
+      .catch((error) => console.error('Error fetching available slots:', error));
+  };
+
+  const fetchServices = () => {
+    fetch('http://localhost:5000/services')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Raw services data:', data);
+        const formattedServices = data.map(service => ({
+          ...service,
+          servicePrice: Number(service.servicePrice)
+        }));
+        console.log('Formatted services:', formattedServices);
+        setServices(formattedServices);
+      })
+      .catch((error) => console.error('Error fetching services:', error));
+  };
+
+  const fetchUserPoints = () => {
+    const userData = JSON.parse(localStorage.getItem('user')); // Retrieve the user data
+    const userId = userData ? userData.userId : null; // Safely access userId
+    console.log('Fetching user points for userId:', userId);
+
+    if (userId) {
+      fetch(`http://localhost:5000/user-points/${userId}`)
+        .then((res) => {
+          console.log('Response status:', res.status);
+          return res.json();
+        })
+        .then((data) => {
+          console.log('Raw user points data:', data);
+          if (data && data.userPoint !== undefined) {
+            setUserPoints(Number(data.userPoint));
+            console.log('Set user points to:', Number(data.userPoint));
+          } else {
+            console.error('Invalid user points data:', data);
+            setUserPoints(0); // Handle case where userPoint is not available
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user points:', error);
+          setUserPoints(0); // Set to 0 in case of error
+        });
+    } else {
+      console.error('No userId found in localStorage');
+      setUserPoints(0); // Handle case where userId is missing
+    }
+  };
+
+
+  const handleBookingTypeChange = (e) => {
+    setBookingType(e.target.value);
+    setSelectedSlots([]);
+  };
+
   const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    let newDateRange = { ...dateRange, [name]: value };
+
+    if (name === 'start') {
+      // If changing start date, ensure end date is not before start date
+      if (newDateRange.end && new Date(value) > new Date(newDateRange.end)) {
+        newDateRange.end = value;
+      }
+    } else if (name === 'end') {
+      // If changing end date, ensure it's not before start date
+      if (newDateRange.start && new Date(value) < new Date(newDateRange.start)) {
+        return; // Don't update if end date is before start date
+      }
+    }
+
+    setDateRange(newDateRange);
+  };
+
+  const handleSlotSelection = (slot) => {
+    setSelectedSlots(prevSelectedSlots => {
+      if (prevSelectedSlots.some(s => s.slotId === slot.slotId)) {
+        return prevSelectedSlots.filter(s => s.slotId !== slot.slotId);
+      } else {
+        return [...prevSelectedSlots, slot];
+      }
+    });
+  };
+
+  const calculateDaysBetween = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
+  };
+
+  const calculateTotalPrice = () => {
+    if (!roomDetail) {
+      console.log('Room details not loaded yet');
+      return;
+    }
+
+    console.log('Room Detail:', roomDetail);
+    console.log('Booking Type:', bookingType);
+    console.log('Selected Slots:', selectedSlots);
+    console.log('Date Range:', dateRange);
+    console.log('Services:', services);
+
+    let price = 0;
+    if (bookingType === 'slot') {
+      price = selectedSlots.length * (roomDetail?.roomPricePerSlot || 0);
+      console.log('Slot Price:', price);
+    } else if (bookingType === 'range') {
+      const days = calculateDaysBetween(dateRange.start, dateRange.end);
+      console.log('Days:', days);
+      const weeksCount = Math.floor(days / 7);
+      const remainingDays = days % 7;
+
+      if (days < 7) {
+        price = days * (roomDetail?.roomPricePerDay || 0);
+      } else {
+        price = (weeksCount * (roomDetail?.roomPricePerWeek || 0)) + (remainingDays * (roomDetail?.roomPricePerDay || 0));
+      }
+      console.log('Range Price:', price);
+    }
+
+    const selectedServicePrice = services.reduce((sum, service) => {
+      console.log(`Service: ${service.serviceName}, Price: ${service.servicePrice}, Selected: ${service.selected}`);
+      return service.selected ? sum + (Number(service.servicePrice) || 0) : sum;
+    }, 0);
+    console.log('Total Service Price:', selectedServicePrice);
+
+    const discount = useUserPoints ? Math.min(userPoints, price * 0.1) : 0;
+    console.log('Discount:', discount);
+
+    const finalPrice = price + selectedServicePrice - discount;
+    console.log('Final Price:', finalPrice);
+
+    setTotalPrice(finalPrice);
+  };
+
+  useEffect(() => {
+    if (roomDetail) {
+      calculateTotalPrice();
+    }
+  }, [roomDetail, bookingType, useUserPoints, services, selectedSlots, dateRange]);
+
+  const checkRoomAvailability = () => {
+    if (dateRange.start && dateRange.end) {
+      fetch(`http://localhost:5000/available-rooms/${id}?startDate=${dateRange.start}&endDate=${dateRange.end}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Room availability:', data);
+          setIsRoomAvailable(data.available);
+        })
+        .catch((error) => console.error('Error checking room availability:', error));
+    }
+  };
+
+  useEffect(() => {
+    if (bookingType !== 'slot' && dateRange.start && dateRange.end) {
+      checkRoomAvailability();
+    }
+  }, [bookingType, dateRange]);
+
+  useEffect(() => {
+    console.log('userPoints updated:', userPoints);
+  }, [userPoints]);
+
+  const handleDateSelection = (e) => {
     setSelectedDate(e.target.value);
+    fetchAvailableSlots(e.target.value);
   };
 
-  const handleTimeSlotChange = (e) => {
-    setSelectedTimeSlot(e.target.value);
+  const handleNavigateToPayment = () => {
+
+    let bookingStartDay, bookingEndDay;
+
+    const discount = useUserPoints ? Math.min(userPoints, totalPrice * 0.1) : 0;
+
+    if (bookingType === 'slot') {
+      if (!selectedDate) {
+        setError('Please select a date.');
+        return;
+      }
+      if (selectedSlots.length === 0) {
+        setError('Please select at least one time slot.');
+        return;
+      }
+      bookingStartDay = selectedDate;
+      bookingEndDay = selectedDate;
+
+    } else if (bookingType === 'range') {
+      if (!dateRange.start || !dateRange.end) {
+        setError('Please select both start and end dates.');
+        return;
+      }
+      if (!isRoomAvailable) {
+        setError('The room is not available for the selected dates.');
+        return;
+      }
+      bookingStartDay = dateRange.start;
+      bookingEndDay = dateRange.end;
+    }
+    setError('');
+
+    // Collect selected services
+    const selectedServices = services.filter(service => service.selected);
+
+    const paymentData = {
+      roomId: id,
+      roomName: roomDetail.roomName,
+      totalPrice,
+      bookingType,
+      selectedServices, // Pass selected services here
+      selectedSlots,
+      selectedDate,
+      bookingStartDay,
+      bookingEndDay,
+      discount,
+      userId
+    };
+
+    navigate('/payment', { state: paymentData });
   };
 
-  const handleBooking = (e) => {
-    e.preventDefault();
-    // Handle booking logic here
-    console.log("Booking submitted", { selectedDate, selectedTimeSlot });
-  };
-
+  const room = roomDetail;
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === room.images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === roomDetail?.images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? room.images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? roomDetail?.images.length - 1 : prevIndex - 1
     );
   };
 
+
   return (
-    <div className=" bg-white shadow-lg rounded-lg overflow-hidden mt-4 container mx-auto p-4">
-      <div className=" lg:flex   justify-center mb-4">
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden mt-4 container mx-auto p-4">
+      <div className="lg:flex justify-center mb-4">
         <div className="relative h-auto lg:w-1/2">
           <img
-            src={room.images[currentImageIndex]}
-            alt={`${room.name} - Image ${currentImageIndex + 1}`}
+            src={room?.images[currentImageIndex]}
+            alt={`${room?.roomName} - Image ${currentImageIndex + 1}`}
             layout="fill"
             objectFit="cover"
             className="relative h-full w-full object-cover rounded-lg "
@@ -135,71 +331,62 @@ export default function RoomDetail() {
             <ChevronRight className="w-6 h-6" />
           </button>
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {room.images.map((_, index) => (
+            {room?.images.map((_, index) => (
               <div
                 key={index}
-                className={`w-3 h-3 rounded-full ${
-                  index === currentImageIndex ? "bg-white" : "bg-gray-300"
-                }`}
+                className={`w-3 h-3 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-gray-300"
+                  }`}
               />
             ))}
           </div>
         </div>
         <div className="p-6 lg:w-1/2">
           <div className="flex justify-between items-start mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">{room.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-800">{room?.roomName}</h1>
             <div className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
               <Star className="w-4 h-4 mr-1 fill-current" />
-              <span>{room.rating}/5</span>
+              <span>/5</span>
             </div>
           </div>
-          <p className="text-gray-600 mb-6">{room.description}</p>
+          <p className="text-gray-600 mb-6">{room?.roomDetailsDescription}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="flex items-center">
               <Users className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Capacity: {room.capacity} people</span>
+              <span>Capacity:  people</span>
             </div>
             <div className="flex items-center">
               <Maximize className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Size: {room.size} m²</span>
+              <span>Size:  m²</span>
             </div>
             <div className="flex items-center">
               <Clock className="w-6 h-6 text-gray-400 mr-2" />
               <span>
-                Available hours: {room.availableFrom} - {room.availableTo}
+                Available hours:
               </span>
             </div>
             <div className="flex items-center">
               <DollarSign className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Price: {room.price}k/hour</span>
+              <span>Price: {room?.roomPricePerSlot} VND/Slot</span>
             </div>
           </div>
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">Equipment</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {room.equipment.map((item, index) => (
+            {/* <div className="grid grid-cols-2 gap-2">
+              {room?.equipment.map((item, index) => (
                 <div key={index} className="flex items-center">
-                  {item.includes("Wifi") && (
-                    <Wifi className="w-5 h-5 text-blue-500 mr-2" />
-                  )}
-                  {item.includes("Projector") && (
-                    <Monitor className="w-5 h-5 text-blue-500 mr-2" />
-                  )}
-                  {item.includes("Video conferencing") && (
-                    <Video className="w-5 h-5 text-blue-500 mr-2" />
-                  )}
-                  {item.includes("Whiteboard") && (
-                    <Coffee className="w-5 h-5 text-blue-500 mr-2" />
-                  )}
+                  {item.includes("Wifi") && <Wifi className="w-5 h-5 text-blue-500 mr-2" />}
+                  {item.includes("Projector") && <Monitor className="w-5 h-5 text-blue-500 mr-2" />}
+                  {item.includes("Video conferencing") && <Video className="w-5 h-5 text-blue-500 mr-2" />}
+                  {item.includes("Whiteboard") && <Coffee className="w-5 h-5 text-blue-500 mr-2" />}
                   <span>{item}</span>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">Additional Amenities</h2>
-            <div className="flex flex-wrap gap-2">
-              {room.amenities.map((amenity, index) => (
+            {/* <div className="flex flex-wrap gap-2">
+              {room?.amenities.map((amenity, index) => (
                 <span
                   key={index}
                   className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
@@ -207,62 +394,131 @@ export default function RoomDetail() {
                   {amenity}
                 </span>
               ))}
-            </div>
+            </div> */}
           </div>
-          <form
-            onSubmit={handleBooking}
-            className="bg-gray-50 p-6 rounded-lg mb-6"
-          >
+          <form onSubmit={handleNavigateToPayment} className="bg-gray-50 p-6 rounded-lg mb-6">
             <h2 className="text-xl font-semibold mb-4">Book the Room</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  value="slot"
+                  checked={bookingType === 'slot'}
+                  onChange={handleBookingTypeChange}
+                />{' '}
+                Book by Slot
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="range"
+                  checked={bookingType === 'range'}
+                  onChange={handleBookingTypeChange}
+                />{' '}
+                Book by Date Range
+              </label>
+            </div>
+
+            {/* Display error message */}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            {/* Booking by Slot */}
+            {bookingType === 'slot' && (
               <div>
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Select Date
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <h3>Available Slots</h3>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateSelection}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+                {availableSlots.length > 0 ? (
+                  <ul>
+                    {availableSlots.map((slot) => (
+                      <li key={slot.slotId}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={selectedSlots.some(s => s.slotId === slot.slotId)}
+                            onChange={() => handleSlotSelection(slot)}
+                          />
+                          {slot.slotStartTime} - {slot.slotEndTime}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No available slots</p>
+                )}
+              </div>
+            )}
+
+            {/* Booking by Date Range */}
+            {bookingType === 'range' && (
+              <div>
+                <h3>Select Date Range</h3>
+                <label>
+                  Start Date:
                   <input
                     type="date"
-                    id="date"
-                    name="date"
-                    value={selectedDate}
+                    name="start"
+                    value={dateRange.start}
                     onChange={handleDateChange}
-                    className="pl-10 w-full p-2 border rounded-md"
-                    required
+                    min={new Date().toISOString().split('T')[0]}
                   />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="time-slot"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Select Time Slot
                 </label>
-                <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <select
-                    id="time-slot"
-                    name="time-slot"
-                    value={selectedTimeSlot}
-                    onChange={handleTimeSlotChange}
-                    className="pl-10 w-full p-2 border rounded-md appearance-none"
-                    required
-                  >
-                    <option value="">Select time slot</option>
-                    <option value="09:00-10:00">09:00 - 10:00</option>
-                    <option value="10:00-11:00">10:00 - 11:00</option>
-                    <option value="11:00-12:00">11:00 - 12:00</option>
-                    <option value="13:00-14:00">13:00 - 14:00</option>
-                    <option value="14:00-15:00">14:00 - 15:00</option>
-                    <option value="15:00-16:00">15:00 - 16:00</option>
-                    <option value="16:00-17:00">16:00 - 17:00</option>
-                  </select>
-                </div>
+                <label>
+                  End Date:
+                  <input
+                    type="date"
+                    name="end"
+                    value={dateRange.end}
+                    onChange={handleDateChange}
+                    min={dateRange.start || new Date().toISOString().split('T')[0]}
+                  />
+                </label>
+                {isRoomAvailable !== null && (
+                  <p>
+                    {isRoomAvailable
+                      ? "Room is available for the selected dates."
+                      : "Room is not available for the selected dates. Please choose different dates."}
+                  </p>
+                )}
               </div>
+            )}
+
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Available Services</h2>
+              {services.length > 0 ? (
+                services.map((service) => (
+                  <label key={service.serviceId}>
+                    <input
+                      type="checkbox"
+                      checked={service.selected}
+                      onChange={(e) => {
+                        const updatedServices = services.map((s) =>
+                          s.serviceId === service.serviceId
+                            ? { ...s, selected: e.target.checked }
+                            : s
+                        );
+                        setServices(updatedServices);
+                      }}
+                    />
+                    {service.serviceName} ({service.servicePrice} VND)
+                  </label>
+                ))
+              ) : (
+                <p>No available services</p>
+              )}
+            </div>
+            <div>
+              {/* Display Total Price with original price and discount */}
+              <h3>
+                Total Price: <span style={{ color: 'red' }}>₫{totalPrice.toLocaleString()}</span>&nbsp;
+
+
+              </h3>
+
             </div>
             <button
               type="submit"
@@ -271,72 +527,74 @@ export default function RoomDetail() {
               Book the Room
             </button>
           </form>
-
-        
         </div>
       </div>
-        {/* New sections start here */}
-        <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Additional Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <Airplay className="w-5 h-5 text-gray-500 mr-2" />
-                <span>Lighting: {room.additionalInfo.lighting}</span>
-              </div>
-              <div className="flex items-center">
-                <Music className="w-5 h-5 text-gray-500 mr-2" />
-                <span>Sound System: {room.additionalInfo.soundSystem}</span>
-              </div>
-              <div className="flex items-center">
-                <Zap className="w-5 h-5 text-gray-500 mr-2" />
-                <span>Power Outlets: {room.additionalInfo.powerOutlets}</span>
-              </div>
-              <div className="flex items-center">
-                <Droplet className="w-5 h-5 text-gray-500 mr-2" />
-                <span>Water Dispenser: {room.additionalInfo.waterDispenser}</span>
-              </div>
-            </div>
-          </div>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Reviews</h2>
-            {room.reviews.map((review) => (
-              <div key={review.id} className="bg-gray-50 p-4 rounded-lg mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold">{review.user}</span>
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="ml-1">{review.rating}/5</span>
-                  </div>
+      <h3>Additional Information Section</h3>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Additional Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center">
+            <Airplay className="w-5 h-5 text-gray-500 mr-2" />
+            <span>Lighting: </span>
+          </div>
+          <div className="flex items-center">
+            <Music className="w-5 h-5 text-gray-500 mr-2" />
+            <span>Sound System: </span>
+          </div>
+          <div className="flex items-center">
+            <Zap className="w-5 h-5 text-gray-500 mr-2" />
+            <span>Power Outlets: </span>
+          </div>
+          <div className="flex items-center">
+            <Droplet className="w-5 h-5 text-gray-500 mr-2" />
+            <span>Water Dispenser: </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Reviews</h2>
+        {/* {room?.reviews.map((review) => (
+            <div key={review.id} className="bg-gray-50 p-4 rounded-lg mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-semibold">{review.user}</span>
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="ml-1">{review.rating}/5</span>
                 </div>
-                <p className="text-gray-600">{review.comment}</p>
               </div>
-            ))}
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Location</h2>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <MapPin className="w-5 h-5 text-gray-500 mr-2" />
-                <span>{room.location.address}</span>
-              </div>
-              <div className="aspect-w-16 aspect-h-9">
-                <iframe
-                  src={room.location.mapUrl}
-                  width="600"
-                  height="450"
-                  style={{ border: 0 }}
-                  allowFullScreen={false}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full rounded-lg"
-                ></iframe>
-              </div>
+              <p className="text-gray-600">{review.comment}</p>
             </div>
-          </div>
+          ))} */}
 
-          <RoomListDetail/>
+      </div>
+
+      {/* Location Section */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Location</h2>
+        {/* <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <MapPin className="w-5 h-5 text-gray-500 mr-2" />
+              <span>{room?.location?.address}</span>
+            </div>
+            <div className="aspect-w-16 aspect-h-9">
+              <iframe
+                src={room?.location?.mapUrl}
+                width="600"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full rounded-lg"
+              ></iframe>
+            </div>
+          </div> */}
+      </div>
+
+      <RoomListDetail />
     </div>
   );
 }

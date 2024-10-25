@@ -118,7 +118,7 @@ export default function Home() {
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Book a Room</h3>
+                  <h3 className="text-xl font-semibold mb-2">Book A Room</h3>
                   <p className="text-gray-600 mb-4">
                     Browse our selection of meeting rooms and find the perfect
                     space for your needs.
@@ -140,17 +140,17 @@ export default function Home() {
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">
-                    View Your Bookings
+                  About Us
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Check your upcoming reservations and manage your bookings.
+                  We are a team of dedicated professionals providing the best technological solutions for your business.
                   </p>
                   <Link
-                    to="/bookings"
+                    to="/about"
                     className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
                   >
                     <UsersIcon className="mr-2" />
-                    My Bookings
+                    About Us
                   </Link>
                 </div>
               </div>

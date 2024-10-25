@@ -22,6 +22,8 @@ import RoomDetail from './pages/RoomDetail/RoomDetail.jsx';
 import UpcomingBookings from './pages/Staff/UpcomingBookings';
 import UpcomingServices from './pages/Staff/UpcomingServices'; // Đường dẫn tới UpcomingServices
 import ManageRooms from './pages/Manager/ManageRooms.js';
+import sidenav from './components/sidenav/sidenav.jsx';
+
 
 function App() {
   return (
@@ -34,12 +36,12 @@ function App() {
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
-        <Route path="/room-detail/:id" element={<RoomDetail />} />
+        <Route path="/room-details/:id" element={<RoomDetail />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
-        <Route path="/viewbookings/:userId" element={<ViewBooking />} />
+        <Route path="/viewbookings/:userId" element={ <ComHeader> <ViewBooking /> </ComHeader>} />
         <Route path="/payment" element={<Payment />} />
-        <Route path="/rooms/:id" element={<ManageRoom />} />
+        <Route path="/rooms/:id" element={<ManageRoom />} />  
         <Route path="/login2" element={<Login />} />
 
         <Route path="/customer" element={

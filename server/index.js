@@ -1183,7 +1183,7 @@ app.post("/payment", async (req, res) => {
         bookingStartDay,  
         bookingEndDay,    
         discount,
-        redirecturl: "http://localhost:3000/viewbookings/:userId"
+        redirecturl: `http://localhost:3000/viewbookings/${userId}`
     };
 
     // Handle items for slot or date range bookings
@@ -1217,7 +1217,8 @@ app.post("/payment", async (req, res) => {
         amount: totalPrice,
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
-        callback_url: "https://ffc3-2402-800-63af-eda1-b5f8-5aae-5950-dd62.ngrok-free.app/callback",
+
+        callback_url: "https://0956-113-161-52-4.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1299,7 +1300,7 @@ app.post("/callback", async (req, res) => {
                     // Insert into Booking table for slot booking
                     const bookingQuery = `
                         INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                        VALUES (?, ?, ?, ?, ?, 'Confirmed')
+                        VALUES (?, ?, ?, ?, ?, 'Using')
                     `;
                     const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
@@ -1315,7 +1316,7 @@ app.post("/callback", async (req, res) => {
                     // Insert into Booking table for date booking
                     const bookingQuery = `
                         INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                        VALUES (?, ?, ?, ?, ?, 'Confirmed')
+                        VALUES (?, ?, ?, ?, ?, 'Using')
                     `;
                     const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
