@@ -12,6 +12,9 @@ import { Carousel } from "antd";
 import { Link } from "react-router-dom";
 import Home2 from "./Home2";
 import WorkspaceComparison from "./WorkspaceComparison";
+import fb from '../../assets/fb.png';
+import home1 from '../../assets/home1.jpg';
+
 
 const CARD_WIDTH = 280; // Fixed width for each card
 const CARD_GAP = 16; // Gap between cards
@@ -19,7 +22,7 @@ const CARD_GAP = 16; // Gap between cards
 export default function Home() {
   const [dataImg, setDataImg] = useState([
     {
-      img: "https://www.kientrucdoorway.com.vn/wp-content/uploads/2019/11/thiet-ke-noi-that-phong-hop.jpg",
+      img: "https://www.seminaris.de/wp-content/themes/yootheme/cache/b7/seminaris-hotel-bad-honnef-meeting-room-idea-space-two-web-b7e840af.webp",
     },
     {
       img: "https://kientrucanviet.com/wp-content/uploads/2020/12/thi%E1%BA%BFt-k%E1%BA%BF-n%E1%BB%99i-th%E1%BA%A5t-ph%C3%B2ng-h%E1%BB%8Dp-xanh.jpg",
@@ -113,7 +116,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8 mt-4">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src="https://thietkenoithatatz.com/wp-content/uploads/2022/04/mau-thiet-ke-phong-hop-dep.jpg"
+                  src={home1}
                   alt="Conference Room"
                   className="w-full h-48 object-cover"
                 />
@@ -134,7 +137,7 @@ export default function Home() {
               </div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src="https://thietkevanphong.pro/wp-content/uploads/2020/02/vtc-phong-hop-lon.jpg"
+                  src="https://www.helloworldsaigon.com/wp-content/uploads/2021/01/Compressed-Private-Office-6-paxes4.jpg"
                   alt="Team Meeting"
                   className="w-full h-48 object-cover"
                 />
@@ -156,7 +159,7 @@ export default function Home() {
               </div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src="https://www.kientrucdoorway.com.vn/wp-content/uploads/2019/11/thiet-ke-noi-that-phong-hop.jpg"
+                  src={fb}
                   alt="Office Space"
                   className="w-full h-48 object-cover"
                 />
