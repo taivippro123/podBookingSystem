@@ -19,8 +19,8 @@ const ViewPopularRooms = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost:5000/admin/popular-rooms');
-            const formattedData = response.data.map(({ roomId, bookingCount }) => ({
-                roomId,
+            const formattedData = response.data.map(({ roomName, bookingCount }) => ({
+                roomName,
                 BookingCount: bookingCount,
             }));
             setData(formattedData);
@@ -45,7 +45,7 @@ const ViewPopularRooms = () => {
             <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="roomId" />
+                    <XAxis dataKey="roomName" />
                     <YAxis />
                     <Tooltip />
                     <Legend />

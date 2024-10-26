@@ -19,8 +19,8 @@ const ViewPopularServices = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost:5000/admin/popular-services');
-            const formattedData = response.data.map(({ serviceId, serviceCount }) => ({
-                serviceId,
+            const formattedData = response.data.map(({ serviceName, serviceCount }) => ({
+                serviceName,
                 ServiceCount: Math.max(0, serviceCount), // Ensure no negative values
             }));
             setData(formattedData);
@@ -45,7 +45,7 @@ const ViewPopularServices = () => {
             <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="serviceId" />
+                    <XAxis dataKey="serviceName" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
