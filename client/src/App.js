@@ -34,6 +34,7 @@ import ViewTransactions from './pages/Admin/ViewTransactions/ViewTransactions.js
 import ViewNumberAccounts from './pages/Admin/ViewNumberAccounts/ViewNumberAccounts.js';
 import ViewPopularRooms from './pages/Admin/ViewPopularRooms/ViewPopularRooms.js';
 import ViewPopularServices from './pages/Admin/ViewPopularServices/ViewPopularServices.js';
+import ViewFeedbacks from './pages/Admin/ViewFeedbacks/ViewFeedbacks.js';
 
 function App() {
   return (
@@ -46,7 +47,6 @@ function App() {
         <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
         <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
         <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
-        {/* <Route path="/room-details/:id" element={<RoomDetail />} /> */}
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/viewbookings/:userId" element={ <ComHeader> <ViewBooking /> </ComHeader>} />
@@ -66,8 +66,6 @@ function App() {
             </ProtectedRoute>
           } />
         </Route>
-
-
 
         {/* Đường dẫn cho Staff */}
         <Route path="/staff" element={
@@ -117,7 +115,12 @@ function App() {
             <ProtectedRoute allowedRoles={[1]}>
               <ViewPopularServices />
             </ProtectedRoute>
-          } /> {/* Đường dẫn mới cho ViewPopularServices */}
+          } />
+          <Route path="feedback" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewFeedbacks />
+            </ProtectedRoute>
+          } /> {/* Đường dẫn mới cho ViewFeedbacks */}
         </Route>
 
         {/* Đường dẫn cho Manager */}

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { FaClock, FaUserShield, FaClipboardList, FaBars } from 'react-icons/fa';
+import { FaClock, FaUserShield, FaClipboardList, FaBars, FaMoneyBillWave } from 'react-icons/fa';
 import { GrTask } from 'react-icons/gr';
 import { LuDoorOpen } from 'react-icons/lu';
+import { BsPeopleFill } from 'react-icons/bs';
 import styles from './Admin.module.css';
 import LogoutButton from '../../../components/LogoutButton/LogoutButton';
-import { FaMoneyBillWave } from "react-icons/fa";
-import { BsPeopleFill } from "react-icons/bs";
 
 const Admin = () => {
     const [isMenuVisible, setIsMenuVisible] = useState(true);
@@ -53,6 +52,12 @@ const Admin = () => {
                         <Link to="/admin/popular-services" className={styles['Admin-navLink']}>
                             <GrTask className={styles['Admin-icon']} />
                             <span>Popular Services</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/admin/feedback" className={styles['Admin-navLink']}>
+                            <FaClipboardList className={styles['Admin-icon']} />
+                            <span>View Feedbacks</span>
                         </Link>
                     </li>
                 </ul>

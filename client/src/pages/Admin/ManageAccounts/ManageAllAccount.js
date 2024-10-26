@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEdit, FaTrash } from 'react-icons/fa'; // Import biểu tượng
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './ManageAllAccounts.module.css';
 
 const ManageAllAccounts = () => {
@@ -8,10 +8,13 @@ const ManageAllAccounts = () => {
     const [editedAccountId, setEditedAccountId] = useState(null);
     const [userName, setUserName] = useState('');
     const [userEmail, setUserEmail] = useState('');
-    const [userPassword, setUserPassword] = useState(''); // Mới thêm
+    const [userPassword, setUserPassword] = useState('');
     const [userPhone, setUserPhone] = useState('');
     const [userPoint, setUserPoint] = useState('');
     const [userRole, setUserRole] = useState('');
+    
+    const [currentPage, setCurrentPage] = useState(1);
+    const accountsPerPage = 10; // Số tài khoản mỗi trang
 
     useEffect(() => {
         fetchAccounts();
@@ -30,7 +33,7 @@ const ManageAllAccounts = () => {
         setEditedAccountId(account.userId);
         setUserName(account.userName);
         setUserEmail(account.userEmail);
-        setUserPassword(''); // Đặt password rỗng khi chỉnh sửa
+        setUserPassword('');
         setUserPhone(account.userPhone);
         setUserPoint(account.userPoint);
         setUserRole(account.userRole);
@@ -41,12 +44,12 @@ const ManageAllAccounts = () => {
             await axios.put(`http://localhost:5000/admin/accounts/${editedAccountId}`, {
                 userName,
                 userEmail,
-                userPassword, // Gửi password khi cập nhật
+                userPassword,
                 userPhone,
                 userPoint,
                 userRole,
             });
-            fetchAccounts(); // Refresh the account list
+            fetchAccounts();
             resetForm();
         } catch (error) {
             console.error('Error updating account:', error);
@@ -57,7 +60,7 @@ const ManageAllAccounts = () => {
         if (window.confirm('Are you sure you want to delete this account?')) {
             try {
                 await axios.delete(`http://localhost:5000/admin/accounts/${userId}`);
-                fetchAccounts(); // Refresh the account list
+                fetchAccounts();
             } catch (error) {
                 console.error('Error deleting account:', error);
             }
@@ -68,13 +71,12 @@ const ManageAllAccounts = () => {
         setEditedAccountId(null);
         setUserName('');
         setUserEmail('');
-        setUserPassword(''); // Reset password
+        setUserPassword('');
         setUserPhone('');
         setUserPoint('');
         setUserRole('');
     };
 
-    // Hàm chuyển đổi role ID thành tên vai trò
     const getRoleName = (roleId) => {
         switch (roleId) {
             case 1:
@@ -89,6 +91,15 @@ const ManageAllAccounts = () => {
                 return 'Unknown';
         }
     };
+
+    // Tính toán số trang
+    const indexOfLastAccount = currentPage * accountsPerPage;
+    const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
+    const currentAccounts = accounts.slice(indexOfFirstAccount, indexOfLastAccount);
+    const totalPages = Math.ceil(accounts.length / accountsPerPage);
+
+    // Chuyển đổi trang
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <div className={styles.container}>
@@ -106,21 +117,21 @@ const ManageAllAccounts = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {accounts.length > 0 ? (
-                        accounts.map((account) => (
+                    {currentAccounts.length > 0 ? (
+                        currentAccounts.map((account) => (
                             <tr key={account.userId}>
                                 <td>{account.userId}</td>
                                 <td>{account.userName}</td>
                                 <td>{account.userEmail}</td>
                                 <td>{account.userPhone}</td>
                                 <td>{account.userPoint}</td>
-                                <td>{getRoleName(account.userRole)}</td> {/* Sử dụng hàm getRoleName */}
+                                <td>{getRoleName(account.userRole)}</td>
                                 <td>
                                     <button onClick={() => handleEditClick(account)} title="Edit">
-                                        <FaEdit color="black" size={30} />
+                                        <FaEdit color="black" size={20} />
                                     </button>
                                     <button onClick={() => handleDelete(account.userId)} title="Delete">
-                                        <FaTrash color="red" size={30} />
+                                        <FaTrash color="red" size={20} />
                                     </button>
                                 </td>
                             </tr>
@@ -132,7 +143,23 @@ const ManageAllAccounts = () => {
                     )}
                 </tbody>
             </table>
-            {/* Modal for editing account */}
+            {/* Phân trang */}
+            <div className={styles.pagination}>
+                <button
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    &lt;
+                </button>
+                <span>{currentPage} / {totalPages}</span>
+                <button
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    &gt;
+                </button>
+            </div>
+            
             {editedAccountId && (
                 <div className={styles.modal}>
                     <div className={styles['modal-content']}>
