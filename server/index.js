@@ -999,7 +999,7 @@ app.get('/admin/number-accounts', (req, res) => {
         SELECT 
             (SELECT COUNT(*) FROM User WHERE userRole = 4) AS User,   -- User role 4
             (SELECT COUNT(*) FROM User WHERE userRole = 3) AS Staff,  -- User role 3
-            (SELECT COUNT(*) FROM User WHERE userRole = 2) AS Manage, -- User role 2
+            (SELECT COUNT(*) FROM User WHERE userRole = 2) AS Manager, -- User role 2
             (SELECT COUNT(*) FROM User WHERE userRole = 1) AS Admin  -- User role 1
     `;
 
@@ -1090,9 +1090,10 @@ app.get('/admin/transactions', (req, res) => {
 //----------------------POPULAR ROOMS------------------------
 app.get('/admin/popular-rooms', (req, res) => {
     const sql = `
-        SELECT roomId, COUNT(bookingId) AS bookingCount
+        SELECT Room.roomName, COUNT(Booking.bookingId) AS bookingCount
         FROM Booking
-        GROUP BY roomId
+        JOIN Room ON Booking.roomId = Room.roomId
+        GROUP BY Room.roomName
         ORDER BY bookingCount DESC
         LIMIT 3
     `;
@@ -1104,12 +1105,14 @@ app.get('/admin/popular-rooms', (req, res) => {
     });
 });
 
+
 //----------------------POPULAR SERVICES------------------------
 app.get('/admin/popular-services', (req, res) => {
     const sql = `
-        SELECT serviceId, COUNT(bookingServiceId) AS serviceCount
+        SELECT Services.serviceName, COUNT(BookingServices.bookingServiceId) AS serviceCount
         FROM BookingServices
-        GROUP BY serviceId
+        JOIN Services ON BookingServices.serviceId = Services.serviceId
+        GROUP BY Services.serviceName
         ORDER BY serviceCount DESC
         LIMIT 3
     `;
@@ -1218,7 +1221,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://ea78-2402-800-63af-eda1-3546-57d0-ea37-13fe.ngrok-free.app/callback",
+        callback_url: "https://e01e-118-69-70-166.ngrok-free.app/callback",
         selectedDate
     };
 
