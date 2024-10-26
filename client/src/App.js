@@ -40,19 +40,20 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<ComHeader><Home /></ComHeader>} />
-        <Route path="/login" element={<ComHeader><LoginPage /></ComHeader>} />
-        <Route path="/rooms" element={<ComHeader><ListRoom /></ComHeader>} />
+        <Route path="/" element={<ComHeaderCostomer><Home /></ComHeaderCostomer>} />
+        <Route path="/login" element={<ComHeaderCostomer><LoginPage /></ComHeaderCostomer>} />
+        <Route path="/rooms" element={<ComHeaderCostomer><ListRoom /></ComHeaderCostomer>} />
         <Route path="/room/:id" element={<ComHeaderCostomer><RoomDetail /></ComHeaderCostomer>} />
-        <Route path="/signup" element={<ComHeader><Signup /></ComHeader>} />
-        <Route path="/about" element={<ComHeader><AboutUs /></ComHeader>} />
-        <Route path="/contact" element={<ComHeader><Contact /></ComHeader>} />
+        <Route path="/signup" element={<ComHeaderCostomer><Signup /></ComHeaderCostomer>} />
+        <Route path="/about" element={<ComHeaderCostomer><AboutUs /></ComHeaderCostomer>} />
+        <Route path="/contact" element={<ComHeaderCostomer><Contact /></ComHeaderCostomer>} />
+        {/* <Route path="/room-details/:id" element={<RoomDetail />} /> */}
         <Route path="/booking/:id" element={<Booking />} />
-        <Route path="/profile/:userId" element={<Profile />} />
-        <Route path="/viewbookings/:userId" element={ <ComHeader> <ViewBooking /> </ComHeader>} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/profile/:userId" element={<ComHeaderCostomer><Profile /></ComHeaderCostomer>} />
+        <Route path="/viewbookings/:userId" element={ <ComHeaderCostomer> <ViewBooking /> </ComHeaderCostomer>} />
+        <Route path="/payment" element={ <ComHeaderCostomer> <Payment /> </ComHeaderCostomer>} />
         <Route path="/rooms/:id" element={<ManageRoom />} />  
-        <Route path="/login2" element={<Login />} />
+        <Route path="/login2" element={ <ComHeaderCostomer> <Login /> </ComHeaderCostomer>} />
 
          {/* Customer Protected Routes */}
          <Route path="/customer" element={
