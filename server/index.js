@@ -1218,7 +1218,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://0956-113-161-52-4.ngrok-free.app/callback",
+        callback_url: "https://ea78-2402-800-63af-eda1-3546-57d0-ea37-13fe.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1300,7 +1300,7 @@ app.post("/callback", async (req, res) => {
                     // Insert into Booking table for slot booking
                     const bookingQuery = `
                         INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                        VALUES (?, ?, ?, ?, ?, 'Using')
+                        VALUES (?, ?, ?, ?, ?, 'Upcoming')
                     `;
                     const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
@@ -1316,7 +1316,7 @@ app.post("/callback", async (req, res) => {
                     // Insert into Booking table for date booking
                     const bookingQuery = `
                         INSERT INTO Booking (userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus)
-                        VALUES (?, ?, ?, ?, ?, 'Using')
+                        VALUES (?, ?, ?, ?, ?, 'Upcoming')
                     `;
                     const [bookingResult] = await db.promise().query(bookingQuery, [userId, roomId, bookingStartDay, bookingEndDay, totalPrice]);
 
@@ -1441,7 +1441,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
             SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
-            WHERE b.userId = ? AND (b.bookingStatus = 'Completed' OR b.bookingStatus = 'Cancelled')
+            WHERE b.userId = ? AND (b.bookingStatus = 'Completed' OR b.bookingStatus = 'Cancelled' OR b.bookingStatus = 'Refunded')
         `;
         const [historyBookings] = await db.promise().query(historyQuery, [userId]);
 
@@ -1450,7 +1450,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
             SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
-            WHERE b.userId = ? AND (b.bookingStatus = 'Pending' OR b.bookingStatus = 'Confirmed' OR b.bookingStatus = 'Using')
+            WHERE b.userId = ? AND (b.bookingStatus = 'Upcoming' OR b.bookingStatus = 'Using')
         `;
         const [upcomingBookings] = await db.promise().query(upcomingQuery, [userId]);
 

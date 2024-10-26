@@ -30,15 +30,15 @@ const UpcomingServices = () => {
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
+    
+        // Filter services by exact match
         const filtered = upcomingServices.filter((service) => {
-            return (
-                service.bookingId.toString().includes(value) ||
-                service.serviceId.toString().includes(value) ||
-                service.serviceName.toLowerCase().includes(value.toLowerCase())
-            );
+            return service.bookingId.toString() === value;
         });
+    
         setFilteredServices(filtered);
     };
+    
 
     if (loading) {
         return <div className={styles.loading}>Loading...</div>;
@@ -56,7 +56,7 @@ const UpcomingServices = () => {
                     type="text"
                     value={searchTerm}
                     onChange={handleSearch} // Gọi hàm tìm kiếm khi có sự thay đổi
-                    placeholder="Search by Booking ID, Service ID, or Service Name"
+                    placeholder="Search by Booking ID"
                     className={styles.searchInput}
                 />
             </div>
