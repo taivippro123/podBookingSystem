@@ -12,9 +12,10 @@ const ManageAllAccounts = () => {
     const [userPhone, setUserPhone] = useState('');
     const [userPoint, setUserPoint] = useState('');
     const [userRole, setUserRole] = useState('');
-    
     const [currentPage, setCurrentPage] = useState(1);
-    const accountsPerPage = 10; // Số tài khoản mỗi trang
+    const accountsPerPage = 10;
+    const [sortConfig, setSortConfig] = useState({ key: 'userId', direction: 'ascending' });
+    const [selectedRole, setSelectedRole] = useState('All');
 
     useEffect(() => {
         fetchAccounts();
@@ -92,27 +93,60 @@ const ManageAllAccounts = () => {
         }
     };
 
-    // Tính toán số trang
+    const filteredAccounts = selectedRole === 'All' ? accounts : accounts.filter(account => getRoleName(account.userRole) === selectedRole);
+    const sortedAccounts = [...filteredAccounts].sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+    });
+
     const indexOfLastAccount = currentPage * accountsPerPage;
     const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
-    const currentAccounts = accounts.slice(indexOfFirstAccount, indexOfLastAccount);
-    const totalPages = Math.ceil(accounts.length / accountsPerPage);
+    const currentAccounts = sortedAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+    const totalPages = Math.ceil(sortedAccounts.length / accountsPerPage);
 
-    // Chuyển đổi trang
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+
+    const requestSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const handleRoleSelect = (role) => {
+        setSelectedRole(role);
+        setCurrentPage(1);
+    };
 
     return (
         <div className={styles.container}>
             <h2>Manage Accounts</h2>
+            <div className={styles.roleButtons}>
+                {['Admin', 'Manager', 'Staff', 'User', 'All'].map(role => (
+                    <button
+                        key={role}
+                        onClick={() => handleRoleSelect(role)}
+                        className={`${styles.button} ${selectedRole === role ? styles.selected : ''}`}
+                    >
+                        {role}
+                    </button>
+                ))}
+            </div>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Points</th>
-                        <th>Role</th>
+                        <th onClick={() => requestSort('userId')}>User ID</th>
+                        <th onClick={() => requestSort('userName')}>Name</th>
+                        <th onClick={() => requestSort('userEmail')}>Email</th>
+                        <th onClick={() => requestSort('userPhone')}>Phone</th>
+                        <th onClick={() => requestSort('userPoint')}>Points</th>
+                        <th onClick={() => requestSort('userRole')}>Role</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -143,23 +177,30 @@ const ManageAllAccounts = () => {
                     )}
                 </tbody>
             </table>
-            {/* Phân trang */}
             <div className={styles.pagination}>
                 <button
-                    onClick={() => paginate(currentPage - 1)}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
                     &lt;
                 </button>
-                <span>{currentPage} / {totalPages}</span>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={currentPage === index + 1 ? styles.active : ''}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
                 <button
-                    onClick={() => paginate(currentPage + 1)}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
                     &gt;
                 </button>
             </div>
-            
+
             {editedAccountId && (
                 <div className={styles.modal}>
                     <div className={styles['modal-content']}>
@@ -175,7 +216,12 @@ const ManageAllAccounts = () => {
                         <label>Points:</label>
                         <input value={userPoint} onChange={(e) => setUserPoint(e.target.value)} />
                         <label>Role:</label>
-                        <input value={userRole} onChange={(e) => setUserRole(e.target.value)} />
+                        <select value={userRole} onChange={(e) => setUserRole(e.target.value)}>
+                            <option value="1">Admin</option>
+                            <option value="2">Manager</option>
+                            <option value="3">Staff</option>
+                            <option value="4">User</option>
+                        </select>
                         <button onClick={handleUpdate}>Update</button>
                         <button onClick={resetForm}>Cancel</button>
                     </div>

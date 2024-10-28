@@ -38,6 +38,7 @@ body {
     height: 100%; /* Đảm bảo cột kéo dài hết trang */
     z-index: 20; /* Đặt z-index cao hơn header */
     transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển động */
+    
 }
 
 .Admin-hidden {
@@ -138,4 +139,10 @@ h1 {
 
 .Admin-navLink:hover {
     background-color: #e0e0e0; /* Màu xám nhạt khi hover */
+}
+
+/* Thêm màu nền khi nút đang được chọn */
+.Admin-navLink-active {
+    background-color: #e0e0e0; /* Màu xám nhạt */
+    color: black; /* Màu chữ */
 }

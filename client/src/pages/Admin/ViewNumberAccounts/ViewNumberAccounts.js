@@ -42,7 +42,7 @@ const ViewNumberAccounts = () => {
     return (
         <div>
             <h2>Total Accounts</h2>
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="type" />

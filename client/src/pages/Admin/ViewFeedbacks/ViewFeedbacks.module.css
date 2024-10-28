@@ -1,65 +1,40 @@
-/* Container for the feedback list */
-.feedback-container {
-    display: flex; /* Use flexbox for centering */
-    justify-content: center; /* Center horizontally */
-    padding: 100px; /* Add some padding */
-    margin-top: 10px;
-    margin-bottom: 50px;
-    flex-direction: column; /* Arrange children vertically */
-    align-items: center; /* Center items horizontally */
-}
-
-/* Title styling */
 .feedback-title {
-    text-align: center; /* Center the title text */
-    color: #333; /* Set color for the title */
-    margin-bottom: 10px; /* Space below the title */
+    font-size: 24px; /* Kích thước tiêu đề */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+    color: #333; /* Màu chữ tối */
 }
 
-/* Table styling */
 .feedback-table {
-    width: 100%; /* Full width */
-    max-width: 1300px; /* Increase maximum width for the table */
-    border-collapse: collapse; /* Collapse borders */
-    border: 2px solid #333; /* Add border for the entire table */
+    width: 100%; /* Chiều rộng toàn bộ */
+    border-collapse: collapse; /* Gộp viền bảng */
+    border-radius: 8px; /* Bo góc cho bảng */
+    overflow: hidden; /* Ẩn viền tràn ra ngoài */
 }
 
-/* Table header styling */
-.feedback-table thead {
-    background-color: #FFD700; /* Dark golden color for header */
-    color: black; /* Black text color for the header */
+.feedback-table th,
+.feedback-table td {
+    padding: 12px; /* Khoảng cách trong ô */
+    text-align: left; /* Căn trái */
+    border-bottom: 1px solid #ddd; /* Viền dưới nhẹ */
+    cursor: pointer; /* Hiển thị con trỏ dạng pointer khi di chuột qua ô */
+    font-weight: bolder;
 }
 
-/* Styling for header and cells */
-.feedback-table th, .feedback-table td {
-    padding: 12px; /* Padding for table cells */
-    text-align: left; /* Align text to the left */
-    border: 2px solid #333; /* Dark gray border for all cells */
+.feedback-table th {
+    background-color: #007bff; /* Màu xanh dương cho tiêu đề bảng */
+    color: white; /* Màu chữ tiêu đề bảng */
 }
 
-/* Remove border for the last cell in each row */
-.feedback-table tr td:last-child {
-    border-right: none; /* No right border for the last cell */
-}
-
-/* Row hover effect */
 .feedback-table tr:hover {
-    background-color: #FFFACD; /* Light golden color for hover effect */
+    background-color: #f1f1f1; /* Màu nền khi di chuột qua hàng */
 }
 
-/* Apply hover effect only for data rows */
-.feedback-table tbody tr:hover {
-    background-color: #FFFACD; /* Light golden color for hover effect */
-}
-
-/* Empty feedback message style */
 .feedback-empty {
-    text-align: center; /* Center the empty message */
-    color: #888; /* Light gray color for the message */
-    margin-top: 20px; /* Space above the message */
+    color: #666; /* Màu chữ cho thông báo không có dữ liệu */
+    font-style: italic; /* Kiểu chữ nghiêng */
+    text-align: center; /* Căn giữa */
 }
 
-/* Pagination container */
 .pagination {
     display: flex; /* Use flexbox for alignment */
     justify-content: flex-end; /* Align items to the right */
@@ -73,7 +48,7 @@
 .pagination button {
     padding: 10px 15px; /* Padding for buttons */
     border: none; /* Remove default border */
-    background-color: #FFD700; /* Golden background color */
+    background-color: white; /* Golden background color */
     color: black; /* Black text color */
     cursor: pointer; /* Pointer cursor on hover */
     border-radius: 5px; /* Rounded corners */
@@ -82,7 +57,7 @@
 
 /* Pagination button hover effect */
 .pagination button:hover {
-    background-color: #FFC107; /* Darker shade on hover */
+    background-color: grey; /* Darker shade on hover */
 }
 
 /* Disabled button style */
@@ -98,4 +73,3 @@
     font-weight: bold; /* Bold text */
     color: #333; /* Text color */
 }
-    

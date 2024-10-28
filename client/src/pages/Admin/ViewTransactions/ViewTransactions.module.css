@@ -37,8 +37,9 @@
 .table td {
     padding: 12px 15px;
     text-align: left;
-    font-size: 14px;
+    font-size: 20px;
     color: #555;
+    font-weight: bolder;
 }
 
 .table th {
@@ -57,6 +58,11 @@
     background-color: #e2e6ea;
     transition: background-color 0.2s ease;
 }
+/* Pointer cursor for table rows */
+.table tbody tr {
+    cursor: pointer; /* Shows pointer cursor on row hover */
+}
+
 
 /* Hover effect on buttons or icons */
 .icon {
@@ -80,3 +86,96 @@
         font-size: 20px;
     }
 }
+
+.pagination {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: flex-end; /* Align items to the right */
+    margin-top: 20px; /* Space above the pagination */
+    gap: 10px; /* Space between buttons and text */
+    width: 100%; /* Make pagination take full width of the table */
+    max-width: 1300px; /* Match the table's max width */
+}
+
+/* Pagination button styles */
+.pagination button {
+    padding: 10px 15px; /* Padding for buttons */
+    border: none; /* Remove default border */
+    background-color: white; /* Golden background color */
+    color: black; /* Black text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+/* Pagination button hover effect */
+.pagination button:hover {
+    background-color: grey; /* Darker shade on hover */
+}
+
+/* Disabled button style */
+.pagination button:disabled {
+    background-color: #ccc; /* Grey background for disabled button */
+    cursor: not-allowed; /* Not allowed cursor */
+    color: #666; /* Darker text color for disabled button */
+}
+
+/* Pagination text style */
+.pagination span {
+    align-self: center; /* Center vertically */
+    font-weight: bold; /* Bold text */
+    color: #333; /* Text color */
+}
+
+/* Styling for sortable table headers */
+.sortable {
+    cursor: pointer; /* Pointer cursor for sortable headers */
+    transition: background-color 0.2s ease; /* Optional background transition */
+}
+
+/* Optional hover effect to highlight sortable headers */
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+  }
+  
+  .popupContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px; /* Đặt chiều rộng của popup */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  
+  
+  .details {
+    display: flex;
+    flex-direction: column;
+    font-size: larger;
+  }
+  
+  .details p {
+    margin: 5px 0; /* Khoảng cách giữa các thông tin */
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  
+  
