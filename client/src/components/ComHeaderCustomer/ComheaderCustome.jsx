@@ -119,7 +119,7 @@ export default function ComHeader({ children }) {
                   <CalendarIcon className="h-6 w-6" /> Work
                   <span className="text-blue-500"> Zone</span>
                 </Link>
-                
+
                 <div className="flex-grow mx-10 text-lg">
                   <nav className="bg-white border-t border-gray-200">
                     <div className="container mx-auto">
@@ -153,29 +153,52 @@ export default function ComHeader({ children }) {
         </main>
 
         <footer className="bg-black text-white py-8">
-          <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2024 WorkZone. All rights reserved.</p>
-            <nav className="mt-4">
-              <ul className="flex justify-center space-x-6">
-                <li>
-                  <Link to="/terms" className="hover:underline">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/privacy" className="hover:underline">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="hover:underline">
-                    Contact Us
-                  </Link>
-                </li>
+          <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center sm:text-left">
+            {/* Our Services Section */}
+            <div>
+              <h3 className="font-bold mb-4">OUR SERVICES</h3>
+              <ul className="space-y-2">
+                <li><a href="/rooms" className="hover:underline">All</a></li>
+                <li><a href="/room/8" className="hover:underline">Single POD</a></li>
+                <li><a href="/room/9" className="hover:underline">Double POD</a></li>
+                <li><a href="/room/11" className="hover:underline">Small Meeting Room                </a></li>
+                <li><a href="/room/12" className="hover:underline">Large Meeting Room</a></li>
+                <li><a href="/room/13" className="hover:underline">Event Space</a></li>
+                <li><a href="/room/14" className="hover:underline">Office Room</a></li>
+                <li><a href="/room/15" className="hover:underline">Gaming Room</a></li>
+                <li><a href="/room/16" className="hover:underline">Open Space</a></li>
+                
               </ul>
-            </nav>
+            </div>
+
+            {/* Company Section */}
+            <div>
+              <h3 className="font-bold mb-4">SUPPORT</h3>
+              <ul className="space-y-2">
+                <li><a href="/about" className="hover:underline">About us</a></li>
+                <li><a href="/contact" className="hover:underline">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Legal Section */}
+            <div>
+              <h3 className="font-bold mb-4">LEGAL</h3>
+              <ul className="space-y-2">
+                <li><a href="/terms" className="hover:underline">Terms of use</a></li>
+                <li><a href="/privacy" className="hover:underline">Privacy policy</a></li>
+                <li><a href="/cookie-policy" className="hover:underline">Cookie policy</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center border-t border-gray-600 pt-4">
+            <div className="flex items-center justify-center space-x-2">
+
+              <p>&copy; 2024 WorkZone. POD Booking System All Rights Reserved.</p>
+            </div>
           </div>
         </footer>
+
       </div>
     </>
   );
