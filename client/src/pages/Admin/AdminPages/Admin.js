@@ -99,11 +99,17 @@ const Admin = () => {
             </button>
             <main className={`${styles['Admin-mainContent']} ${isMenuVisible ? '' : styles['Admin-menuHidden']}`}>
                 {isHomePage && (
-                    <>
-                        <ViewNumberAccounts />
-                        <ViewPopularRooms />
-                        <ViewPopularServices />
-                    </>
+                    <div className={styles.chartContainer}>
+                        <div className={styles.chartItem}>
+                            <ViewPopularRooms />
+                        </div>
+                        <div className={styles.chartItem}>
+                            <ViewPopularServices />
+                        </div>
+                        <div className={styles.chartTotalAccounts}>
+                            <ViewNumberAccounts />
+                        </div>
+                    </div>
                 )}
                 <Outlet />
             </main>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { FaPlus, FaEye, FaEdit, FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './ManageRooms.module.css';
 
 function ManageRooms() {
@@ -23,10 +23,11 @@ function ManageRooms() {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    
+
     // New state for delete confirmation modal
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [roomToDelete, setRoomToDelete] = useState(null);
+    const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] = useState(false); // New state for delete success modal
 
     useEffect(() => {
         fetchRooms();
@@ -142,6 +143,7 @@ function ManageRooms() {
                 fetchRooms();
                 setIsDeleteModalOpen(false); // Close modal after deletion
                 setRoomToDelete(null); // Reset roomToDelete
+                setIsDeleteSuccessModalOpen(true); // Open delete success modal
             } catch (error) {
                 setErrorMessage('Error deleting room. Please try again.');
                 setIsErrorModalOpen(true);
@@ -168,6 +170,11 @@ function ManageRooms() {
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false);
         setRoomToDelete(null); // Reset roomToDelete
+    };
+
+    // Close delete success modal
+    const closeDeleteSuccessModal = () => {
+        setIsDeleteSuccessModalOpen(false);
     };
 
     return (
@@ -246,7 +253,7 @@ function ManageRooms() {
                         <input
                             type="number"
                             name="roomPricePerSlot"
-                            placeholder="Price per Slot"
+                            placeholder="Price Per Slot"
                             value={newRoom.roomPricePerSlot}
                             onChange={handleInputChange}
                             className={styles.inputField}
@@ -254,7 +261,7 @@ function ManageRooms() {
                         <input
                             type="number"
                             name="roomPricePerDay"
-                            placeholder="Price per Day"
+                            placeholder="Price Per Day"
                             value={newRoom.roomPricePerDay}
                             onChange={handleInputChange}
                             className={styles.inputField}
@@ -262,7 +269,7 @@ function ManageRooms() {
                         <input
                             type="number"
                             name="roomPricePerWeek"
-                            placeholder="Price per Week"
+                            placeholder="Price Per Week"
                             value={newRoom.roomPricePerWeek}
                             onChange={handleInputChange}
                             className={styles.inputField}
@@ -274,10 +281,10 @@ function ManageRooms() {
                             className={styles.inputField}
                         >
                             <option value="Available">Available</option>
-                            <option value="Maintenance">Maintenance</option>
+                            <option value="Unavailable">Unavailable</option>
                         </select>
                         <input type="file" onChange={handleImageChange} />
-                        <button onClick={handleCreateRoom} className={styles.submitButton}>Create Room</button>
+                        <button className={styles.createButton} onClick={handleCreateRoom}>Create Room</button>
                     </div>
                 </div>
             )}
@@ -286,31 +293,46 @@ function ManageRooms() {
             {isDeleteModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <h2>Confirm Deletion</h2>
-                        <p>Are you sure you want to delete this room?</p>
-                        <button onClick={handleDeleteRoom} className={styles.confirmButton}>Yes</button>
-                        <button onClick={closeDeleteModal} className={styles.cancelButton}>No</button>
+                        <span className={styles.closeIcon} onClick={closeDeleteModal}>×</span>
+                        <h2>Are you sure you want to delete this room?</h2>
+                        <div className={styles.buttonContainer}>
+                            <button className={styles.yesButton} onClick={handleDeleteRoom}>Yes</button>
+                            <button className={styles.noButton} onClick={closeDeleteModal}>No</button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Success and Error Modals */}
+
+            {/* Delete Success Modal */}
+            {isDeleteSuccessModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <span className={styles.closeIcon} onClick={closeDeleteSuccessModal}>×</span>
+                        <h2>Room deleted successfully!</h2>
+                        <button className={styles.closeButton} onClick={closeDeleteSuccessModal}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Modal */}
             {isSuccessModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <h2>Success</h2>
-                        <p>Room created successfully!</p>
-                        <button onClick={closeSuccessModal} className={styles.closeButton}>Close</button>
+                        <span className={styles.closeIcon} onClick={closeSuccessModal}>×</span>
+                        <h2>Room created successfully!</h2>
+                        <button className={styles.closeButton} onClick={closeSuccessModal}>Close</button>
                     </div>
                 </div>
             )}
 
+            {/* Error Modal */}
             {isErrorModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <h2>Error</h2>
-                        <p>{errorMessage}</p>
-                        <button onClick={closeErrorModal} className={styles.closeButton}>Close</button>
+                        <span className={styles.closeIcon} onClick={closeErrorModal}>×</span>
+                        <h2>{errorMessage}</h2>
+                        <button className={styles.closeButton} onClick={closeErrorModal}>Close</button>
                     </div>
                 </div>
             )}

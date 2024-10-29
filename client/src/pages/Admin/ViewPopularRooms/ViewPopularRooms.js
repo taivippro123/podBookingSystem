@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from 'recharts';
+import Chart from 'react-apexcharts';
 import axios from 'axios';
 
 const ViewPopularRooms = () => {
@@ -20,8 +11,8 @@ const ViewPopularRooms = () => {
         try {
             const response = await axios.get('http://localhost:5000/admin/popular-rooms');
             const formattedData = response.data.map(({ roomName, bookingCount }) => ({
-                roomName,
-                BookingCount: bookingCount,
+                roomName: roomName || 'Unknown Room', // Đảm bảo không có giá trị undefined
+                bookingCount: Math.max(0, bookingCount || 0), // Đảm bảo giá trị không âm
             }));
             setData(formattedData);
         } catch (error) {
@@ -39,19 +30,41 @@ const ViewPopularRooms = () => {
     if (loading) return <div>Loading data...</div>;
     if (error) return <div>{error}</div>;
 
+    // Cấu hình biểu đồ
+    const chartOptions = {
+        chart: {
+            type: 'pie',
+            height: 350,
+        },
+        title: {
+            text: 'Popular Rooms',
+            align: 'center',
+        },
+        labels: data.length > 0 ? data.map(item => item.roomName) : ['No Data'], // Đảm bảo labels không undefined
+        colors: ['#ff7f50', '#1E90FF', '#FFD700', '#32CD32', '#FF4500'],
+        tooltip: {
+            y: {
+                formatter: (value) => {
+                    const totalCount = data.reduce((acc, item) => acc + item.bookingCount, 0);
+                    const percentage = totalCount ? ((value / totalCount) * 100).toFixed(2) : 0; // Tránh chia cho 0
+                    return `${value} (${percentage}%)`; // Hiển thị số liệu và phần trăm
+                },
+            },
+        },
+        legend: {
+            position: 'bottom',
+            floating: false,
+            horizontalAlign: 'center',
+            verticalAlign: 'top',
+            offsetY: 10,
+        },
+    };
+
+    const chartData = data.length > 0 ? data.map(item => item.bookingCount) : [0]; // Đảm bảo có dữ liệu cho biểu đồ
+
     return (
         <div>
-            <h2>Popular Rooms</h2>
-            <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="roomName" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="BookingCount" fill="#82ca9d" />
-                </BarChart>
-            </ResponsiveContainer>
+            <Chart options={chartOptions} series={chartData} type="pie" height={350} />
         </div>
     );
 };

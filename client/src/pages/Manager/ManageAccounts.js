@@ -2,6 +2,19 @@ import React, { useEffect, useState } from 'react';
 import styles from './ManageAccounts.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
+// Component cho thông báo thành công
+const SuccessPopup = ({ message, onClose }) => {
+    return (
+        <div className={styles.successPopupOverlay}>
+            <div className={styles.successPopup}>
+                <h2>Success</h2>
+                <p>{message}</p>
+                <button onClick={onClose}>Close</button>
+            </div>
+        </div>
+    );
+};
+
 const ManageAccounts = () => {
     const [accounts, setAccounts] = useState([]);
     const [userName, setUserName] = useState('');
@@ -10,12 +23,22 @@ const ManageAccounts = () => {
     const [userRole, setUserRole] = useState('');
     const [editingAccountId, setEditingAccountId] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [accountToDelete, setAccountToDelete] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    // Trạng thái cho phân trang
+    const [currentPage, setCurrentPage] = useState(1);
+    const accountsPerPage = 5;
+
+    // Trạng thái cho loại người dùng được chọn
+    const [filterRole, setFilterRole] = useState(''); // "" để hiện tất cả, "3" cho Staff, "4" cho User
 
     useEffect(() => {
         fetchAccounts();
     }, []);
 
-    // Fetch all accounts
     const fetchAccounts = async () => {
         try {
             const response = await fetch('http://localhost:5000/manage/accounts');
@@ -26,37 +49,37 @@ const ManageAccounts = () => {
         }
     };
 
-    // Validate inputs
     const validateInputs = () => {
+        let isValid = true;
+
         if (!userName) {
-            alert('Please enter a user name.');
-            return false;
+            setErrorMessage('Please enter a user name.');
+            isValid = false;
+        } else if (!userEmail.includes('@')) {
+            setErrorMessage('Please enter a valid email address containing @.');
+            isValid = false;
+        } else if (!/^\d{1,10}$/.test(userPhone)) {
+            setErrorMessage('Phone number must be numeric and up to 10 digits.');
+            isValid = false;
+        } else if (!userRole) {
+            setErrorMessage('Please select a role.');
+            isValid = false;
+        } else {
+            setErrorMessage('');
         }
-        if (!userEmail.includes('@')) {
-            alert('Please enter a valid email address containing @.');
-            return false;
-        }
-        if (!/^\d{1,10}$/.test(userPhone)) {
-            alert('Phone number must be numeric and up to 10 digits.');
-            return false;
-        }
-        if (!userRole) {
-            alert('Please select a role.');
-            return false;
-        }
-        return true;
+
+        return isValid;
     };
 
-    // Add a new account
     const handleAddAccount = async () => {
         if (!validateInputs()) return;
 
         const newAccount = {
             userName,
             userEmail,
-            userPassword: 'defaultPassword', // Mật khẩu tạm thời (nên băm mật khẩu)
+            userPassword: 'defaultPassword',
             userPhone,
-            userRole: parseInt(userRole), // Chuyển đổi thành số
+            userRole: parseInt(userRole),
         };
 
         try {
@@ -69,30 +92,33 @@ const ManageAccounts = () => {
             });
 
             if (response.ok) {
-                await fetchAccounts(); // Use await to ensure data is fetched
-                alert('Account added successfully!'); // Thông báo thành công
+                await fetchAccounts();
+                setSuccessMessage('Account added successfully!');
                 closePopup();
+
+                setTimeout(() => {
+                    setSuccessMessage('');
+                }, 2000);
             } else {
-                const errorData = await response.json(); // Parse error response
-                alert(`Error adding account: ${errorData.message || 'Please try again.'}`);
+                const errorData = await response.json();
+                setErrorMessage(`Error adding account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error adding account:', error);
-            alert('An unexpected error occurred. Please try again.');
+            setErrorMessage('An unexpected error occurred. Please try again.');
         }
     };
 
-    // Edit an account
     const handleEditAccount = (account) => {
         setUserName(account.userName);
         setUserEmail(account.userEmail);
         setUserPhone(account.userPhone);
-        setUserRole(account.userRole.toString()); // Chuyển đổi thành chuỗi để hiển thị trong select
+        setUserRole(account.userRole.toString());
         setEditingAccountId(account.userId);
         setIsPopupOpen(true);
+        setErrorMessage('');
     };
 
-    // Update an account
     const handleUpdateAccount = async () => {
         if (!validateInputs()) return;
 
@@ -100,7 +126,7 @@ const ManageAccounts = () => {
             userName,
             userEmail,
             userPhone,
-            userRole: parseInt(userRole), // Chuyển đổi thành số
+            userRole: parseInt(userRole),
         };
 
         try {
@@ -114,44 +140,54 @@ const ManageAccounts = () => {
 
             if (response.ok) {
                 await fetchAccounts();
-                alert('Account updated successfully!'); // Thông báo thành công
+                setSuccessMessage('Account updated successfully!');
                 closePopup();
+
+                setTimeout(() => {
+                    setSuccessMessage('');
+                }, 2000);
             } else {
                 const errorData = await response.json();
-                alert(`Error updating account: ${errorData.message || 'Please try again.'}`);
+                setErrorMessage(`Error updating account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error updating account:', error);
-            alert('An unexpected error occurred. Please try again.');
+            setErrorMessage('An unexpected error occurred. Please try again.');
         }
     };
 
-    // Delete an account with confirmation
-    const handleDeleteAccount = async (accountId) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this account? This action cannot be undone.');
+    const handleConfirmDelete = (accountId) => {
+        setAccountToDelete(accountId);
+        setIsDeleteConfirmOpen(true);
+    };
 
-        if (!confirmDelete) {
-            return; // Nếu không xác nhận, thoát khỏi hàm
-        }
+    const handleDeleteAccount = async () => {
+        if (!accountToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/manage/accounts/${accountId}`, {
+            const response = await fetch(`http://localhost:5000/manage/accounts/${accountToDelete}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 await fetchAccounts();
-                alert('Account deleted successfully!'); // Thông báo thành công
+                setSuccessMessage('Account deleted successfully!');
+                setIsDeleteConfirmOpen(false);
+                setAccountToDelete(null);
+
+                setTimeout(() => {
+                    setSuccessMessage('');
+                }, 2000);
             } else {
                 const errorData = await response.json();
-                alert(`Error deleting account: ${errorData.message || 'Please try again.'}`);
+                setErrorMessage(`Error deleting account: ${errorData.message || 'Please try again.'}`);
+                setIsDeleteConfirmOpen(false);
             }
         } catch (error) {
             console.error('Error deleting account:', error);
         }
     };
 
-    // Close popup form and clear fields
     const closePopup = () => {
         setUserName('');
         setUserEmail('');
@@ -159,11 +195,37 @@ const ManageAccounts = () => {
         setUserRole('');
         setEditingAccountId(null);
         setIsPopupOpen(false);
+        setErrorMessage('');
     };
+
+    // Tính toán số lượng tài khoản trên mỗi trang
+    const indexOfLastAccount = currentPage * accountsPerPage;
+    const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
+
+    // Lọc tài khoản dựa trên vai trò
+    const filteredAccounts = filterRole ? accounts.filter(account => account.userRole.toString() === filterRole) : accounts;
+
+    const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+
+    // Chuyển trang
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber < 1 || pageNumber > totalPages) return;
+        setCurrentPage(pageNumber);
+    };
+
+    const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
 
     return (
         <div className={styles.container}>
             <h1>Manage Accounts</h1>
+
+            {/* Nút lọc vai trò nằm bên phải */}
+            <div className={styles.roleFilter}>
+                <button onClick={() => setFilterRole('')}>All</button>
+                <button onClick={() => setFilterRole('3')}>Staff</button>
+                <button onClick={() => setFilterRole('4')}>User</button>
+            </div>
+
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -175,7 +237,7 @@ const ManageAccounts = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {accounts.map((account) => (
+                    {currentAccounts.map((account) => (
                         <tr key={account.userId}>
                             <td>{account.userName}</td>
                             <td>{account.userEmail}</td>
@@ -185,7 +247,7 @@ const ManageAccounts = () => {
                                 <button onClick={() => handleEditAccount(account)}>
                                     <FaEdit color="black" size={30} />
                                 </button>
-                                <button onClick={() => handleDeleteAccount(account.userId)}>
+                                <button onClick={() => handleConfirmDelete(account.userId)}>
                                     <FaTrash color="red" size={30} />
                                 </button>
                             </td>
@@ -199,6 +261,7 @@ const ManageAccounts = () => {
                 <div className={styles.popupOverlay}>
                     <div className={styles.popupForm}>
                         <h2>{editingAccountId ? 'Edit Account' : 'Add Account'}</h2>
+                        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                         <input
                             type="text"
                             placeholder="User Name"
@@ -207,33 +270,64 @@ const ManageAccounts = () => {
                         />
                         <input
                             type="email"
-                            placeholder="User Email"
+                            placeholder="Email"
                             value={userEmail}
                             onChange={(e) => setUserEmail(e.target.value)}
                         />
                         <input
                             type="text"
-                            placeholder="User Phone"
+                            placeholder="Phone"
                             value={userPhone}
                             onChange={(e) => setUserPhone(e.target.value)}
                         />
-                        <select
-                            value={userRole}
-                            onChange={(e) => setUserRole(e.target.value)}
-                        >
-                            <option value="" disabled>Select Role</option>
+                        <select value={userRole} onChange={(e) => setUserRole(e.target.value)}>
+                            <option value="">Select Role</option>
                             <option value="3">Staff</option>
                             <option value="4">User</option>
                         </select>
                         <button onClick={editingAccountId ? handleUpdateAccount : handleAddAccount}>
                             {editingAccountId ? 'Update Account' : 'Add Account'}
                         </button>
-                        <button onClick={closePopup} className={styles.cancelButton}>Close</button>
+                        <button onClick={closePopup}>Cancel</button>
                     </div>
                 </div>
             )}
 
-            {/* Add account button */}
+            {/* Xác nhận xóa tài khoản */}
+            {isDeleteConfirmOpen && (
+                <div className={styles.deleteConfirmOverlay}>
+                    <div className={styles.deleteConfirm}>
+                        <h2>Confirm Delete</h2>
+                        <p>Are you sure you want to delete this account?</p>
+                        <button onClick={handleDeleteAccount}>Yes, Delete</button>
+                        <button onClick={() => setIsDeleteConfirmOpen(false)}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
+            <div className={styles.pagination}>
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                    &lt;
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={currentPage === index + 1 ? styles.active : ''}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                    &gt;
+                </button>
+            </div>
+
+            {/* Thông báo thành công */}
+            {successMessage && (
+                <SuccessPopup message={successMessage} onClose={() => setSuccessMessage('')} />
+            )}
+
             <button className={styles.addAccountButton} onClick={() => setIsPopupOpen(true)}>
                 +
             </button>

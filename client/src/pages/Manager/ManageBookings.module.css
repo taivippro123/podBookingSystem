@@ -1,85 +1,145 @@
 .container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .statusMessage {
-    color: green;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  .table th,
-  .table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .table th {
-    background-color: #f2f2f2;
-  }
-  
-  .table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .statusSelect {
-    padding: 5px;
-    font-size: 14px;
-  }
-  
-  .updateButton {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .updateButton:hover {
-    background-color: #0056b3;
-  }
-  
-  .modal {
-    padding: 20px;
-    border-radius: 12px; /* Bo tròn góc cho modal */
-    background: #fff;
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px; /* Giảm chiều rộng cho modal */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Thêm bóng cho modal */
-    transition: all 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
-  }
-  
-  h2 {
-    font-size: 20px; /* Kích thước tiêu đề nhỏ hơn */
-    margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
-    color: #333; /* Màu tiêu đề */
-    text-align: center; /* Căn giữa tiêu đề */
-  }
-  
-  p {
-    font-size: 14px; /* Kích thước văn bản thông điệp nhỏ hơn */
-    margin-bottom: 15px; /* Khoảng cách dưới thông điệp */
-    text-align: center; /* Căn giữa văn bản */
-    color: #666; /* Màu văn bản */
-  }
-  
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9; /* Màu nền nhẹ để tăng sự thoải mái */
+  border-radius: 8px; /* Bo tròn góc cho container */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Bóng nhẹ cho container */
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px; /* Kích thước lớn hơn cho tiêu đề */
+}
+
+.roleFilter {
+  display: flex; /* Sử dụng flexbox để căn chỉnh các nút */
+  justify-content: flex-end; /* Căn chỉnh nút về phía bên phải */
+  margin-bottom: 20px; /* Khoảng cách dưới cùng */
+}
+
+.roleFilter button {
+  margin-left: 10px; /* Khoảng cách giữa các nút */
+  padding: 10px 15px; /* Padding cho nút */
+  border: none; /* Bỏ đường viền */
+  background-color: #007bff; /* Màu nền cho nút */
+  color: white; /* Màu chữ */
+  border-radius: 5px; /* Bo góc cho nút */
+  cursor: pointer; /* Đổi con trỏ khi di chuột */
+  transition: background-color 0.3s ease, transform 0.2s; /* Hiệu ứng chuyển tiếp màu nền và hiệu ứng phóng to */
+}
+
+.roleFilter button:hover {
+  background-color: #0056b3; /* Màu tối hơn khi di chuột */
+  transform: scale(1.05); /* Tăng kích thước nhẹ khi hover */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng cho bảng */
+  border-radius: 8px; /* Bo tròn góc cho bảng */
+  overflow: hidden; /* Đảm bảo không bị tràn ra ngoài */
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 12px; /* Tăng khoảng cách trong ô */
+  text-align: center;
+}
+
+.table th {
+  background-color: #007bff; /* Màu nền cho tiêu đề bảng */
+  color: white; /* Màu chữ trắng */
+  font-weight: bold; /* Đậm chữ */
+}
+
+.table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Màu nền cho các hàng chẵn */
+}
+
+.table tr:hover {
+  background-color: #e0f7fa; /* Màu nền cho hàng khi hover */
+}
+
+.statusSelect {
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 4px; /* Bo góc cho select */
+  border: 1px solid #ccc; /* Đường viền cho select */
+  transition: border-color 0.3s ease; /* Hiệu ứng chuyển tiếp cho viền */
+}
+
+.statusSelect:hover {
+  border-color: #007bff; /* Thay đổi màu viền khi hover */
+}
+
+.pagination {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: flex-end; /* Align items to the right */
+  margin-top: 20px; /* Space above the pagination */
+  gap: 10px; /* Space between buttons and text */
+  width: 100%; /* Make pagination take full width of the table */
+  max-width: 1300px; /* Match the table's max width */
+}
+
+/* Pagination button styles */
+.pagination button {
+  padding: 10px 15px; /* Padding for buttons */
+  border: none; /* Remove default border */
+  background-color: white; /* Golden background color */
+  color: black; /* Black text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+/* Pagination button hover effect */
+.pagination button:hover {
+  background-color: grey; /* Darker shade on hover */
+}
+
+/* Disabled button style */
+.pagination button:disabled {
+  background-color: #ccc; /* Grey background for disabled button */
+  cursor: not-allowed; /* Not allowed cursor */
+  color: #666; /* Darker text color for disabled button */
+}
+
+/* Pagination text style */
+.pagination span {
+  align-self: center; /* Center vertically */
+  font-weight: bold; /* Bold text */
+  color: #333; /* Text color */
+}
+
+
+.modal {
+  padding: 20px;
+  border-radius: 12px; /* Bo tròn góc cho modal */
+  background: #fff;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; /* Giảm chiều rộng cho modal */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Thêm bóng cho modal */
+  transition: all 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+.modal h2 {
+  font-size: 20px; /* Kích thước tiêu đề nhỏ hơn */
+  margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+  color: #333; /* Màu tiêu đề */
+  text-align: center; /* Căn giữa tiêu đề */
+}
+
+.modal p {
+  font-size: 14px; /* Kích thước văn bản thông điệp nhỏ hơn */
+  margin-bottom: 15px; /* Khoảng cách dưới thông điệp */
+  text-align: center; /* Căn giữa văn bản */
+  color: #666; /* Màu văn bản */
+}

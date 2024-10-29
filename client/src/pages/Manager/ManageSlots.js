@@ -126,6 +126,7 @@ function ManageSlots() {
         setHoveredSlotId(slotId);
     };
 
+
     const confirmDelete = async () => {
         try {
             await axios.delete(`http://localhost:5000/slots/${slotToDelete}`);
@@ -305,12 +306,16 @@ function ManageSlots() {
 
             {isDeleteConfirmVisible && (
                 <div className={styles.deleteConfirmPopup}>
-                    <h2>Confirm Deletion</h2>
-                    <p>Are you sure you want to delete this slot?</p>
+                <h2>Confirm Deletion</h2>
+                <p>Are you sure you want to delete this slot?</p>
+                <div className={styles.buttonContainer}>
                     <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
                     <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
                 </div>
+            </div>
+            
             )}
+
 
             {isPopupVisible && (
                 <div className={styles.popup}>

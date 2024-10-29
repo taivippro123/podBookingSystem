@@ -146,3 +146,55 @@ h1 {
     background-color: #e0e0e0; /* Màu xám nhạt */
     color: black; /* Màu chữ */
 }
+
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* Admin.module.css */
+/* ViewNumberAccounts.module.css */
+
+
+
+.bottomRow {
+    display: flex;
+    justify-content: center;
+}
+
+.popularServicesContainer {
+    margin-top: 40px; /* Thay đổi giá trị này để điều chỉnh khoảng cách */
+}
+
+/* Chỉnh sửa cho biểu đồ */
+.chartContainer {
+    display: flex;
+    justify-content: space-between; /* Giữ khoảng cách giữa các biểu đồ */
+    flex-wrap: wrap; /* Nếu không đủ chỗ, các biểu đồ sẽ xuống hàng */
+    margin: 40px 0 0; /* Thêm khoảng cách trên để lùi tất cả biểu đồ xuống */
+    padding: 0; /* Bỏ padding */
+    width: 100%; /* Chiếm toàn bộ chiều rộng của trang */
+}
+
+
+.chartItem {
+    flex: 1; /* Mỗi biểu đồ chiếm 1 phần không gian */
+    min-width: 300px; /* Chiều rộng tối thiểu cho mỗi biểu đồ */
+    max-width: calc(33.33% - 20px); /* Đặt chiều rộng tối đa để không quá lớn, với khoảng cách giữa các biểu đồ */
+    margin: 10px; /* Khoảng cách giữa các biểu đồ */
+}
+
+.chartTotalAccounts {
+    width: 100%; /* Đặt chiều rộng để chiếm hết không gian có thể */
+    padding: 20px;
+    
+    
+    border-radius: 8px;
+}

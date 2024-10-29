@@ -151,3 +151,14 @@ h1 {
 .manager-navLink:hover {
     background-color: #e0e0e0; /* Màu nền khi hover */
 }
+
+.manager-navLink.active {
+    background-color: #e0e0e0; /* Màu nền khi nút được chọn */
+    color: #000; /* Màu chữ khi nút được chọn */
+}
+
+/* Giữ màu hover khi nút được chọn */
+.manager-navLink.active:hover {
+    background-color: #d0d0d0; /* Màu nền khi di chuột qua nút đã chọn */
+    color: #000; /* Màu chữ khi di chuột qua nút đã chọn */
+}

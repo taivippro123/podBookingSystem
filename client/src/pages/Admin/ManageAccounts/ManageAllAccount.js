@@ -16,6 +16,7 @@ const ManageAllAccounts = () => {
     const accountsPerPage = 10;
     const [sortConfig, setSortConfig] = useState({ key: 'userId', direction: 'ascending' });
     const [selectedRole, setSelectedRole] = useState('All');
+    const [deleteAccountId, setDeleteAccountId] = useState(null); // State for delete confirmation modal
 
     useEffect(() => {
         fetchAccounts();
@@ -57,11 +58,16 @@ const ManageAllAccounts = () => {
         }
     };
 
-    const handleDelete = async (userId) => {
-        if (window.confirm('Are you sure you want to delete this account?')) {
+    const handleDeleteRequest = (userId) => {
+        setDeleteAccountId(userId); // Set the account ID to delete
+    };
+
+    const handleDelete = async () => {
+        if (deleteAccountId) {
             try {
-                await axios.delete(`http://localhost:5000/admin/accounts/${userId}`);
+                await axios.delete(`http://localhost:5000/admin/accounts/${deleteAccountId}`);
                 fetchAccounts();
+                setDeleteAccountId(null); // Reset the delete ID
             } catch (error) {
                 console.error('Error deleting account:', error);
             }
@@ -164,7 +170,7 @@ const ManageAllAccounts = () => {
                                     <button onClick={() => handleEditClick(account)} title="Edit">
                                         <FaEdit color="black" size={20} />
                                     </button>
-                                    <button onClick={() => handleDelete(account.userId)} title="Delete">
+                                    <button onClick={() => handleDeleteRequest(account.userId)} title="Delete">
                                         <FaTrash color="red" size={20} />
                                     </button>
                                 </td>
@@ -224,6 +230,18 @@ const ManageAllAccounts = () => {
                         </select>
                         <button onClick={handleUpdate}>Update</button>
                         <button onClick={resetForm}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal for delete confirmation */}
+            {deleteAccountId && (
+                <div className={styles.modal}>
+                    <div className={styles['modal-content']}>
+                        <h3>Confirm Deletion</h3>
+                        <p>Are you sure you want to delete this account?</p>
+                        <button onClick={handleDelete}>Yes, delete</button>
+                        <button onClick={() => setDeleteAccountId(null)}>Cancel</button>
                     </div>
                 </div>
             )}
