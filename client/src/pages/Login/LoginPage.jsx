@@ -258,7 +258,7 @@ export default function LoginPage() {
                   href="/signup"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                   Rgister here
+                   Register here
                 </a>
               </div>      
             
