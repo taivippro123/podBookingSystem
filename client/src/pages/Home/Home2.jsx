@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 
 export default function WorkspaceShowcase() {
   const workspaces = [
@@ -33,7 +34,7 @@ export default function WorkspaceShowcase() {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen mt-4">
+    <div className="bg-gray-150 min-h-screen mt-4">
       <div className=" mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h3
@@ -46,20 +47,19 @@ export default function WorkspaceShowcase() {
               marginBottom: 0,
             }}
           >
-           Modern workspace with diverse services and amenities
+            Modern workspace with diverse services and amenities
           </h3>
-          <button className="bg-[#352220] text-white px-4 py-2 rounded-md hover:bg-brown-800 transition duration-300">
-          EXPERIENCE NOW
-          </button>
+          <Link to="/rooms" className="bg-[#352220] text-white px-4 py-2 rounded-md hover:bg-brown-800 transition duration-300">
+            EXPERIENCE NOW
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {workspaces.map((workspace, index) => (
             <div
               key={index}
-              className={`flex flex-col justify-between bg-white rounded-xl  shadow-md ${
-                index === 0 || index === 3 ? "bg-yellow-50" : ""
-              }`}
+              className={`flex flex-col justify-between bg-white rounded-xl  shadow-md ${index === 0 || index === 3 ? "bg-yellow-50" : ""
+                }`}
             >
               <div className="p-6">
                 <h2 className="text-4xl mb-2 font-bold">{workspace.title}</h2>
