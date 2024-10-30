@@ -105,9 +105,9 @@ export default function ListRoom() {
                 Description: {room.roomDescription}
                 </span>
               </div>
-              <div className="flex items-center text-gray-600 mb-4">
-                <DollarSign className="w-4 h-4 mr-1" />
-                <span>Price: {room.roomPricePerSlot} VND/hour</span>
+              <div className="flex items-center text-red-500 mb-4">
+              <DollarSign className="w-4 h-4 mr-1" />
+              <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot </span>
               </div>
               <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
                 Book Now
