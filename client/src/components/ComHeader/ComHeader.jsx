@@ -172,14 +172,14 @@ export default function ComHeader({ children }) {
               <h3 className="font-bold mb-4">OUR SERVICES</h3>
               <ul className="space-y-2">
                 <li><a href="/rooms" className="hover:underline">All</a></li>
-                <li><a href="/room/8" className="hover:underline">Single POD</a></li>
-                <li><a href="/room/9" className="hover:underline">Double POD</a></li>
-                <li><a href="/room/11" className="hover:underline">Small Meeting Room                </a></li>
-                <li><a href="/room/12" className="hover:underline">Large Meeting Room</a></li>
-                <li><a href="/room/13" className="hover:underline">Event Space</a></li>
-                <li><a href="/room/14" className="hover:underline">Office Room</a></li>
-                <li><a href="/room/15" className="hover:underline">Gaming Room</a></li>
-                <li><a href="/room/16" className="hover:underline">Open Space</a></li>
+                <li><a href="/room/:id" className="hover:underline">Single Work Pod</a></li>
+                <li><a href="/room/:id" className="hover:underline">Double Work Pod</a></li>
+                <li><a href="/room/:id" className="hover:underline">Small Meeting Room</a></li>
+                <li><a href="/room/:id" className="hover:underline">Large Meeting Room</a></li>
+                <li><a href="/room/:id" className="hover:underline">Event Space</a></li>
+                <li><a href="/room/:id" className="hover:underline">Office Room</a></li>
+                <li><a href="/room/:id" className="hover:underline">Gaming Room</a></li>
+                <li><a href="/room/:id" className="hover:underline">Open Space</a></li>
                 
               </ul>
             </div>
