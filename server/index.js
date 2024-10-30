@@ -415,7 +415,7 @@ app.get('/slots', (req, res) => {
 
 // Fetch services
 app.get('/services', (req, res) => {
-    const sql = 'SELECT * FROM Services';
+    const sql = `SELECT * FROM Services WHERE serviceStatus = 'Available'`;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: 'Error fetching services' });
         res.json(results);
