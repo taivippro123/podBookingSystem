@@ -70,14 +70,14 @@ export default function Home() {
               </Carousel>
             </div>
 
+            <div className="mt-2">
+              <RoomListHome />
+            </div>   
 
             <div className="mt-2">
               <Home2 />
             </div>
 
-            <div className="mt-2">
-              <RoomListHome />
-            </div>
 
             <div className="mt-2">
               <WorkspaceComparison />

@@ -111,50 +111,6 @@ export default function ListRoom() {
           </div>
           <div>
             <label
-              htmlFor="capacity"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Capacity
-            </label>
-            <div className="relative">
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="number"
-                id="capacity"
-                name="capacity"
-                value={searchParams.capacity}
-                onChange={handleInputChange}
-                className="pl-10 w-full p-2 border rounded-md"
-                placeholder="Minimum capacity"
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="equipment"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Equipment
-            </label>
-            <div className="relative">
-              <Monitor className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <select
-                id="equipment"
-                name="equipment"
-                value={searchParams.equipment}
-                onChange={handleInputChange}
-                className="pl-10 w-full p-2 border rounded-md appearance-none"
-              >
-                <option value="">All equipment</option>
-                <option value="Projector">Projector</option>
-                <option value="TV">TV</option>
-                <option value="Whiteboard">Whiteboard</option>
-                <option value="Video conferencing">Video conferencing</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label
               htmlFor="type"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
@@ -170,7 +126,7 @@ export default function ListRoom() {
                 className="pl-10 w-full p-2 border rounded-md appearance-none"
               >
                 <option value="">All types</option>
-                <option value="Conference">Conference</option>
+                <option value="Double">Conference</option>
                 <option value="Training">Training</option>
                 <option value="Board">Board</option>
               </select>
@@ -211,13 +167,14 @@ export default function ListRoom() {
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>
-                Description: {room.roomDescription}
+                  Available hours: 9:00AM - 5:00 PM
                 </span>
               </div>
-              <div className="flex items-center text-gray-600 mb-4">
-                <DollarSign className="w-4 h-4 mr-1" />
-                <span>Price: {room.roomPricePerSlot} VND/hour</span>
+              <div className="flex items-center text-red-500 mb-4">
+              <DollarSign className="w-4 h-4 mr-1" />
+              <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot </span>
               </div>
+
               <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
                 Book Now
               </Link>

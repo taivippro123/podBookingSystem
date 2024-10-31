@@ -500,9 +500,9 @@ export default function RoomDetail() {
             {/* Booking by Date Range */}
             {bookingType === 'range' && (
               <div className="mb-6">
-                <h3 className="text-lg font-medium mb-2 text-gray-800">Select Date Range</h3>
-                <div className="space-y-2">
-                  <label className="block text-gray-700">
+                <h3 className="text-lg font-medium mb-2 text-gray-800 text-center">Select Date Range</h3>
+                <div className="flex space-x-4">
+                  <label className="block text-gray-700 w-full">
                     Start Date:
                     <input
                       type="date"
@@ -510,10 +510,10 @@ export default function RoomDetail() {
                       value={dateRange.start}
                       onChange={handleDateChange}
                       min={new Date().toISOString().split('T')[0]}
-                      className="border border-gray-300 p-2 rounded-md mt-1"
+                      className="border border-gray-300 p-2 rounded-md mt-1 w-full"
                     />
                   </label>
-                  <label className="block text-gray-700">
+                  <label className="block text-gray-700 w-full">
                     End Date:
                     <input
                       type="date"
@@ -521,10 +521,11 @@ export default function RoomDetail() {
                       value={dateRange.end}
                       onChange={handleDateChange}
                       min={dateRange.start || new Date().toISOString().split('T')[0]}
-                      className="border border-gray-300 p-2 rounded-md mt-1"
+                      className="border border-gray-300 p-2 rounded-md mt-1 w-full"
                     />
                   </label>
                 </div>
+
                 {isRoomAvailable !== null && (
                   <p className={`mt-4 ${isRoomAvailable ? 'text-green-500' : 'text-red-500'}`}>
                     {isRoomAvailable
@@ -552,11 +553,11 @@ export default function RoomDetail() {
                         setServices(updatedServices);
                       }}
                       className={`cursor-pointer border-2 rounded-md px-4 py-2 text-center transition-colors ${service.selected
-                          ? 'border-blue-600 text-blue-600 bg-blue-50'
-                          : 'border-gray-300 text-gray-800 bg-white'
+                        ? 'border-blue-600 text-blue-600 bg-blue-50'
+                        : 'border-gray-300 text-gray-800 bg-white'
                         }`}
                     >
-                      {service.serviceName} (₫{service.servicePrice.toLocaleString()})
+                      {service.serviceName} (₫{service.servicePrice.toLocaleString('vi-VN')})
                     </div>
                   ))}
                 </div>
@@ -600,8 +601,9 @@ export default function RoomDetail() {
 
             {/* Total Price Section */}
             <div className="flex justify-between items-center mb-4">
-              <p className="text-red-500 text-2xl font-bold">Total: ₫{totalPrice.toLocaleString()}</p>
+              <p className="text-red-500 text-2xl font-bold">Total: ₫{totalPrice.toLocaleString('vi-VN')}</p>
             </div>
+
 
 
             {/* Submit Button */}
