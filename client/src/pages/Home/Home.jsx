@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   CalendarIcon,
   ChevronLeft,
@@ -35,6 +35,32 @@ export default function Home() {
       img: "https://cdn-static.wework.com/content/images/home/hero-banner_1920x576.webp",
     },
   ]);
+
+  useEffect(() => {
+    // Delay adding the Tawk.to script slightly to ensure the component is fully mounted
+    const initTawk = setTimeout(() => {
+      // Initialize Tawk.to on the window object
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+
+      const tawkScript = document.createElement("script");
+      tawkScript.async = true;
+      tawkScript.src = 'https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq';
+      tawkScript.charset = 'UTF-8';
+      tawkScript.setAttribute('crossorigin', '*');
+
+      // Append the script to the document body
+      document.body.appendChild(tawkScript);
+    }, 500); // 500 ms delay
+
+    // Cleanup on unmount: Remove Tawk.to script and reset Tawk_API
+    return () => {
+      clearTimeout(initTawk);
+      const tawkScript = document.querySelector('script[src="https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq"]');
+      if (tawkScript) document.body.removeChild(tawkScript);
+      delete window.Tawk_API;
+    };
+  }, []); // Runs only once on component mount
 
   return (
     <>
