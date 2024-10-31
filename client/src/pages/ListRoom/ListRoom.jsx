@@ -96,6 +96,7 @@ export default function ListRoom() {
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-md"
                 placeholder="From"
+                min="0"
               />
               <span>-</span>
               <input
@@ -106,6 +107,7 @@ export default function ListRoom() {
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-md"
                 placeholder="To"
+                min="0"
               />
             </div>
           </div>
@@ -126,9 +128,11 @@ export default function ListRoom() {
                 className="pl-10 w-full p-2 border rounded-md appearance-none"
               >
                 <option value="">All types</option>
-                <option value="Double">Conference</option>
-                <option value="Training">Training</option>
-                <option value="Board">Board</option>
+                <option value="Double">Double</option>
+                <option value="Single">Single</option>
+                <option value="Meeting">Meeting</option>
+                <option value="Event">Event</option>
+                <option value="Office">Office</option>
               </select>
             </div>
           </div>
