@@ -1426,6 +1426,151 @@ app.post("/status-booking/:app_trans_id", async (req, res) => {
     }
 });
 
+
+// Payment ZALOPAY for add service of existed booking
+app.post("/add-service", async (req, res) => {
+    console.log("Received add service payment request:", req.body);
+
+    const { bookingId, userId, selectedServices, totalPrice, methodId } = req.body;
+
+    // Check if the required fields are present
+    if (!bookingId || !userId || !selectedServices || !totalPrice || !methodId) {
+        console.log("Missing required fields");
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Log the received values
+    console.log("Booking ID:", bookingId);
+    console.log("User ID:", userId);
+    console.log("Selected Services:", selectedServices);
+    console.log("Total Price:", totalPrice);
+    console.log("Method ID:", methodId);
+
+    // Prepare embedded data for ZaloPay
+    const embed_data = {
+        bookingId,
+        userId,
+        selectedServices,
+        redirecturl: `http://localhost:3000/viewbookings/${userId}`
+    };
+
+    const transID = Math.floor(Math.random() * 1000000); // Unique transaction ID
+    const order = {
+        app_id: config.app_id,
+        app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
+        app_user: userId,
+        app_time: Date.now(),
+        item: JSON.stringify(selectedServices),
+        embed_data: JSON.stringify(embed_data),
+        amount: totalPrice,
+        description: `Payment for services in booking ID: ${bookingId}`,
+        bank_code: methodId,
+        callback_url: "https://16c3-2402-800-63af-9448-f560-4130-56-8e08.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+    };
+
+    // Generate MAC for security
+    const data = `${config.app_id}|${order.app_trans_id}|${order.app_user}|${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
+    order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+
+    try {
+        console.log("Sending request to ZaloPay");
+        const result = await axios.post(config.endpoint, null, { params: order });
+
+        console.log("ZaloPay response:", result.data);
+
+        // Check if the payment URL is available and return it
+        if (result.data && result.data.order_url) {
+            res.json({ paymentUrl: result.data.order_url });
+        } else {
+            console.log("Failed to get order_url from ZaloPay");
+            res.status(400).json({ message: "Failed to initiate payment" });
+        }
+    } catch (error) {
+        console.error("Error initiating payment:", error.response ? error.response.data : error.message);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Callback endpoint to handle payment confirmation and insert into database
+app.post("/callback-add-service", async (req, res) => {
+    let result = {};
+
+    try {
+        // Parse and validate the callback data
+        const dataStr = req.body.data;
+        const reqMac = req.body.mac;
+        const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
+
+        if (reqMac !== mac) {
+            result.return_code = -1;
+            result.return_message = "MAC does not match";
+            return res.json(result);
+        }
+
+        const dataJson = JSON.parse(dataStr);
+        const embedData = JSON.parse(dataJson.embed_data);
+        const selectedServices = embedData.selectedServices || [];
+        const bookingId = embedData.bookingId;
+        const userId = embedData.userId;
+        const totalPrice = dataJson.amount;
+        const paymentMethodId = dataJson.paymentMethodId || 3; // Use the payment method ID from frontend or default to 3
+
+        console.log("Processing callback for booking ID:", bookingId);
+
+        // Insert services to BookingServices table
+        if (selectedServices.length > 0) {
+            const servicesQuery = `
+                INSERT INTO BookingServices (bookingId, serviceId, servicePrice)
+                VALUES (?, ?, ?)
+            `;
+            for (const service of selectedServices) {
+                const { serviceId, servicePrice } = service;
+                await db.promise().query(servicesQuery, [bookingId, serviceId, servicePrice]);
+                console.log("Service inserted into BookingServices:", serviceId);
+            }
+        }
+
+        // Insert payment details into Payment table
+        const paymentQuery = `
+            INSERT INTO Payment (bookingId, methodId, totalPrice, paymentStatus)
+            VALUES (?, ?, ?, 'Completed')
+        `;
+        await db.promise().query(paymentQuery, [bookingId, paymentMethodId, totalPrice]);
+        console.log("Payment record inserted into Payment");
+
+        // Insert transaction record into Transaction table
+        const transactionQuery = `
+            INSERT INTO Transaction (bookingId, userId, eventDescription, transactionType, transactionAmount, transactionStatus)
+            VALUES (?, ?, 'Payment for extra services', 'Payment', ?, 'Success')
+        `;
+        const eventDescription = `Payment for services in booking ID: ${bookingId}`;
+        await db.promise().query(transactionQuery, [bookingId, userId, eventDescription, totalPrice]);
+        console.log("Transaction record inserted");
+
+        // Update the totalPrice in Booking table
+        const updateBookingPriceQuery = `
+            UPDATE Booking
+            SET totalPrice = totalPrice + ?
+            WHERE bookingId = ?
+        `;
+        await db.promise().query(updateBookingPriceQuery, [totalPrice, bookingId]);
+        console.log("Booking totalPrice updated successfully");
+
+        // Return success response
+        result.return_code = 1;
+        result.return_message = "success";
+    } catch (ex) {
+        console.error("Error during callback handling:", ex);
+        result.return_code = 0;
+        result.return_message = ex.message;
+    }
+
+    // Send response back to ZaloPay
+    res.json(result);
+});
+
+
+
 //View booking
 
 app.get('/viewbookings/:userId', async (req, res) => {
