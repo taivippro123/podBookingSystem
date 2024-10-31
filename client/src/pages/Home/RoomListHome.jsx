@@ -121,7 +121,7 @@ export default function ListRoom() {
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>
-                Description: {room.roomDescription}
+                Available hours: 9:00AM - 5:00 PM
                 </span>
               </div>
               <div className="flex items-center text-red-500 mb-4">
