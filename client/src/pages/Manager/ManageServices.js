@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ManageServices.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 
 const ManageServices = () => {
     const [services, setServices] = useState([]);
@@ -129,8 +130,9 @@ const ManageServices = () => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles['manageservices-h1']}>Manage Services</h1>
+            <h1 className={styles.headerTitle}>MANAGE SERVICES</h1>
             <div className={styles['manageservices-servicesList']}>
+
                 <table className={styles['manageservices-table']}>
                     <thead>
                         <tr className={styles['manageservices-tr']}>
@@ -158,7 +160,7 @@ const ManageServices = () => {
                                         </button>
                                         <button
                                             className={styles['manageservices-icon-button']}
-                                            onClick={() => confirmDeleteService(service.serviceId)} // Gọi hàm xác nhận xóa
+                                            onClick={() => confirmDeleteService(service.serviceId)}
                                         >
                                             <FaTrash color="red" size={30} />
                                         </button>
@@ -168,6 +170,10 @@ const ManageServices = () => {
                         ))}
                     </tbody>
                 </table>
+                <button className={styles['manageservices-add-service-button']} onClick={() => setIsPopupOpen(true)}>
+                    <FaPlus size={30} color="white" />
+                </button>
+                {/* Kết thúc container cho bảng */}
             </div>
 
             {isPopupOpen && (
@@ -217,9 +223,7 @@ const ManageServices = () => {
                 </div>
             )}
 
-            <button className={styles['manageservices-add-service-button']} onClick={() => setIsPopupOpen(true)}>
-                +
-            </button>
+
 
             {/* Popup thông báo */}
             {isNotificationPopupOpen && (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { FaPlus, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './ManageRooms.module.css';
 
 function ManageRooms() {
@@ -179,40 +179,42 @@ function ManageRooms() {
 
     return (
         <div>
-            <h2 className={styles.title}>Room Management</h2>
 
-            <table className={styles.roomTable}>
-                <thead>
-                    <tr>
-                        <th>Room Name</th>
-                        <th>Room Status</th>
-                        <th className={styles.actionsHeader}>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rooms.map((room) => (
-                        <tr key={room.roomId}>
-                            <td>{room.roomName}</td>
-                            <td>{room.roomStatus}</td>
-                            <td>
-                                <div className={styles.actions}>
-                                    <a href={imageUrls[room.roomId]} target="_blank" rel="noopener noreferrer">
-                                        <FaEye color="blue" size={30} />
-                                    </a>
-                                    <Link to={`/rooms/${room.roomId}`}>
-                                        <FaEdit color="black" size={30} />
-                                    </Link>
-                                    <FaTrash color="red" size={30} onClick={() => openDeleteModal(room.roomId)} />
-                                </div>
-                            </td>
+
+            {/* Thêm container cho bảng */}
+            <div className={styles.tableContainer}>
+                <h1 className={styles.headerTitle}>ROOM MANAGEMENT</h1>
+                <table className={styles.roomTable}>
+                    <thead>
+                        <tr>
+                            <th>Room Name</th>
+                            <th>Room Status</th>
+                            <th className={styles.actionsHeader}>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <div className={styles.addRoomButton} onClick={() => setIsModalOpen(true)}>
-                <FaPlus size={30} color="white" />
+                    </thead>
+                    <tbody>
+                        {rooms.map((room) => (
+                            <tr key={room.roomId}>
+                                <td>{room.roomName}</td>
+                                <td>{room.roomStatus}</td>
+                                <td>
+                                    <div className={styles.actions}>
+                                        <Link to={`/rooms/${room.roomId}`}>
+                                            <FaEdit color="black" size={30} />
+                                        </Link>
+                                        <FaTrash color="red" size={30} onClick={() => openDeleteModal(room.roomId)} />
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <div className={styles.addRoomButton} onClick={() => setIsModalOpen(true)}>
+                    <FaPlus size={30} color="white" />
+                </div>
             </div>
+
+
 
             {/* Room Creation Modal */}
             {isModalOpen && (
@@ -274,43 +276,12 @@ function ManageRooms() {
                             onChange={handleInputChange}
                             className={styles.inputField}
                         />
-                        <select
-                            name="roomStatus"
-                            value={newRoom.roomStatus}
-                            onChange={handleInputChange}
-                            className={styles.inputField}
-                        >
+                        <select name="roomStatus" value={newRoom.roomStatus} onChange={handleInputChange}>
                             <option value="Available">Available</option>
                             <option value="Unavailable">Unavailable</option>
                         </select>
-                        <input type="file" onChange={handleImageChange} />
-                        <button className={styles.createButton} onClick={handleCreateRoom}>Create Room</button>
-                    </div>
-                </div>
-            )}
-
-            {/* Delete Confirmation Modal */}
-            {isDeleteModalOpen && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={closeDeleteModal}>×</span>
-                        <h2>Are you sure you want to delete this room?</h2>
-                        <div className={styles.buttonContainer}>
-                            <button className={styles.yesButton} onClick={handleDeleteRoom}>Yes</button>
-                            <button className={styles.noButton} onClick={closeDeleteModal}>No</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-
-            {/* Delete Success Modal */}
-            {isDeleteSuccessModalOpen && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={closeDeleteSuccessModal}>×</span>
-                        <h2>Room deleted successfully!</h2>
-                        <button className={styles.closeButton} onClick={closeDeleteSuccessModal}>Close</button>
+                        <input type="file" onChange={handleImageChange} className={styles.fileInput} />
+                        <button onClick={handleCreateRoom} className={styles.submitButton}>Create Room</button>
                     </div>
                 </div>
             )}
@@ -319,9 +290,9 @@ function ManageRooms() {
             {isSuccessModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={closeSuccessModal}>×</span>
-                        <h2>Room created successfully!</h2>
-                        <button className={styles.closeButton} onClick={closeSuccessModal}>Close</button>
+                        <h2>Success!</h2>
+                        <p>Room created successfully.</p>
+                        <button onClick={closeSuccessModal}>Close</button>
                     </div>
                 </div>
             )}
@@ -330,9 +301,32 @@ function ManageRooms() {
             {isErrorModalOpen && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        <span className={styles.closeIcon} onClick={closeErrorModal}>×</span>
-                        <h2>{errorMessage}</h2>
-                        <button className={styles.closeButton} onClick={closeErrorModal}>Close</button>
+                        <h2>Error!</h2>
+                        <p>{errorMessage}</p>
+                        <button onClick={closeErrorModal}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Delete Room</h2>
+                        <p>Are you sure you want to delete this room?</p>
+                        <button onClick={handleDeleteRoom}>Yes</button>
+                        <button onClick={closeDeleteModal}>No</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Success Modal */}
+            {isDeleteSuccessModalOpen && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h2>Success!</h2>
+                        <p>Room deleted successfully.</p>
+                        <button onClick={closeDeleteSuccessModal}>Close</button>
                     </div>
                 </div>
             )}

@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function ManageRoom() {
-    const { id } = useParams(); // Get room ID from URL parameters
-    const navigate = useNavigate(); // Hook for programmatic navigation
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [room, setRoom] = useState(null);
     const [newRoomData, setNewRoomData] = useState({
         roomName: '',
@@ -16,8 +16,9 @@ function ManageRoom() {
         roomPricePerWeek: 0,
         roomStatus: 'Available',
     });
-    const [image, setImage] = useState(null); // State for image file
-    const [error, setError] = useState(null); // To manage errors
+    const [image, setImage] = useState(null);
+    const [error, setError] = useState(null);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
     useEffect(() => {
         fetchRoomDetails();
@@ -48,7 +49,7 @@ function ManageRoom() {
     };
 
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]); // Set image file to state
+        setImage(e.target.files[0]);
     };
 
     const handleUpdateRoom = async () => {
@@ -64,14 +65,14 @@ function ManageRoom() {
             formData.append('roomStatus', newRoomData.roomStatus);
 
             if (image) {
-                formData.append('roomImage', image); // Append image file if available
+                formData.append('roomImage', image);
             }
 
             await axios.put(`http://localhost:5000/rooms/${id}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            alert('Room updated successfully');
-            fetchRoomDetails(); // Refresh room details
+            setIsSuccessModalOpen(true);
+            fetchRoomDetails();
         } catch (error) {
             console.error('Error updating room:', error);
             alert('Failed to update room.');
@@ -82,34 +83,41 @@ function ManageRoom() {
         try {
             await axios.delete(`http://localhost:5000/rooms/${id}`);
             alert('Room deleted successfully');
-            navigate('/manager'); // Redirect to the manager page after deletion
+            navigate('/manager');
         } catch (error) {
             console.error('Error deleting room:', error);
             alert('Failed to delete room.');
         }
     };
 
+    const closeSuccessModal = () => {
+        setIsSuccessModalOpen(false);
+    };
+
+    const handleBackToHome = () => {
+        navigate('/manager/manageRooms'); // Điều hướng đến trang quản lý
+    };
+
     if (error) {
-        return <p>{error}</p>; // Display error message if any
+        return <p style={{ color: 'red' }}>{error}</p>;
     }
 
     if (!room) {
-        return <p>Loading room details...</p>; // Loading state
+        return <p>Loading room details...</p>;
     }
 
     return (
-        <div>
-            <h2>Manage Room</h2>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)' }}>
+            <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>Manage Room</h2>
 
-            {/* Render multiple images */}
             {room.images && room.images.length > 0 ? (
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
                     {room.images.map((imageUrl, index) => (
                         <img
                             key={index}
                             src={imageUrl}
                             alt={`Room ${room.roomId} image ${index + 1}`}
-                            style={{ width: '150px', height: 'auto', objectFit: 'cover' }}
+                            style={{ width: '150px', height: 'auto', objectFit: 'cover', borderRadius: '4px' }}
                         />
                     ))}
                 </div>
@@ -117,22 +125,25 @@ function ManageRoom() {
                 <p>No images available for this room.</p>
             )}
 
-            <div><strong>Name:</strong> {room.roomName}</div>
-            <div><strong>Type:</strong> {room.roomType}</div>
-            <div><strong>Description:</strong> {room.roomDescription}</div>
-            <div><strong>Details Description:</strong> {room.roomDetailsDescription}</div>
-            <div><strong>Price per Slot:</strong> {room.roomPricePerSlot}</div>
-            <div><strong>Price per Day:</strong> {room.roomPricePerDay}</div>
-            <div><strong>Price per Week:</strong> {room.roomPricePerWeek}</div>
-            <div><strong>Status:</strong> {room.roomStatus}</div>
+            <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+                <div><strong>Name:</strong> {room.roomName}</div>
+                <div><strong>Type:</strong> {room.roomType}</div>
+                <div><strong>Description:</strong> {room.roomDescription}</div>
+                <div><strong>Details Description:</strong> {room.roomDetailsDescription}</div>
+                <div><strong>Price per Slot:</strong> {room.roomPricePerSlot}</div>
+                <div><strong>Price per Day:</strong> {room.roomPricePerDay}</div>
+                <div><strong>Price per Week:</strong> {room.roomPricePerWeek}</div>
+                <div><strong>Status:</strong> {room.roomStatus}</div>
+            </div>
 
-            <h3>Update Room Information</h3>
+            <h3 style={{ marginTop: '20px' }}>Update Room Information</h3>
             <input
                 type="text"
                 name="roomName"
                 placeholder="Room Name"
                 value={newRoomData.roomName}
                 onChange={handleInputChange}
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
             <input
                 type="text"
@@ -140,25 +151,29 @@ function ManageRoom() {
                 placeholder="Room Type"
                 value={newRoomData.roomType}
                 onChange={handleInputChange}
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
             <textarea
                 name="roomDescription"
                 placeholder="Room Description"
                 value={newRoomData.roomDescription}
                 onChange={handleInputChange}
-            ></textarea>
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
+            />
             <textarea
                 name="roomDetailsDescription"
                 placeholder="Room Details Description"
                 value={newRoomData.roomDetailsDescription}
                 onChange={handleInputChange}
-            ></textarea>
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
+            />
             <input
                 type="number"
                 name="roomPricePerSlot"
                 placeholder="Price per Slot"
                 value={newRoomData.roomPricePerSlot}
                 onChange={handleInputChange}
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
             <input
                 type="number"
@@ -166,6 +181,7 @@ function ManageRoom() {
                 placeholder="Price per Day"
                 value={newRoomData.roomPricePerDay}
                 onChange={handleInputChange}
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
             <input
                 type="number"
@@ -173,17 +189,37 @@ function ManageRoom() {
                 placeholder="Price per Week"
                 value={newRoomData.roomPricePerWeek}
                 onChange={handleInputChange}
+                style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
-            <select name="roomStatus" value={newRoomData.roomStatus} onChange={handleInputChange}>
+            <select name="roomStatus" value={newRoomData.roomStatus} onChange={handleInputChange} style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}>
                 <option value="Available">Available</option>
-                <option value="Maintenance">Maintenance</option>
+                <option value="Unavailable">Unavailable</option>
             </select>
 
-            {/* Image upload input */}
-            <input type="file" onChange={handleImageChange} accept="image/*" />
+            <input type="file" onChange={handleImageChange} style={{ marginBottom: '15px' }} />
 
-            <button onClick={handleUpdateRoom}>Update Room</button>
-            <button onClick={handleDeleteRoom}>Delete Room</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                <button onClick={handleUpdateRoom} style={{ padding: '10px 15px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '20px' }}>
+                    Update Room
+                </button>
+
+                <button onClick={handleBackToHome} style={{ padding: '10px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                    Back to Home Page
+                </button>
+            </div>
+
+            {/* Cửa sổ pop-up thông báo thành công */}
+            {isSuccessModalOpen && (
+                <div style={{ position: 'fixed', top: '0', left: '0', right: '0', bottom: '0', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+                        <h3>Update Successful!</h3>
+                        <p>Your room information has been updated successfully.</p>
+                        <button onClick={closeSuccessModal} style={{ padding: '10px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

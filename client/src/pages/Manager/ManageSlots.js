@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { AiOutlinePlus } from 'react-icons/ai';
 import styles from './ManageSlots.module.css';
+import { FaPlus } from 'react-icons/fa';
 
 function ManageSlots() {
     const [slots, setSlots] = useState([]);
@@ -172,7 +172,7 @@ function ManageSlots() {
 
     return (
         <div className={styles.manageSlotsContainer}>
-            <h1 className={styles.pageTitle}>Manage Slots</h1>
+            <h1 className={styles.headerTitle}>MANAGE SLOTS</h1>
 
             <table className={styles.slotTable}>
                 <thead>
@@ -210,9 +210,7 @@ function ManageSlots() {
                 </tbody>
             </table>
 
-            <div className={styles.addSlotButton} onClick={() => setIsAddingSlot(true)}>
-                <AiOutlinePlus />
-            </div>
+
 
             {isAddingSlot && (
                 <div className={styles.manageSlotsPopup}>
@@ -306,14 +304,14 @@ function ManageSlots() {
 
             {isDeleteConfirmVisible && (
                 <div className={styles.deleteConfirmPopup}>
-                <h2>Confirm Deletion</h2>
-                <p>Are you sure you want to delete this slot?</p>
-                <div className={styles.buttonContainer}>
-                    <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
-                    <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
+                    <h2>Confirm Deletion</h2>
+                    <p>Are you sure you want to delete this slot?</p>
+                    <div className={styles.buttonContainer}>
+                        <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
+                        <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
+                    </div>
                 </div>
-            </div>
-            
+
             )}
 
 
@@ -325,6 +323,9 @@ function ManageSlots() {
                     </div>
                 </div>
             )}
+            <div className={styles.addSlotButton} onClick={() => setIsAddingSlot(true)}>
+            <FaPlus size={30} color="white" />
+            </div>
         </div>
     );
 }

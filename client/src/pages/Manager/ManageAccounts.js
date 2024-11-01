@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ManageAccounts.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 
 // Component cho thông báo thành công
 const SuccessPopup = ({ message, onClose }) => {
@@ -217,7 +218,7 @@ const ManageAccounts = () => {
 
     return (
         <div className={styles.container}>
-            <h1>Manage Accounts</h1>
+            <h1 className={styles.headerTitle}>MANAGE ACCOUNTS</h1>
 
             {/* Nút lọc vai trò nằm bên phải */}
             <div className={styles.roleFilter}>
@@ -329,7 +330,7 @@ const ManageAccounts = () => {
             )}
 
             <button className={styles.addAccountButton} onClick={() => setIsPopupOpen(true)}>
-                +
+            <FaPlus size={30} color="white" />
             </button>
         </div>
     );

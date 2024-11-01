@@ -6,16 +6,56 @@
     color: #333;
 }
 
+/* Liên kết font Inter hoặc Roboto từ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* Áp dụng font chữ cho toàn bộ giao diện */
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+body{
+    background-color: rgb(248, 242, 242);
+}
+
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
+}
+
+.manageSlotsContainer{
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 50px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
+
 .slotTable {
     width: 100%;
-    border-collapse: collapse; /* Gộp các đường viền lại với nhau */
-    margin-bottom: 20px;
-    border-radius: 16px; /* Bo tròn góc */
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
-    table-layout: auto; /* Thay đổi sang auto */
-    box-sizing: border-box; /* Đảm bảo padding và border không làm cản trở chiều rộng */
-    border: none; /* Ẩn đường viền của bảng */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 50px 0; /* Ẩn đường viền của bảng */
 }
 
 .slotTable th,
@@ -27,7 +67,7 @@
 }
 
 .slotTable th {
-    background-color: #4a90e2; /* Màu nền cho tiêu đề */
+    background-color: #415c77; /* Màu nền cho tiêu đề */
     color: white;
     font-weight: bold;
 }
@@ -64,23 +104,21 @@
 }
 
 .addSlotButton {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    padding: 0;
-    cursor: pointer;
-    font-size: 1.5rem;
-    width: 60px;
-    height: 60px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s, transform 0.2s;
+    width: 60px; /* Kích thước của nút */
+    height: 60px; 
+    background-color: #4CAF50; /* Màu xanh lá cho nút */
+    border-radius: 50%; /* Hình tròn */
+    color: white; 
+    cursor: pointer; 
+    position: absolute; /* Đặt vị trí tuyệt đối */
+    bottom: 10px; /* Cách đáy container 20px */
+    left: 48%; /* Đặt bên trái ở giữa */
+     /* Đẩy sang trái một nửa kích thước của nút để căn giữa */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tăng bóng cho nút */
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .addSlotButton:hover {

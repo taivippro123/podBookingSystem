@@ -1,37 +1,73 @@
 /* ManageServices.module.css */
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+    display: flex; /* Sử dụng flexbox */
+    justify-content: center; /* Canh giữa nội dung */
 }
 
-
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
+}
 
 .manageservices-servicesList {
     width: 100%;
     max-width: 1200px;
     margin-top: 20px;
+    display: flex; /* Sử dụng flexbox */
+    justify-content: center; /* Canh giữa nội dung */
 }
 
 .manageservices-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+    background-color: white;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 50px 0;
 }
 
 .manageservices-th {
-    background-color: #007bff;
+    background-color: #415c77;
     color: #ffffff;
     padding: 15px;
     text-align: center;
     font-weight: 600;
 }
+
+/* ManageServices.module.css */
+
+.manageservices-tr:hover {
+    background-color: #c1d1e0; /* Màu nền khi hover */
+}
+
+/* Bạn cũng có thể thêm hiệu ứng chuyển tiếp cho sự mượt mà */
+.manageservices-tr {
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển tiếp màu nền */
+}
+
 
 .manageservices-td {
     border: 1px solid #ddd;
@@ -116,29 +152,30 @@
     background-color: #0056b3;
 }
 
+body {
+    background-color: rgb(248, 242, 242);
+}
+
 .manageservices-add-service-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #007bff;
-    color: #ffffff;
-    font-size: 3rem;
-    font-weight: bold;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s;
-    margin-bottom: 50px;
+    width: 60px; /* Kích thước của nút */
+    height: 60px; 
+    background-color: #4CAF50; /* Màu xanh lá cho nút */
+    border-radius: 50%; /* Hình tròn */
+    color: white; 
+    cursor: pointer; 
+    position: absolute; /* Đặt vị trí tuyệt đối */
+    bottom: 10px; /* Cách đáy container 20px */
+    left: 48%; /* Đặt bên trái ở giữa */
+     /* Đẩy sang trái một nửa kích thước của nút để căn giữa */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tăng bóng cho nút */
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .manageservices-add-service-button:hover {
-    background-color: #0056b3;
+    background-color: #10583a;
 }
 
 /* Overlay cho pop-up thông báo */
@@ -160,7 +197,6 @@
     color: #333; /* Màu chữ */
     margin: 0; /* Không có margin cho p */
 }
-
 
 .confirmation-popup {
     background: #ffffff;
@@ -254,3 +290,4 @@
 .confirmation-popup button:last-of-type:hover {
     background-color: #c82333; /* Màu đỏ đậm */
 }
+

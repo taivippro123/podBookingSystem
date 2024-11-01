@@ -1,30 +1,58 @@
 .container {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Căn giữa nội dung theo chiều ngang */
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
+
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
 }
 
 .table {
-    width: 90%; /* Đặt chiều rộng là 90% để dễ nhìn hơn */
+    width: 100%;
     border-collapse: collapse;
-    margin: 20px 0; /* Thêm khoảng cách cho phần tử */
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Tăng độ đổ bóng cho bảng */
+    margin: 70px 0; /* Tăng margin giữa bảng và container */
 }
 
 .table th {
-    background-color: #007bff; /* Màu nền của tiêu đề */
+    background-color: #415c77; /* Màu nền của tiêu đề */
     color: white; /* Màu chữ */
     padding: 12px; /* Tăng padding cho khoảng cách tốt hơn */
 }
 
 .table th, .table td {
-    border: 2px solid #fffffff6; /* Đường viền dày hơn để rõ ràng hơn */
-    padding: 12px; /* Tăng padding cho khoảng cách tốt hơn */
+    padding: 14px 20px; /* Tăng padding */
     text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f1f1;
 }
 
 .table tr:hover {
-    background-color: #d3d3d3; /* Nổi bật hàng khi di chuột */
+    background-color: #d8eaf1; /* Nổi bật hàng khi di chuột */
 }
 
 .actions button {
@@ -38,16 +66,25 @@
 }
 
 .addAccountButton {
-    position: fixed; /* Đặt vị trí ở góc dưới bên phải */
-    bottom: 20px; /* Khoảng cách từ đáy */
-    right: 20px; /* Khoảng cách từ bên phải */
-    padding: 10px 15px;
-    background-color: green; /* Màu nền xanh cho nút thêm tài khoản */
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%; /* Làm cho nút tròn */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Thêm bóng cho nút */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px; /* Kích thước của nút */
+    height: 60px; 
+    background-color: #4CAF50; /* Màu xanh lá cho nút */
+    border-radius: 50%; /* Hình tròn */
+    color: white; 
+    cursor: pointer; 
+    position: absolute; /* Đặt vị trí tuyệt đối */
+    bottom: 10px; /* Cách đáy container 20px */
+    left: 48%; /* Đặt bên trái ở giữa */
+     /* Đẩy sang trái một nửa kích thước của nút để căn giữa */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tăng bóng cho nút */
+    transition: background-color 0.3s, transform 0.2s; /* Thêm bóng cho nút */
+}
+
+.addAccountButton:hover {
+    background-color: #218838;
 }
 
 .popupOverlay {
@@ -176,8 +213,8 @@
 /* Phần nút bộ lọc vai trò */
 .roleFilter {
     display: flex; /* Sử dụng flexbox để căn chỉnh các nút */
-    justify-content: flex-end; /* Căn chỉnh nút về phía bên phải */
-    margin-bottom: 20px; /* Khoảng cách dưới nút */
+    justify-content: flex-start; /* Căn chỉnh nút về phía bên phải */
+    margin-bottom: 10px; /* Khoảng cách dưới nút */
     width: 90%; /* Đặt chiều rộng giống như bảng */
 }
 
@@ -185,12 +222,14 @@
     margin-left: 10px; /* Khoảng cách giữa các nút */
     padding: 8px 12px;
     border: none;
-    background-color: #007bff;
+    background-color: #415c77;
     color: white;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 50px;
+    margin-bottom: -50px;
 }
 
 .roleFilter button:hover {
-    background-color: #0056b3; /* Màu tối hơn khi di chuột */
+    background-color: #293b4d; /* Màu tối hơn khi di chuột */
 }
