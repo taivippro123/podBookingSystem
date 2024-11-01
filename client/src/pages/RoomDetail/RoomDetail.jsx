@@ -19,7 +19,7 @@ import {
   Droplet,
 } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
-
+import PaymentModal from "./PaymentModal"; // Import the PaymentModal component
 import RoomListDetail from "./RoomListDetail";
 
 export default function RoomDetail() {
@@ -312,6 +312,58 @@ export default function RoomDetail() {
     );
   };
 
+  //modelPayment
+  const [showPaymentModal, setShowPaymentModal] = useState(false); // Controls modal visibility
+const [paymentData, setPaymentData] = useState(null); // Holds booking data for the modal
+const handleOpenPaymentModal = (e) => {
+  e.preventDefault();
+  if (!userId) {
+    setError('You must be logged in to book a room.');
+    navigate('/login');
+    return;
+  }
+
+  let bookingStartDay, bookingEndDay;
+  const discount = useUserPoints ? Math.min(userPoints, totalPrice * 0.1) : 0;
+
+  if (bookingType === 'slot') {
+    if (!selectedDate || selectedSlots.length === 0) {
+      setError('Please select a date and at least one time slot.');
+      return;
+    }
+    bookingStartDay = selectedDate;
+    bookingEndDay = selectedDate;
+  } else if (bookingType === 'range') {
+    if (!dateRange.start || !dateRange.end || !isRoomAvailable) {
+      setError('Please select valid dates and ensure room availability.');
+      return;
+    }
+    bookingStartDay = dateRange.start;
+    bookingEndDay = dateRange.end;
+  }
+
+  setError('');
+
+  const paymentDetails = {
+    roomId: id,
+    roomName: roomDetail.roomName,
+    totalPrice,
+    bookingType,
+    selectedServices: services.filter(s => s.selected),
+    selectedSlots,
+    selectedDate,
+    bookingStartDay,
+    bookingEndDay,
+    discount,
+    userId,
+  };
+
+  setPaymentData(paymentDetails);
+  setShowPaymentModal(true);
+};
+
+
+
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden mt-4 container mx-auto p-4">
@@ -406,7 +458,7 @@ export default function RoomDetail() {
 
 
           <form onSubmit={handleNavigateToPayment} className="bg-gray-50 p-2 rounded-lg mb-6">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Book the Room</h2>
+            <h2 className="text-3xl font-bold mb-1 text-gray-800">Book the Room</h2>
 
 
 
@@ -537,7 +589,7 @@ export default function RoomDetail() {
             )}
 
             {/* Available Services Section */}
-            <div className="p-4 bg-white shadow-lg rounded-lg mb-6">
+            <div className="p-1 bg-white shadow-lg rounded-lg mb-1">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Services</h2>
               {services.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -613,6 +665,7 @@ export default function RoomDetail() {
                 (bookingType === 'slot' && !selectedDate) ||
                 (bookingType === 'range' && (!dateRange.start || !dateRange.end))
               }
+              onClick={handleOpenPaymentModal}
               className={`w-full py-2 px-4 rounded-md transition duration-300 ${(bookingType === 'slot' && !selectedDate) ||
                 (bookingType === 'range' && (!dateRange.start || !dateRange.end))
                 ? 'bg-gray-400 cursor-not-allowed'
@@ -625,6 +678,13 @@ export default function RoomDetail() {
 
         </div>
       </div>
+      {showPaymentModal && (
+  <PaymentModal
+    paymentData={paymentData}
+    closeModal={() => setShowPaymentModal(false)}
+  />
+)}
+
 
 
 
