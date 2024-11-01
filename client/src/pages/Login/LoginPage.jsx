@@ -42,26 +42,50 @@ export default function LoginPage() {
         alert("Login failed. Please check your email and password.");
       });
   };
+ 
+  
   const handleGoogleSignIn = () => {
     signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        localStorage.setItem("email", user.email);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            userEmail: user.email,
-            userName: user.displayName,
-            userRole: 4, // Assuming Google sign-in users are customers by default
-          })
-        );
-        navigate("/customer"); // Navigate to customer page after Google sign-in
+      .then(async (result) => {
+          const user = result.user;
+          const response = await fetch('http://localhost:5000/login-google', { 
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  email: user.email,
+                  displayName: user.displayName || '',
+              })
+          });
+          
+          if (response.ok) {
+              const userData = await response.json();
+              const userId = userData.user.userId; // Extract userId for easier reference
+              
+              // Store necessary user data in localStorage
+              localStorage.setItem("userId", userId);
+              localStorage.setItem("user", JSON.stringify({
+                  userId: userId,
+                  userEmail: userData.user.userEmail,
+                  userName: userData.user.userName,
+                  userRole: userData.user.userRole,
+              }));
+              
+              // Navigate to the profile page using the extracted userId
+              navigate(`/profile/${userId}`);
+          } else {
+              console.error("Error:", response.statusText);
+              alert("Failed to log in. Please try again.");
+          }
       })
       .catch((error) => {
-        console.error("Google login error:", error);
-        alert("Google sign-in failed. Please try again.");
+          console.error("Google login error:", error);
+          alert("Google sign-in failed. Please try again.");
       });
-  };
+};
+
+
+
+
   const navigateBasedOnRole = (userRole) => {
     switch (userRole) {
       case 1:

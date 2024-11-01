@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Profile() {
-    const { userId } = useParams();  // Get the userId from the URL
+    const { userId: userIdParam } = useParams();  
+    const navigate = useNavigate();
     const [profile, setProfile] = useState({
         userName: '',
         userEmail: '',
@@ -11,13 +12,20 @@ function Profile() {
         userPassword: '',
         userPoint: 0
     });
-    const [isEditing, setIsEditing] = useState(false); // Track whether the form is in edit mode
+    const [isEditing, setIsEditing] = useState(false);
     const [message, setMessage] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    // Fetch user's profile when component mounts
+    // Check for userId from URL or local storage
+    const userId = userIdParam || localStorage.getItem("userId");
+
     useEffect(() => {
+        if (!userId) {
+            navigate("/login");  // Redirect to login if no userId is available
+            return;
+        }
+
         axios.get(`http://localhost:5000/profile/${userId}`)
             .then(response => {
                 setProfile(response.data);
@@ -25,7 +33,7 @@ function Profile() {
             .catch(error => {
                 console.error('There was an error fetching the profile!', error);
             });
-    }, [userId]);
+    }, [userId, navigate]);
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -115,7 +123,6 @@ function Profile() {
                                 name="userPassword" 
                                 value={profile.userPassword} 
                                 onChange={handleInputChange} 
-                                required 
                             />
                         </div>
                         <div>
@@ -124,7 +131,6 @@ function Profile() {
                                 type="password" 
                                 value={confirmPassword} 
                                 onChange={handleConfirmPasswordChange} 
-                                required 
                             />
                         </div>
                         {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}

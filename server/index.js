@@ -30,6 +30,8 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
+const dbPromise = db.promise();
+
 db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
@@ -185,6 +187,32 @@ app.post('/login', (req, res) => {
     });
 });
 
+
+app.post('/login-google', async (req, res) => {
+    const { email, displayName } = req.body;
+
+    try {
+        // Check if the user exists
+        const [userResults] = await db.promise().query('SELECT * FROM User WHERE userEmail = ?', [email]);
+        let user = userResults[0]; // Get the first result if it exists
+
+        // If user doesn't exist, create a new user
+        if (!user) {
+            const [newUserResult] = await db.promise().query(
+                'INSERT INTO User (userName, userEmail, userRole) VALUES (?, ?, ?)',
+                [displayName || '', email, 4] // Default to customer role (4)
+            );
+            const [newUser] = await db.promise().query('SELECT * FROM User WHERE userId = ?', [newUserResult.insertId]);
+            user = newUser[0]; // Assign the newly created user to `user`
+        }
+
+        // Return user data, whether it's new or existing
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ message: "Error signing in with Google" });
+    }
+});
 
 
 
@@ -1220,7 +1248,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://e01e-118-69-70-166.ngrok-free.app/callback",
+        callback_url: "https://193b-118-69-70-166.ngrok-free.app/callback",
         selectedDate
     };
 

@@ -176,7 +176,7 @@ export default function Home() {
             </div>
 
 
-            <div className="grid md:grid-cols-2 gap-8 mt-4">
+            {/* <div className="grid md:grid-cols-2 gap-8 mt-4">
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
                   src="https://www.helloworldsaigon.com/wp-content/uploads/2021/01/Compressed-Private-Office-6-paxes4.jpg"
@@ -222,7 +222,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </main>
