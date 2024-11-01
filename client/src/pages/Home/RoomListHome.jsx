@@ -76,8 +76,9 @@ export default function ListRoom() {
 
   return (
     <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold">Trending Workspace</h1>
 
-<div className="flex justify-between mb-1">
+      <div className="flex justify-between mb-1">
         <button
           onClick={handlePreviousPage}
           disabled={currentPage === 0}
@@ -121,12 +122,12 @@ export default function ListRoom() {
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>
-                Available hours: 9:00AM - 5:00 PM
+                  Available hours: 9:00AM - 5:00 PM
                 </span>
               </div>
               <div className="flex items-center text-red-500 mb-4">
-              <DollarSign className="w-4 h-4 mr-1" />
-              <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot </span>
+                <DollarSign className="w-4 h-4 mr-1" />
+                <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot </span>
               </div>
               <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
                 Book Now
@@ -136,7 +137,7 @@ export default function ListRoom() {
         ))}
       </div>
 
-      
+
     </div>
   );
 }

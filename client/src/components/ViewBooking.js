@@ -275,6 +275,8 @@ function ViewBookings() {
                 </Layout>
             </Layout>
 
+
+
             {/* Modal for adding services */}
             <Modal
                 title="Add Service"
