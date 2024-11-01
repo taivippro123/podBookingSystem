@@ -76,6 +76,25 @@ export default function ListRoom() {
 
   return (
     <div className="container mx-auto p-4">
+
+<div className="flex justify-between mb-1">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 0}
+          className={`flex items-center py-2 px-4 rounded ${currentPage === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 transition duration-300'}`}
+        >
+          <ChevronLeft className="w-5 h-5 mr-2" />
+          Previous
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={(currentPage + 1) * roomsPerPage >= filteredRooms.length}
+          className={`flex items-center py-2 px-4 rounded ${(currentPage + 1) * roomsPerPage >= filteredRooms.length ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 transition duration-300'}`}
+        >
+          Next
+          <ChevronRight className="w-5 h-5 ml-2" />
+        </button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedRooms.map((room) => (
           <div
@@ -102,7 +121,7 @@ export default function ListRoom() {
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>
-                Description: {room.roomDescription}
+                Available hours: 9:00AM - 5:00 PM
                 </span>
               </div>
               <div className="flex items-center text-red-500 mb-4">
@@ -117,24 +136,7 @@ export default function ListRoom() {
         ))}
       </div>
 
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0}
-          className={`flex items-center py-2 px-4 rounded ${currentPage === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 transition duration-300'}`}
-        >
-          <ChevronLeft className="w-5 h-5 mr-2" />
-          Previous
-        </button>
-        <button
-          onClick={handleNextPage}
-          disabled={(currentPage + 1) * roomsPerPage >= filteredRooms.length}
-          className={`flex items-center py-2 px-4 rounded ${(currentPage + 1) * roomsPerPage >= filteredRooms.length ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800 transition duration-300'}`}
-        >
-          Next
-          <ChevronRight className="w-5 h-5 ml-2" />
-        </button>
-      </div>
+      
     </div>
   );
 }

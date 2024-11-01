@@ -76,6 +76,10 @@
     margin-right: 10px;
 }
 
+.searchIcon {
+    align-self: center; /* Căn giữa biểu tượng */
+}
+
 body, html {
     background-color: white; /* Màu nền cho toàn bộ màn hình */
     margin: 0;

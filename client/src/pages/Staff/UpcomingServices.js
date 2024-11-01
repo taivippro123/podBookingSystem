@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './UpcomingServices.module.css'; // Import CSS module
-import { FaSearch } from 'react-icons/fa'; // Import biểu tượng kính lúp
+import Pagination from '../../components/Pagination/Pagination';
 
 const UpcomingServices = () => {
     const [upcomingServices, setUpcomingServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredServices, setFilteredServices] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1); // Trạng thái cho trang hiện tại
+    const itemsPerPage = 8; // Số lượng dịch vụ hiển thị trên mỗi trang
 
     useEffect(() => {
         const fetchUpcomingServices = async () => {
+            setLoading(true); // Reset loading khi fetch
             try {
                 const response = await axios.get('http://localhost:5000/staff/upcoming-services');
                 setUpcomingServices(response.data);
-                setFilteredServices(response.data); // Set dịch vụ gốc ban đầu
             } catch (error) {
                 setError(error.response ? error.response.data.message : 'Error fetching upcoming services');
             } finally {
@@ -26,19 +26,14 @@ const UpcomingServices = () => {
         fetchUpcomingServices();
     }, []);
 
-    // Hàm tìm kiếm
-    const handleSearch = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-    
-        // Filter services by exact match
-        const filtered = upcomingServices.filter((service) => {
-            return service.bookingId.toString() === value;
-        });
-    
-        setFilteredServices(filtered);
+    // Tính toán các dịch vụ cần hiển thị trên trang hiện tại
+    const indexOfLastService = currentPage * itemsPerPage;
+    const indexOfFirstService = indexOfLastService - itemsPerPage;
+    const currentServices = upcomingServices.slice(indexOfFirstService, indexOfLastService);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page); // Cập nhật trang hiện tại
     };
-    
 
     if (loading) {
         return <div className={styles.loading}>Loading...</div>;
@@ -51,40 +46,39 @@ const UpcomingServices = () => {
     return (
         <div className={styles.pageContainer}> {/* Container toàn trang */}
             <h2>Upcoming Services</h2>
-            <div className={styles.searchContainer}>
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearch} // Gọi hàm tìm kiếm khi có sự thay đổi
-                    placeholder="Search by Booking ID"
-                    className={styles.searchInput}
-                />
-            </div>
-            {filteredServices.length === 0 ? (
+            {upcomingServices.length === 0 ? (
                 <p>No upcoming services found.</p>
             ) : (
-                <table className={styles.servicesTable}>
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Service ID</th>
-                            <th>Service Name</th>
-                            <th>Service Price</th>
-                            <th>Service Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredServices.map((service) => (
-                            <tr key={service.serviceId}>
-                                <td>{service.bookingId}</td>
-                                <td>{service.serviceId}</td>
-                                <td>{service.serviceName}</td>
-                                <td>{service.servicePrice} VND</td>
-                                <td>{service.serviceDescription}</td>
+                <>
+                    <table className={styles.servicesTable}>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Service ID</th>
+                                <th>Service Name</th>
+                                <th>Service Price</th>
+                                <th>Service Description</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {currentServices.map((service, index) => (
+                                <tr key={`${service.serviceId}-${index}`}> {/* Tạo key duy nhất */}
+                                    <td>{service.bookingId}</td>
+                                    <td>{service.serviceId}</td>
+                                    <td>{service.serviceName}</td>
+                                    <td>{service.servicePrice} VND</td>
+                                    <td>{service.serviceDescription}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <Pagination
+                        totalItems={upcomingServices.length} // Tổng số dịch vụ
+                        itemsPerPage={itemsPerPage} // Số lượng dịch vụ mỗi trang
+                        currentPage={currentPage} // Trang hiện tại
+                        onPageChange={handlePageChange} // Hàm xử lý thay đổi trang
+                    />
+                </>
             )}
         </div>
     );

@@ -29,7 +29,7 @@ const WorkspaceType = ({ title, description, images, amenities }) => {
         <Clock size={16} className="mr-2" />
         <span className="text-sm">Depends on package</span>
       </div>
-      <div className="relative mb-4">
+      <div className="relative mb-2">
         <img
           src={images[currentImage]}
           alt={title}
@@ -195,7 +195,7 @@ const WorkspaceComparison = () => {
 
   return (
     <div className=" mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mt-6">
         <h1 className="text-2xl font-bold">Modern workspace</h1>
         <div className="flex space-x-2">
           <button
