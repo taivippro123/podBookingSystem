@@ -76,7 +76,7 @@ export default function ListRoom() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Trending Workspace</h1>
+      
 
       <div className="flex justify-between mb-1">
         <button
@@ -87,6 +87,7 @@ export default function ListRoom() {
           <ChevronLeft className="w-5 h-5 mr-2" />
           Previous
         </button>
+        <h1 className="text-2xl font-bold">Trending Workspace</h1>
         <button
           onClick={handleNextPage}
           disabled={(currentPage + 1) * roomsPerPage >= filteredRooms.length}
