@@ -70,8 +70,8 @@ export default function LoginPage() {
                   userRole: userData.user.userRole,
               }));
               
-              // Navigate to the profile page using the extracted userId
-              navigate(`/profile/${userId}`);
+              // Navigate to the Home page
+              navigate('/');
           } else {
               console.error("Error:", response.statusText);
               alert("Failed to log in. Please try again.");
