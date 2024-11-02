@@ -187,7 +187,7 @@ function ViewBookings() {
                                     </li>
                                 ))}
                             </ul>
-                            <p className=" text-red-500 mb-4"><strong>Total Price: </strong>{(Number(booking.totalPrice)).toLocaleString('vi-VN')} VND (Paid)</p>
+                            <p className=" text-red-500 mb-4"><strong>Total Price: </strong>{(Number(booking.totalPrice)).toLocaleString('vi-VN')} VND </p>
                         </div>
                     </Card>
                 </Col>
