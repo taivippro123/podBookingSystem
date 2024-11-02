@@ -137,7 +137,7 @@ function ViewBookings() {
 
     const renderBookingItem = (booking) => {
         let actionButton = null;
-
+    
         if (booking.bookingStatus === 'Completed' || booking.bookingStatus === 'Refunded') {
             actionButton = (
                 <Button type="primary" onClick={() => showFeedbackModal(booking)}>
@@ -153,44 +153,84 @@ function ViewBookings() {
         } else {
             console.log("Unrecognized booking status:", booking.bookingStatus);
         }
-
+    
         return (
-            <Card
-                key={booking.id}
-                title={`Room: ${booking.roomName}`}
-                extra={actionButton}
-                style={{ marginBottom: 16 }}
-            >
-                <div className="booking-header" style={{ display: 'flex', marginBottom: 16 }}>
-                    <div>
-                        <p>Status: {booking.bookingStatus}</p>
-                        <p>Start: {new Date(booking.bookingStartDay).toLocaleDateString()}</p>
-                        <p>End: {new Date(booking.bookingEndDay).toLocaleDateString()}</p>
-                    </div>
-                </div>
-                <div className="booking-details">
-                    <strong>Slots:</strong>
-                    <ul>
-                        {booking.slots.map((slot, index) => (
-                            <li key={index}>
-                                {new Date(`1970-01-01T${slot.slotStartTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(`1970-01-01T${slot.slotEndTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </li>
-                        ))}
-                    </ul>
-                    <strong>Services:</strong>
-                    <ul>
-                        {booking.services.map((service, index) => (
-                            <li key={index}>
-                                {service.serviceName}: {service.servicePrice} VND
-                            </li>
-                        ))}
-                    </ul>
-                    <p><strong>Total Price: </strong>{booking.totalPrice} VND</p>
-                </div>
-            </Card>
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+                <Col span={12}>
+                    <Card
+                        key={booking.id}
+                        title={`Room: ${booking.roomName}`}
+                        extra={actionButton}
+                        style={{ marginBottom: 16 }}
+                    >
+                        <div className="booking-header" style={{ display: 'flex', marginBottom: 16 }}>
+                            <div>
+                                <p>Status: {booking.bookingStatus}</p>
+                                <p>Start: {new Date(booking.bookingStartDay).toLocaleDateString()}</p>
+                                <p>End: {new Date(booking.bookingEndDay).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div className="booking-details">
+                            <strong>Slots:</strong>
+                            <ul>
+                                {booking.slots.map((slot, index) => (
+                                    <li key={index}>
+                                        {new Date(`1970-01-01T${slot.slotStartTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(`1970-01-01T${slot.slotEndTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </li>
+                                ))}
+                            </ul>
+                            <strong>Services:</strong>
+                            <ul>
+                                {booking.services.map((service, index) => (
+                                    <li key={index}>
+                                         {service.serviceName}: {(Number(service.servicePrice)).toLocaleString('vi-VN')} VND
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className=" text-red-500 mb-4"><strong>Total Price: </strong>{(Number(booking.totalPrice)).toLocaleString('vi-VN')} VND (Paid)</p>
+                        </div>
+                    </Card>
+                </Col>
+    
+                {/* Duplicate the card in another column for two cards per row */}
+                <Col span={12}>
+                    <Card
+                        key={`${booking.id}-duplicate`}
+                        title={`Room: ${booking.roomName}`}
+                        extra={actionButton}
+                        style={{ marginBottom: 16 }}
+                    >
+                        <div className="booking-header" style={{ display: 'flex', marginBottom: 16,  }}>
+                            <div>
+                                <p>Status: {booking.bookingStatus}</p>
+                                <p>Start: {new Date(booking.bookingStartDay).toLocaleDateString()}</p>
+                                <p>End: {new Date(booking.bookingEndDay).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div className="booking-details">
+                            <strong>Slots:</strong>
+                            <ul>
+                                {booking.slots.map((slot, index) => (
+                                    <li key={index}>
+                                        {new Date(`1970-01-01T${slot.slotStartTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(`1970-01-01T${slot.slotEndTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </li>
+                                ))}
+                            </ul>
+                            <strong>Services:</strong>
+                            <ul>
+                                {booking.services.map((service, index) => (
+                                    <li key={index}>
+                                        {service.serviceName}: {(Number(service.servicePrice)).toLocaleString('vi-VN')} VND
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className='text-red-500 mb-4'><strong>Total Price: </strong>{(Number(booking.totalPrice)).toLocaleString('vi-VN')} VND</p>
+                        </div>
+                    </Card>
+                </Col>
+            </Row>
         );
     };
-
     const upcomingBookingsPaginated = upcomingBookings.slice(
         (upcomingCurrentPage - 1) * itemsPerPage,
         upcomingCurrentPage * itemsPerPage
