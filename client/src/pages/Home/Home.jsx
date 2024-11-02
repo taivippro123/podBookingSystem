@@ -17,7 +17,7 @@ import fb from '../../assets/fb.png';
 import home1 from '../../assets/home1.jpg';
 import wk from '../../assets/workspace.webp';
 import en from '../../assets/enterprise.webp';
-
+import { useLocation } from 'react-router-dom';
 
 
 const CARD_WIDTH = 280; // Fixed width for each card
@@ -35,32 +35,30 @@ export default function Home() {
       img: "https://cdn-static.wework.com/content/images/home/hero-banner_1920x576.webp",
     },
   ]);
-
+  const location = useLocation();
   useEffect(() => {
-    // Delay adding the Tawk.to script slightly to ensure the component is fully mounted
-    const initTawk = setTimeout(() => {
-      // Initialize Tawk.to on the window object
-      window.Tawk_API = window.Tawk_API || {};
-      window.Tawk_LoadStart = new Date();
+    if (location.pathname === "/") { // Only load on the home page
+      const initTawk = setTimeout(() => {
+        window.Tawk_API = window.Tawk_API || {};
+        window.Tawk_LoadStart = new Date();
 
-      const tawkScript = document.createElement("script");
-      tawkScript.async = true;
-      tawkScript.src = 'https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq';
-      tawkScript.charset = 'UTF-8';
-      tawkScript.setAttribute('crossorigin', '*');
+        const tawkScript = document.createElement("script");
+        tawkScript.async = true;
+        tawkScript.src = "https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq";
+        tawkScript.charset = "UTF-8";
+        tawkScript.setAttribute("crossorigin", "*");
 
-      // Append the script to the document body
-      document.body.appendChild(tawkScript);
-    }, 500); // 500 ms delay
+        document.body.appendChild(tawkScript);
+      }, 500);
 
-    // Cleanup on unmount: Remove Tawk.to script and reset Tawk_API
-    return () => {
-      clearTimeout(initTawk);
-      const tawkScript = document.querySelector('script[src="https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq"]');
-      if (tawkScript) document.body.removeChild(tawkScript);
-      delete window.Tawk_API;
-    };
-  }, []); // Runs only once on component mount
+      return () => {
+        clearTimeout(initTawk);
+        const tawkScript = document.querySelector('script[src="https://embed.tawk.to/6720a3062480f5b4f5958a31/1ibbnplfq"]');
+        if (tawkScript) document.body.removeChild(tawkScript);
+        delete window.Tawk_API;
+      };
+    }
+  }, [location.pathname]); // Runs only once on component mount
 
   return (
     <>
