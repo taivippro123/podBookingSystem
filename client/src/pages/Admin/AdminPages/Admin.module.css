@@ -13,8 +13,8 @@ body {
 }
 
 .Admin-header {
-    background-color: white; /* Màu trắng cho header */
-    padding: 10px 20px; /* Padding cho header */
+    background-color: #ffffff; /* Màu trắng cho header */
+    padding: 30px 20px; /* Tăng padding cho header để tăng chiều cao */
     width: 100%; /* Kéo dài hết chiều ngang */
     position: fixed; /* Giữ header cố định ở trên cùng */
     top: 0; /* Đưa lên trên cùng */
@@ -25,19 +25,20 @@ body {
 
 .Admin-nav {
     flex: 1; /* Đảm bảo chiều rộng phù hợp cho navigation */
-    background-color: white; /* Màu trắng cho thanh navigation */
-    padding: 20px;
+    background-color: #fdfdfd; /* Màu nền của thanh navigation */
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Căn đều không gian giữa các nút */
     align-items: center; /* Căn giữa cho các nút */
-    color: black;
-    position: fixed; /* Giữ cố định navigation */
-    top: 0; /* Đưa lên trên cùng */
+    color: #080808; /* Màu chữ xám nhạt */
+    position: fixed;
+    top: 0;
     left: 0;
     height: 100%; /* Đảm bảo cột kéo dài hết trang */
     z-index: 20; /* Đặt z-index cao hơn header */
     transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển động */
+    
 }
 
 .Admin-hidden {
@@ -49,8 +50,8 @@ body {
 }
 
 .Admin-menuToggle {
-    background-color: rgba(248, 248, 248, 0.8); /* Nền trắng với độ trong suốt */
-    color: black; /* Màu chữ */
+    background-color: rgba(0, 0, 0, 0.11); /* Nền trắng với độ trong suốt */
+    color: rgba(29, 22, 22, 0.438); /* Màu chữ cho nút */
     border: none; /* Không có viền */
     cursor: pointer; /* Con trỏ khi hover */
     font-size: 30px; /* Kích thước icon */
@@ -128,14 +129,76 @@ h1 {
 .Admin-navLink {
     display: flex; /* Để căn giữa icon và text */
     align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 20px; /* Tăng khoảng cách giữa các nút trong menu */
     text-decoration: none; /* Bỏ gạch chân cho link */
-    color: black; /* Màu chữ */
-    width: 100%; /* Chiếm toàn bộ chiều rộng */
-    padding: 10px; /* Padding cho các link */
-    border-radius: 5px; /* Bo góc cho các link */
-    transition: background-color 0.3s ease; /* Hiệu ứng cho các link */
+    color: #000000; /* Màu chữ xám nhạt cho link */
+    font-size: larger;
+    font-weight: bold; /* In đậm chữ */
+    transition: background-color 0.3s ease; /* Thêm hiệu ứng cho link */
+    width: 100%; /* Chiếm toàn bộ chiều rộng cho link */
+    margin-bottom: 10px; /* Hiệu ứng cho các link */
 }
 
 .Admin-navLink:hover {
-    background-color: #e0e0e0; /* Màu xám nhạt khi hover */
+    background-color: #636669; /* Màu xám nhạt khi hover */
+}
+
+/* Thêm màu nền khi nút đang được chọn */
+.Admin-navLink-active {
+    background-color: #636669; /* Giữ màu nền khi được nhấn */
+    color: white; /* Màu chữ trắng */
+}
+
+
+
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* Admin.module.css */
+/* ViewNumberAccounts.module.css */
+
+
+
+.bottomRow {
+    display: flex;
+    justify-content: center;
+}
+
+.popularServicesContainer {
+    margin-top: 40px; /* Thay đổi giá trị này để điều chỉnh khoảng cách */
+}
+
+/* Chỉnh sửa cho biểu đồ */
+.chartContainer {
+    display: flex;
+    justify-content: space-between; /* Giữ khoảng cách giữa các biểu đồ */
+    flex-wrap: wrap; /* Nếu không đủ chỗ, các biểu đồ sẽ xuống hàng */
+    margin: 40px 0 0; /* Thêm khoảng cách trên để lùi tất cả biểu đồ xuống */
+    padding: 0; /* Bỏ padding */
+    width: 100%; /* Chiếm toàn bộ chiều rộng của trang */
+}
+
+
+.chartItem {
+    flex: 1; /* Mỗi biểu đồ chiếm 1 phần không gian */
+    min-width: 300px; /* Chiều rộng tối thiểu cho mỗi biểu đồ */
+    max-width: calc(33.33% - 20px); /* Đặt chiều rộng tối đa để không quá lớn, với khoảng cách giữa các biểu đồ */
+    margin: 10px; /* Khoảng cách giữa các biểu đồ */
+}
+
+.chartTotalAccounts {
+    width: 100%; /* Đặt chiều rộng để chiếm hết không gian có thể */
+    padding: 20px;
+    
+    
+    border-radius: 8px;
 }

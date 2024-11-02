@@ -34,6 +34,7 @@ import ViewTransactions from './pages/Admin/ViewTransactions/ViewTransactions.js
 import ViewNumberAccounts from './pages/Admin/ViewNumberAccounts/ViewNumberAccounts.js';
 import ViewPopularRooms from './pages/Admin/ViewPopularRooms/ViewPopularRooms.js';
 import ViewPopularServices from './pages/Admin/ViewPopularServices/ViewPopularServices.js';
+import ViewFeedbacks from './pages/Admin/ViewFeedbacks/ViewFeedbacks.js';
 
 function App() {
   return (
@@ -66,8 +67,6 @@ function App() {
             </ProtectedRoute>
           } />
         </Route>
-
-
 
         {/* Đường dẫn cho Staff */}
         <Route path="/staff" element={
@@ -117,7 +116,12 @@ function App() {
             <ProtectedRoute allowedRoles={[1]}>
               <ViewPopularServices />
             </ProtectedRoute>
-          } /> {/* Đường dẫn mới cho ViewPopularServices */}
+          } />
+          <Route path="feedback" element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <ViewFeedbacks />
+            </ProtectedRoute>
+          } /> {/* Đường dẫn mới cho ViewFeedbacks */}
         </Route>
 
         {/* Đường dẫn cho Manager */}

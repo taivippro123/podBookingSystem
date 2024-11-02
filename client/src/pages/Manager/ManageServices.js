@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ManageServices.module.css';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 
 const ManageServices = () => {
     const [services, setServices] = useState([]);
@@ -29,7 +29,7 @@ const ManageServices = () => {
         const newService = {
             serviceName,
             serviceDescription,
-            servicePrice,
+            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')), // Chuyển đổi giá thành số
             serviceStatus,
         };
 
@@ -53,7 +53,7 @@ const ManageServices = () => {
     const handleEditService = (service) => {
         setServiceName(service.serviceName);
         setServiceDescription(service.serviceDescription);
-        setServicePrice(service.servicePrice);
+        setServicePrice(formatInputPrice(service.servicePrice)); // Định dạng giá tiền
         setServiceStatus(service.serviceStatus);
         setEditingServiceId(service.serviceId);
         setIsPopupOpen(true);
@@ -63,7 +63,7 @@ const ManageServices = () => {
         const updatedService = {
             serviceName,
             serviceDescription,
-            servicePrice,
+            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')), // Chuyển đổi giá thành số
             serviceStatus,
         };
 
@@ -116,7 +116,7 @@ const ManageServices = () => {
     const closePopup = () => {
         clearForm();
         setIsPopupOpen(false);
-        setIsDeleteConfirmationOpen(false); // Đảm bảo đóng cửa sổ xác nhận xóa khi đóng pop-up
+        setIsDeleteConfirmationOpen(false);
     };
 
     const clearForm = () => {
@@ -127,9 +127,37 @@ const ManageServices = () => {
         setEditingServiceId(null);
     };
 
+    // Hàm định dạng giá tiền
+    const formatPrice = (amount) => {
+        if (!amount) return "0 VND";
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    };
+    
+
+    // Hàm định dạng khi nhập giá
+    const formatInputPrice = (value) => {
+        const numericValue = value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+        return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    };
+
+    const handleServicePriceChange = (e) => {
+        let value = e.target.value.replace(/[^\d]/g, ''); // Chỉ lấy phần số
+        if (value === "") {
+            setServicePrice(""); // Xóa tất cả nếu không có giá trị số
+        } else {
+            // Định dạng giá trị thành nhóm 3 chữ số mà không thêm "VND" vào cuối
+            const formattedPrice = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            setServicePrice(formattedPrice); // Chỉ thêm "VND" khi hiển thị
+        }
+    };
+    
+    
+    
+    
+
     return (
         <div className={styles.container}>
-            <h1 className={styles['manageservices-h1']}>Manage Services</h1>
+            <h1 className={styles.headerTitle}>MANAGE SERVICES</h1>
             <div className={styles['manageservices-servicesList']}>
                 <table className={styles['manageservices-table']}>
                     <thead>
@@ -146,7 +174,7 @@ const ManageServices = () => {
                             <tr key={service.serviceId} className={styles['manageservices-tr']}>
                                 <td className={styles['manageservices-td']}>{service.serviceName}</td>
                                 <td className={styles['manageservices-td']}>{service.serviceDescription}</td>
-                                <td className={styles['manageservices-td']}>{service.servicePrice}</td>
+                                <td className={styles['manageservices-td']}>{formatPrice(service.servicePrice)}</td>
                                 <td className={styles['manageservices-td']}>{service.serviceStatus}</td>
                                 <td className={`${styles['manageservices-td']} ${styles['actions-td']}`}>
                                     <div className={styles['actions-container']}>
@@ -158,7 +186,7 @@ const ManageServices = () => {
                                         </button>
                                         <button
                                             className={styles['manageservices-icon-button']}
-                                            onClick={() => confirmDeleteService(service.serviceId)} // Gọi hàm xác nhận xóa
+                                            onClick={() => confirmDeleteService(service.serviceId)}
                                         >
                                             <FaTrash color="red" size={30} />
                                         </button>
@@ -168,6 +196,9 @@ const ManageServices = () => {
                         ))}
                     </tbody>
                 </table>
+                <button className={styles['manageservices-add-service-button']} onClick={() => setIsPopupOpen(true)}>
+                    <FaPlus size={30} color="white" />
+                </button>
             </div>
 
             {isPopupOpen && (
@@ -189,7 +220,7 @@ const ManageServices = () => {
                             type="text"
                             placeholder="Service Price"
                             value={servicePrice}
-                            onChange={(e) => setServicePrice(e.target.value)}
+                            onChange={handleServicePriceChange} // Thay đổi hàm xử lý
                         />
                         <select
                             value={serviceStatus}
@@ -217,11 +248,6 @@ const ManageServices = () => {
                 </div>
             )}
 
-            <button className={styles['manageservices-add-service-button']} onClick={() => setIsPopupOpen(true)}>
-                +
-            </button>
-
-            {/* Popup thông báo */}
             {isNotificationPopupOpen && (
                 <div className={styles['notification-popup']}>
                     <p>{notification}</p>

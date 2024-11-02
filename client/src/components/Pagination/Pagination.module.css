@@ -1,0 +1,31 @@
+/* src/components/Pagination.module.css */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0; /* Giảm khoảng cách trên và dưới */
+}
+
+.pageButton {
+    margin: 0 3px; /* Giảm khoảng cách giữa các nút */
+    padding: 8px 12px; /* Giảm kích thước padding */
+    cursor: pointer;
+    border: 1px solid #ccc; /* Viền nút */
+    background-color: #fff; /* Nền trắng */
+    color: #000; /* Chữ đen */
+    font-size: 14px; /* Giảm kích thước chữ */
+    transition: background-color 0.2s ease, color 0.2s ease; /* Hiệu ứng chuyển tiếp */
+    border-radius: 4px; /* Bo góc cho nút */
+}
+
+.activePage {
+    background-color: #e0e0e0; /* Màu nền khi nút đang hoạt động */
+    color: #000; /* Chữ đen */
+    border: 1px solid #bbb; /* Viền khi đang hoạt động */
+}
+
+.pageButton:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    color: #000; /* Chữ đen khi hover */
+}

@@ -1,0 +1,103 @@
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
+}
+
+.feedback-container {
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
+.feedback-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 50px 0; /* Ẩn viền tràn ra ngoài */
+}
+
+.feedback-table th,
+.feedback-table td {
+    padding: 12px; /* Khoảng cách trong ô */
+    text-align: left; /* Căn trái */
+    border-bottom: 1px solid #ddd; /* Viền dưới nhẹ */
+    cursor: pointer; /* Hiển thị con trỏ dạng pointer khi di chuột qua ô */
+    font-weight: bolder;
+}
+
+.feedback-table th {
+    background-color: #415c77;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px; /* Màu chữ tiêu đề bảng */
+}
+
+.feedback-table tr:hover {
+    background-color: #f1f1f1; /* Màu nền khi di chuột qua hàng */
+}
+
+.feedback-empty {
+    color: #666; /* Màu chữ cho thông báo không có dữ liệu */
+    font-style: italic; /* Kiểu chữ nghiêng */
+    text-align: center; /* Căn giữa */
+}
+
+.pagination {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: flex-end; /* Align items to the right */
+    margin-top: 20px; /* Space above the pagination */
+    gap: 10px; /* Space between buttons and text */
+    width: 100%; /* Make pagination take full width of the table */
+    max-width: 1300px; /* Match the table's max width */
+}
+
+/* Pagination button styles */
+.pagination button {
+    padding: 10px 15px; /* Padding for buttons */
+    border: none; /* Remove default border */
+    background-color: white; /* Golden background color */
+    color: black; /* Black text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+/* Pagination button hover effect */
+.pagination button:hover {
+    background-color: grey; /* Darker shade on hover */
+}
+
+/* Disabled button style */
+.pagination button:disabled {
+    background-color: #ccc; /* Grey background for disabled button */
+    cursor: not-allowed; /* Not allowed cursor */
+    color: #666; /* Darker text color for disabled button */
+}
+
+/* Pagination text style */
+.pagination span {
+    align-self: center; /* Center vertically */
+    font-weight: bold; /* Bold text */
+    color: #333; /* Text color */
+}
