@@ -5,6 +5,7 @@ import { GrTask } from 'react-icons/gr';
 import { LuDoorOpen } from 'react-icons/lu';
 import { BsPeopleFill } from 'react-icons/bs';
 import styles from './Admin.module.css';
+import { CalendarIcon } from '@heroicons/react/24/outline';
 import LogoutButton from '../../../components/LogoutButton/LogoutButton';
 import ViewNumberAccounts from '../ViewNumberAccounts/ViewNumberAccounts'; 
 import ViewPopularRooms from '../ViewPopularRooms/ViewPopularRooms';     
@@ -24,7 +25,12 @@ const Admin = () => {
     return (
         <div className={styles['Admin-container']}>
             <header className={styles['Admin-header']}>
-                <h1 className={styles.adminTitle}>Admin Dashboard</h1>
+            <div className="container mx-auto flex justify-center">
+                    <Link to="/" className="text-2xl font-bold text-blue-900 flex justify-center items-center">
+                        <CalendarIcon className="h-6 w-6" /> Work
+                        <span className="text-blue-500"> Zone</span>
+                    </Link>
+                </div>
             </header>
             <nav className={`${styles['Admin-nav']} ${isMenuVisible ? styles['Admin-visible'] : styles['Admin-hidden']}`}>
                 <Link to="/admin" className={styles.AdminTitle}>
@@ -49,7 +55,7 @@ const Admin = () => {
                             <span>View Transactions</span>
                         </Link>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link
                             to="/admin/number-accounts"
                             className={`${styles['Admin-navLink']} ${location.pathname === '/admin/number-accounts' ? styles['Admin-navLink-active'] : ''}`}
@@ -75,7 +81,7 @@ const Admin = () => {
                             <GrTask className={styles['Admin-icon']} />
                             <span>Popular Services</span>
                         </Link>
-                    </li>
+                    </li> */}
                     <li>
                         <Link
                             to="/admin/feedback"
@@ -93,7 +99,7 @@ const Admin = () => {
             <button
                 className={styles['Admin-menuToggle']}
                 onClick={toggleMenu}
-                style={{ left: isMenuVisible ? '200px' : '20px' }}
+                style={{ left: isMenuVisible ? '200px' : '0px' }}
             >
                 <FaBars />
             </button>

@@ -104,25 +104,23 @@ body{
 }
 
 .addSlotButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff; /* Màu nền của nút */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px; /* Kích thước của nút */
-    height: 60px; 
-    background-color: #4CAF50; /* Màu xanh lá cho nút */
-    border-radius: 50%; /* Hình tròn */
-    color: white; 
-    cursor: pointer; 
-    position: absolute; /* Đặt vị trí tuyệt đối */
-    bottom: 10px; /* Cách đáy container 20px */
-    left: 48%; /* Đặt bên trái ở giữa */
-     /* Đẩy sang trái một nửa kích thước của nút để căn giữa */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tăng bóng cho nút */
-    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
 }
 
 .addSlotButton:hover {
-    background-color: #218838;
+    background-color: #004794;
     transform: scale(1.1);
 }
 

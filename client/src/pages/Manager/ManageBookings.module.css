@@ -1,29 +1,44 @@
 .container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9; /* Màu nền nhẹ để tăng sự thoải mái */
-  border-radius: 8px; /* Bo tròn góc cho container */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Bóng nhẹ cho container */
+  width: 100%; /* Tăng độ rộng container */
+  max-width: 1450px; /* Giảm chiều dài tối đa của container */
+  margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 15px; 
+  box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: box-shadow 0.3s ease; 
+  margin-top: 70px; /* Bóng nhẹ cho container */
 }
 
-h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 24px; /* Kích thước lớn hơn cho tiêu đề */
+.headerTitle {
+  color: rgb(10, 10, 10);
+  text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+  margin: 0; /* Loại bỏ margin tự động */
+  font-size: 1.5rem; /* Kích thước tiêu đề */
+  font-weight: 700; 
+  padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+  border-radius: 10px; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+  max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+  position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+  top: 0; /* Đưa tiêu đề lên đầu container */
+  left: 0; /* Đưa tiêu đề sát bên trái container */
 }
 
 .roleFilter {
   display: flex; /* Sử dụng flexbox để căn chỉnh các nút */
-  justify-content: flex-end; /* Căn chỉnh nút về phía bên phải */
-  margin-bottom: 20px; /* Khoảng cách dưới cùng */
+  justify-content: flex-start; /* Căn chỉnh nút về phía bên phải */
+  margin-bottom: 10px; /* Khoảng cách dưới cùng */
+  margin-top: 60px;
 }
 
 .roleFilter button {
   margin-left: 10px; /* Khoảng cách giữa các nút */
   padding: 10px 15px; /* Padding cho nút */
   border: none; /* Bỏ đường viền */
-  background-color: #007bff; /* Màu nền cho nút */
+  background-color: #415c77; /* Màu nền cho nút */
   color: white; /* Màu chữ */
   border-radius: 5px; /* Bo góc cho nút */
   cursor: pointer; /* Đổi con trỏ khi di chuột */
@@ -31,9 +46,27 @@ h2 {
 }
 
 .roleFilter button:hover {
-  background-color: #0056b3; /* Màu tối hơn khi di chuột */
+  background-color: #2f4357; /* Màu tối hơn khi di chuột */
   transform: scale(1.05); /* Tăng kích thước nhẹ khi hover */
 }
+
+/* CSS cho nút View Details */
+.viewDetailsButton {
+  background-color: #2f4357; /* Màu nền xanh lam */
+  color: white; /* Màu chữ */
+  border: none; /* Loại bỏ viền */
+  border-radius: 4px; /* Bo tròn góc */
+  padding: 8px 12px; /* Khoảng cách bên trong nút */
+  font-size: 14px; /* Cỡ chữ */
+  cursor: pointer; /* Đổi con trỏ chuột khi hover */
+  transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu khi hover */
+}
+
+/* Hiệu ứng hover cho nút */
+.viewDetailsButton:hover {
+  background-color: #1f2d3a; /* Đổi màu nền khi hover */
+}
+
 
 .table {
   width: 100%;
@@ -52,7 +85,7 @@ h2 {
 }
 
 .table th {
-  background-color: #007bff; /* Màu nền cho tiêu đề bảng */
+  background-color: #415c77; /* Màu nền cho tiêu đề bảng */
   color: white; /* Màu chữ trắng */
   font-weight: bold; /* Đậm chữ */
 }

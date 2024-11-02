@@ -24,6 +24,11 @@ function ViewTransactions() {
       });
   }, []);
 
+  // Hàm định dạng số tiền
+  const formatCurrency = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+  };
+
   if (loading) return <p className={styles.loading}>Loading transactions...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
 
@@ -51,7 +56,7 @@ function ViewTransactions() {
     }));
   };
 
-  const handleRowClick = (transaction) => {
+  const handleViewDetails = (transaction) => {
     setSelectedTransaction(transaction);
   };
 
@@ -61,7 +66,7 @@ function ViewTransactions() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Transactions</h1>
+      <h1 className={styles.headerTitle}>TRANSACTIONS</h1>
       <table className={styles.table}>
         <thead>
           <tr>
@@ -77,15 +82,24 @@ function ViewTransactions() {
             <th onClick={() => handleSort('eventDate')} className={styles.sortable}>
               Event Date {sortConfig.key === 'eventDate' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
             </th>
+            <th></th> {/* Cột để chứa nút View Details */}
           </tr>
         </thead>
         <tbody>
           {currentTransactions.map(transaction => (
-            <tr key={transaction.transactionId} onClick={() => handleRowClick(transaction)}>
+            <tr key={transaction.transactionId}>
               <td>{transaction.transactionId}</td>
               <td>{transaction.bookingId}</td>
               <td>{transaction.userId}</td>
               <td>{new Date(transaction.eventDate).toLocaleDateString()}</td>
+              <td>
+                <button
+                  className={styles.viewButton}
+                  onClick={() => handleViewDetails(transaction)}
+                >
+                  View Details
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -109,22 +123,21 @@ function ViewTransactions() {
       </div>
 
       {selectedTransaction && (
-  <div className={styles.popup}>
-    <div className={styles.popupContent}>
-      <button className={styles.closeButton} onClick={closePopup}>X</button>
-      <div className={styles.header}>
-        <h2>Transaction Details</h2>
-        <div className={styles.details}>
-          <p><strong>Description:</strong> <span>{selectedTransaction.eventDescription}</span></p>
-          <p><strong>Type:</strong> <span>{selectedTransaction.transactionType}</span></p>
-          <p><strong>Amount:</strong> <span>{selectedTransaction.transactionAmount}</span></p>
-          <p><strong>Status:</strong> <span>{selectedTransaction.transactionStatus}</span></p>
+        <div className={styles.popup}>
+          <div className={styles.popupContent}>
+            <button className={styles.closeButton} onClick={closePopup}>X</button>
+            <div className={styles.header}>
+              <h2>Transaction Details</h2>
+              <div className={styles.details}>
+                <p><strong>Description:</strong> <span>{selectedTransaction.eventDescription}</span></p>
+                <p><strong>Type:</strong> <span>{selectedTransaction.transactionType}</span></p>
+                <p><strong>Amount:</strong> <span>{formatCurrency(selectedTransaction.transactionAmount)}</span></p> {/* Hiển thị Amount ở đây */}
+                <p><strong>Status:</strong> <span>{selectedTransaction.transactionStatus}</span></p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 }

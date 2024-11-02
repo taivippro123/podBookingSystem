@@ -11,9 +11,11 @@ const ManageBookings = () => {
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' }); // Trạng thái sắp xếp
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const [bookingsPerPage] = useState(10); // Số bookings trên mỗi trang
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Modal for viewing details
+  const [selectedBooking, setSelectedBooking] = useState(null); // Booking details for selected booking
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -47,30 +49,8 @@ const ManageBookings = () => {
       setFilteredBookings(updatedBookings);
     } catch (error) {
       console.error('Error updating booking status:', error);
-      if (error.response && error.response.status === 404) {
-        setStatusMessage('Booking not found.');
-      } else {
-        setStatusMessage('Failed to update booking status. Please try again.');
-      }
+      setStatusMessage('Failed to update booking status. Please try again.');
     }
-  };
-
-  const sortBookings = (key) => {
-    let direction = 'ascending';
-
-    // Đổi chiều sắp xếp nếu đã sắp xếp theo cùng một key
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-
-    const sortedBookings = [...filteredBookings].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
-      return 0;
-    });
-
-    setFilteredBookings(sortedBookings);
-    setSortConfig({ key, direction });
   };
 
   const filterByStatus = (status) => {
@@ -80,25 +60,39 @@ const ManageBookings = () => {
       const filtered = bookings.filter(booking => booking.bookingStatus === status);
       setFilteredBookings(filtered);
     }
-    setCurrentPage(1); // Reset trang khi thay đổi filter
+    setCurrentPage(1);
   };
 
-  // Tính toán chỉ số bookings hiển thị
+  // Pagination logic
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
   const currentBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
-
-  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage); // Tổng số trang
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
 
   const handlePageChange = (pageNumber) => {
-    if (pageNumber < 1) pageNumber = 1; // Không cho phép trang nhỏ hơn 1
-    if (pageNumber > totalPages) pageNumber = totalPages; // Không cho phép trang lớn hơn tổng số trang
-    setCurrentPage(pageNumber); // Cập nhật trang hiện tại
+    if (pageNumber < 1) pageNumber = 1;
+    if (pageNumber > totalPages) pageNumber = totalPages;
+    setCurrentPage(pageNumber);
+  };
+
+  const openDetailsModal = (booking) => {
+    setSelectedBooking(booking);
+    setIsDetailsModalOpen(true);
+  };
+
+  const closeDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedBooking(null);
+  };
+
+  // Function to format total price
+  const formatPrice = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' VND';
   };
 
   return (
     <div className={styles.container}>
-      <h2>Manage Bookings</h2>
+      <h1 className={styles.headerTitle}>MANAGE BOOKINGS</h1>
 
       {/* Filter buttons for status */}
       <div className={styles.roleFilter}>
@@ -113,14 +107,9 @@ const ManageBookings = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th onClick={() => sortBookings('bookingId')}>Booking ID</th>
-            <th onClick={() => sortBookings('userId')}>User ID</th>
-            <th onClick={() => sortBookings('roomId')}>Room ID</th>
-            <th onClick={() => sortBookings('bookingStartDay')}>Start Day</th>
-            <th onClick={() => sortBookings('bookingEndDay')}>End Day</th>
-            <th onClick={() => sortBookings('totalPrice')}>Total Price</th>
-            <th onClick={() => sortBookings('bookingStatus')}>Status</th>
-            <th onClick={() => sortBookings('createdAt')}>Created At</th>
+            <th>Booking ID</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -128,11 +117,6 @@ const ManageBookings = () => {
             currentBookings.map((booking) => (
               <tr key={booking.bookingId}>
                 <td>{booking.bookingId}</td>
-                <td>{booking.userId}</td>
-                <td>{booking.roomId}</td>
-                <td>{new Date(booking.bookingStartDay).toLocaleDateString()}</td>
-                <td>{new Date(booking.bookingEndDay).toLocaleDateString()}</td>
-                <td>{booking.totalPrice}</td>
                 <td>
                   <select
                     className={styles.statusSelect}
@@ -146,12 +130,14 @@ const ManageBookings = () => {
                     <option value="Completed">Completed</option>
                   </select>
                 </td>
-                <td>{new Date(booking.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <button className={styles.viewDetailsButton} onClick={() => openDetailsModal(booking)}>View Details</button>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="8">No bookings available.</td>
+              <td colSpan="3">No bookings available.</td>
             </tr>
           )}
         </tbody>
@@ -187,8 +173,31 @@ const ManageBookings = () => {
         <h2>Status Update</h2>
         <p>{statusMessage}</p>
       </Modal>
+
+      {/* Modal for viewing booking details */}
+      <Modal
+        isOpen={isDetailsModalOpen}
+        onRequestClose={closeDetailsModal}
+        contentLabel="Booking Details"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        {selectedBooking && (
+          <div>
+            <h2>Booking Details</h2>
+            <p><strong>User ID:</strong> {selectedBooking.userId}</p>
+            <p><strong>Room ID:</strong> {selectedBooking.roomId}</p>
+            <p><strong>Start Day:</strong> {new Date(selectedBooking.bookingStartDay).toLocaleDateString()}</p>
+            <p><strong>End Day:</strong> {new Date(selectedBooking.bookingEndDay).toLocaleDateString()}</p>
+            <p><strong>Total Price:</strong> {formatPrice(selectedBooking.totalPrice)}</p> {/* Use the formatPrice function */}
+            <p><strong>Created At:</strong> {new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
+            <button onClick={closeDetailsModal}>Close</button>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
 
 export default ManageBookings;
+  

@@ -68,7 +68,7 @@ function ViewFeedbacks() {
 
     return (
         <div className={styles['feedback-container']}>
-            <h1 className={styles['feedback-title']}>Feedback List</h1>
+            <h1 className={styles.headerTitle}>FEEDBACKS</h1>
             {currentFeedbacks.length > 0 ? (
                 <table className={styles['feedback-table']}>
                     <thead>

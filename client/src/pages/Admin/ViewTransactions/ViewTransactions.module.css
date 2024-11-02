@@ -1,5 +1,32 @@
 /* Styling for the main container */
+.container {
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
 
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
+}
 
 /* Title styling */
 .title {
@@ -27,10 +54,11 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
+    background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 60px 0;
 }
 
 .table th,
@@ -43,9 +71,9 @@
 }
 
 .table th {
-    background-color: #007bff;
+    background-color: #415c77;
     color: #fff;
-    font-weight: 600;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -177,5 +205,26 @@
     top: 10px;
     right: 10px;
   }
+
+  .viewButton {
+    background-color: #415c77;
+    color: white;
+    padding: 8px 10px; /* Giảm kích thước padding để làm nút nhỏ hơn */
+    font-size: 14px; /* Giảm kích thước font chữ */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+  
+  .viewButton:hover {
+    background-color: #202e3b; /* màu khi di chuột vào */
+  }
+  
+  .viewButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); /* hiệu ứng khi focus */
+  }
+  
   
   
