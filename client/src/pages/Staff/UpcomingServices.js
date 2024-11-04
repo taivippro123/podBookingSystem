@@ -3,8 +3,7 @@ import axios from 'axios';
 import styles from './UpcomingServices.module.css';
 import Pagination from '../../components/Pagination/Pagination';
 
-// Component to display the details of the selected service
-const ServiceDetailsPopup = ({ service, onClose }) => {
+const ServiceDetailsPopup = ({ service, onClose, formatCurrency }) => {
     return (
         <div className={styles.popup}>
             <div className={styles.popupContent}>
@@ -12,7 +11,7 @@ const ServiceDetailsPopup = ({ service, onClose }) => {
                 <p><strong>Booking ID:</strong> {service.bookingId}</p>
                 <p><strong>Service ID:</strong> {service.serviceId}</p>
                 <p><strong>Service Name:</strong> {service.serviceName}</p>
-                <p><strong>Service Price:</strong> {service.servicePrice} VND</p>
+                <p><strong>Service Price:</strong> {formatCurrency(service.servicePrice)}</p>
                 <p><strong>Service Description:</strong> {service.serviceDescription}</p>
                 <button className={styles.closeButton} onClick={onClose}>Close</button>
             </div>
@@ -28,7 +27,7 @@ const UpcomingServices = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchFailed, setSearchFailed] = useState(false);
-    const [serviceNameFilter, setServiceNameFilter] = useState('All Services');
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -47,54 +46,53 @@ const UpcomingServices = () => {
         fetchUpcomingServices();
     }, []);
 
-    const indexOfLastService = currentPage * itemsPerPage;
-    const indexOfFirstService = indexOfLastService - itemsPerPage;
+    const formatCurrency = (amount) => {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
+    };
 
-    // Get unique service names for the dropdown
-    const uniqueServiceNames = ['All Services', ...new Set(upcomingServices.map(service => service.serviceName))];
-
-    // Filter services based on search term and selected service name
-    const filteredServices = upcomingServices.filter(service => {
-        const matchesSearchTerm = service.bookingId.toString().includes(searchTerm);
-        const matchesServiceName = serviceNameFilter === 'All Services' || service.serviceName === serviceNameFilter;
-        return matchesSearchTerm && matchesServiceName;
+    const sortedServices = [...upcomingServices].sort((a, b) => {
+        if (sortConfig.key) {
+            const isAscending = sortConfig.direction === 'asc';
+            const aValue = a[sortConfig.key] ? a[sortConfig.key].toString() : ''; // Convert to string for comparison
+            const bValue = b[sortConfig.key] ? b[sortConfig.key].toString() : '';
+            if (aValue < bValue) return isAscending ? -1 : 1;
+            if (aValue > bValue) return isAscending ? 1 : -1;
+        }
+        return 0;
     });
 
-    const currentServices = filteredServices.slice(indexOfFirstService, indexOfLastService);
+    const filteredServices = sortedServices.filter(service => {
+        return service.bookingId.toString().includes(searchTerm) ||
+            service.serviceName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
+    const currentServices = filteredServices.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
-    const handleViewDetails = (service) => {
-        setSelectedService(service);
-    };
+    const handlePageChange = (page) => setCurrentPage(page);
 
-    const handleClosePopup = () => {
-        setSelectedService(null);
-    };
+    const handleViewDetails = (service) => setSelectedService(service);
+
+    const handleClosePopup = () => setSelectedService(null);
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
         setCurrentPage(1);
-
-        // Update searchFailed state based on search results
         setSearchFailed(filteredServices.length === 0 && event.target.value !== '');
     };
 
-    const handleServiceNameChange = (event) => {
-        setServiceNameFilter(event.target.value);
-        setCurrentPage(1);
-        setSearchFailed(filteredServices.length === 0);
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
     };
 
-    if (loading) {
-        return <div className={styles.loading}>Loading...</div>;
-    }
-
-    if (error) {
-        return <div className={styles.errorMessage}>{error}</div>;
-    }
+    if (loading) return <div className={styles.loading}>Loading...</div>;
+    if (error) return <div className={styles.errorMessage}>{error}</div>;
 
     return (
         <div className={styles.container}>
@@ -103,21 +101,10 @@ const UpcomingServices = () => {
                 <input
                     type="text"
                     className={styles.searchInput}
-                    placeholder="Search by Booking ID..."
+                    placeholder="Search by Booking ID or Service Name..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
-                <select
-                    className={styles.serviceNameDropdown}
-                    value={serviceNameFilter}
-                    onChange={handleServiceNameChange}
-                >
-                    {uniqueServiceNames.map((name, index) => (
-                        <option key={index} value={name}>
-                            {name}
-                        </option>
-                    ))}
-                </select>
             </div>
             {searchFailed && <p className={styles.searchFailed}>Search failed</p>}
             {filteredServices.length === 0 ? (
@@ -127,9 +114,15 @@ const UpcomingServices = () => {
                     <table className={styles.servicesTable}>
                         <thead>
                             <tr>
-                                <th>Booking ID</th>
-                                <th>Service ID</th>
-                                <th>Service Name</th>
+                                <th onClick={() => handleSort('bookingId')}>
+                                    Booking ID {sortConfig.key === 'bookingId' && (sortConfig.direction === 'asc' ? ' ▲' : ' ▼')}
+                                </th>
+                                <th onClick={() => handleSort('serviceId')}>
+                                    Service ID {sortConfig.key === 'serviceId' && (sortConfig.direction === 'asc' ? ' ▲' : ' ▼')}
+                                </th>
+                                <th onClick={() => handleSort('serviceName')}>
+                                    Service Name {sortConfig.key === 'serviceName' && (sortConfig.direction === 'asc' ? ' ▲' : ' ▼')}
+                                </th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -160,7 +153,7 @@ const UpcomingServices = () => {
                 </>
             )}
             {selectedService && (
-                <ServiceDetailsPopup service={selectedService} onClose={handleClosePopup} />
+                <ServiceDetailsPopup service={selectedService} onClose={handleClosePopup} formatCurrency={formatCurrency} />
             )}
         </div>
     );

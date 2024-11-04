@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './ManageSlots.module.css';
 import { FaPlus } from 'react-icons/fa';
+import { Modal, notification } from 'antd';
 
 function ManageSlots() {
     const [slots, setSlots] = useState([]);
@@ -16,7 +17,7 @@ function ManageSlots() {
     });
     const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
     const [slotToDelete, setSlotToDelete] = useState(null);
-    const [popupMessage, setPopupMessage] = useState("");
+    
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [hoveredSlotId, setHoveredSlotId] = useState(null);
 
@@ -29,8 +30,8 @@ function ManageSlots() {
             const response = await axios.get('http://localhost:5000/slots');
             setSlots(response.data);
         } catch (error) {
-            setPopupMessage('Error fetching slots');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error fetching slots' });
+            
             console.error('Error fetching slots:', error);
         }
     };
@@ -55,7 +56,7 @@ function ManageSlots() {
             const thirtyMinutes = 30 * 60 * 1000;
 
             if (newStartTime < lastEndTime.getTime() + thirtyMinutes) {
-                setPopupMessage(`Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!`);
+                notification.error({ message: 'Error', description: `Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!` });
                 setIsPopupVisible(true);
                 return;
             }
@@ -76,8 +77,8 @@ function ManageSlots() {
         });
 
         if (isDuplicate) {
-            setPopupMessage("Slot already exists or overlaps with at least 30 minutes!");
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with at least 30 minutes!' });
+            
             return;
         }
 
@@ -89,11 +90,9 @@ function ManageSlots() {
             setSlots([...slots, { ...formData, slotId: response.data.slotId }]);
             setIsAddingSlot(false);
             resetForm();
-            setPopupMessage("Add Slot Successfully!");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Add Slot Successfully!' });
         } catch (error) {
-            setPopupMessage('Error adding slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error adding slot' });
             console.error('Error adding slot:', error);
         }
     };
@@ -111,14 +110,13 @@ function ManageSlots() {
             ));
             setIsEditMode(false);
             resetForm();
-            setPopupMessage("Update Successfully");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Update Successfully' });
         } catch (error) {
-            setPopupMessage('Error updating slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error updating slot' });
             console.error('Error updating slot:', error);
         }
     };
+
 
     const handleDeleteClick = (slotId) => {
         setSlotToDelete(slotId);
@@ -132,11 +130,9 @@ function ManageSlots() {
             await axios.delete(`http://localhost:5000/slots/${slotToDelete}`);
             setSlots(slots.filter(slot => slot.slotId !== slotToDelete));
             setIsDeleteConfirmVisible(false);
-            setPopupMessage("Delete Successfully");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Delete Successfully' });
         } catch (error) {
-            setPopupMessage('Error deleting slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error deleting slot' });
             console.error('Error deleting slot:', error);
         }
     };
@@ -315,14 +311,7 @@ function ManageSlots() {
             )}
 
 
-            {isPopupVisible && (
-                <div className={styles.popup}>
-                    <div className={styles.popupContent}>
-                        <p>{popupMessage}</p>
-                        <button onClick={closePopup} className={styles.popupCloseButton}>Close</button>
-                    </div>
-                </div>
-            )}
+           
             <div className={styles.addSlotButton} onClick={() => setIsAddingSlot(true)}>
             <FaPlus size={30} color="white" />
             </div>

@@ -9,21 +9,25 @@
 
 /* Container */
 .container {
-    width: 100%; /* Tăng độ rộng container */
-    max-width: 1450px; /* Giảm chiều dài tối đa của container */
-    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    width: 100%;
+    /* Tăng độ rộng container */
+    max-width: 1450px;
+    /* Giảm chiều dài tối đa của container */
+    margin: 20px auto;
+    /* Giảm margin-top để đưa header gần hơn với bảng */
     padding: 30px;
     background-color: #ffffff;
-    border-radius: 15px; 
+    border-radius: 15px;
     box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
     position: relative;
-    transition: box-shadow 0.3s ease; 
+    transition: box-shadow 0.3s ease;
     margin-top: 70px;
 }
 
 /* Tăng hiệu ứng hover cho container */
 .container:hover {
-    box-shadow: 0px 18px 40px rgba(0, 0, 0, 0.3); /* Đổ bóng mạnh hơn khi hover */
+    box-shadow: 0px 18px 40px rgba(0, 0, 0, 0.3);
+    /* Đổ bóng mạnh hơn khi hover */
 }
 
 /* Header Title */
@@ -31,18 +35,27 @@
 /* Header Title */
 .headerTitle {
     color: rgb(10, 10, 10);
-    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
-    margin: 0; /* Loại bỏ margin tự động */
-    font-size: 1.5rem; /* Kích thước tiêu đề */
-    font-weight: 700; 
-    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
-    border-radius: 10px; 
+    text-align: center;
+    /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0;
+    /* Loại bỏ margin tự động */
+    font-size: 1.5rem;
+    /* Kích thước tiêu đề */
+    font-weight: 700;
+    padding: 10px 30px;
+    /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
-    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
-    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
-    top: 0; /* Đưa tiêu đề lên đầu container */
-    left: 0; /* Đưa tiêu đề sát bên trái container */
+    width: 30%;
+    /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px;
+    /* Giữ chiều rộng tối đa như trước */
+    position: absolute;
+    /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0;
+    /* Đưa tiêu đề lên đầu container */
+    left: 0;
+    /* Đưa tiêu đề sát bên trái container */
 }
 
 
@@ -58,12 +71,15 @@
 .searchInput {
     width: 80%;
     max-width: 400px;
-    padding: 14px; /* Thay đổi padding */
-    font-size: 1.2rem; /* Tăng kích thước chữ */
+    padding: 14px;
+    /* Thay đổi padding */
+    font-size: 1.2rem;
+    /* Tăng kích thước chữ */
     border: 1px solid #ddd;
     border-radius: 25px;
     outline: none;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Thay đổi độ đổ bóng */
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    /* Thay đổi độ đổ bóng */
     transition: all 0.3s ease;
 }
 
@@ -79,19 +95,23 @@
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
-    margin: 20px 0; /* Tăng margin giữa bảng và container */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+    /* Tăng độ đổ bóng cho bảng */
+    margin: 20px 0;
+    /* Tăng margin giữa bảng và container */
 }
 
 /* Thay đổi kiểu chữ cho bảng */
 .bookingsTable th,
 .bookingsTable td {
-    padding: 14px 20px; /* Tăng padding */
+    padding: 14px 20px;
+    /* Tăng padding */
     text-align: center;
     font-size: 1rem;
     font-weight: 500;
     color: #333;
     border-bottom: 1px solid #f1f1f1;
+
 }
 
 .bookingsTable th {
@@ -99,11 +119,14 @@
     color: white;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px; /* Thêm khoảng cách giữa các chữ cái */
+    letter-spacing: 1px;
+    /* Thêm khoảng cách giữa các chữ cái */
+    cursor: pointer;
 }
 
 .bookingsTable tr:hover {
-    background-color: #e0e8f0; /* Chỉnh sửa màu hover */
+    background-color: #e0e8f0;
+    /* Chỉnh sửa màu hover */
 }
 
 .bookingsTable td:last-child {
@@ -114,14 +137,17 @@
 .viewButton {
     background-color: #415c77;
     color: white;
-    padding: 12px 20px; /* Tăng padding cho button */
+    padding: 12px 20px;
+    /* Tăng padding cho button */
     font-size: 1rem;
     font-weight: 500;
     border: none;
-    border-radius: 5px; /* Thay đổi radius */
+    border-radius: 5px;
+    /* Thay đổi radius */
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng cho button */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    /* Thêm đổ bóng cho button */
 }
 
 .viewButton:hover {
@@ -154,8 +180,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Popup Content */
@@ -207,6 +238,7 @@
 
 /* Responsive Styling */
 @media (max-width: 768px) {
+
     .bookingsTable th,
     .bookingsTable td {
         font-size: 0.9rem;
