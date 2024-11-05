@@ -1,88 +1,127 @@
 .pageTitle {
     text-align: center;
     margin-top: 50px;
-    margin-bottom: 120px;
+    margin-bottom: 20px; /* Giảm khoảng cách dưới */
     font-size: 2rem;
     color: #333;
 }
 
+/* Liên kết font Inter hoặc Roboto từ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* Áp dụng font chữ cho toàn bộ giao diện */
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+body{
+    background-color: rgb(248, 242, 242);
+}
+
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
+}
+
+.manageSlotsContainer{
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 50px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
+
 .slotTable {
     width: 100%;
-    border-collapse: collapse; /* Gộp các đường viền */
-    margin-bottom: 20px;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 50px 0; /* Ẩn đường viền của bảng */
 }
 
 .slotTable th,
 .slotTable td {
-    padding: 12px;
-    text-align: left;
-    border: 1px solid #ddd; /* Đường viền cho ô */
+    padding: 13px;
+    text-align: center; /* Căn giữa nội dung */
+    background-color: transparent; /* Xóa màu nền */
+    border: none; /* Ẩn đường viền của ô */
 }
 
 .slotTable th {
-    background-color: #4a90e2; /* Màu nền cho tiêu đề */
+    background-color: #415c77; /* Màu nền cho tiêu đề */
     color: white;
     font-weight: bold;
 }
 
 .slotTable tr:nth-child(even) {
-    background-color: #f2f2f2; /* Màu nền cho dòng chẵn */
+    background-color: transparent; /* Xóa màu nền cho dòng chẵn */
 }
 
 .slotTable tr:nth-child(odd) {
-    background-color: #ffffff; /* Màu nền cho dòng lẻ */
+    background-color: transparent; /* Xóa màu nền cho dòng lẻ */
 }
 
 .slotTable tr:hover {
-    background-color: #e7f1ff; /* Màu nền khi hover qua dòng */
-}
-
-.slotTable th,
-.slotTable td {
-    border: 2px solid #bac2ca; /* Đường viền cho tiêu đề và ô */
-    padding: 10px; /* Tăng padding cho ô */
-    font-size: 1.1rem; /* Kích thước font lớn hơn */
+    background-color: rgba(173, 185, 201, 0.5); /* Màu nền khi hover qua dòng */
 }
 
 .actionIcons {
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Tăng khoảng cách giữa các icon */
 }
 
 .editIcon,
 .deleteIcon {
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, color 0.2s; /* Thêm hiệu ứng thay đổi màu */
 }
 
 .editIcon:hover,
 .deleteIcon:hover {
     transform: scale(1.1);
+    color: #007bff; /* Thay đổi màu icon khi hover */
 }
 
 .addSlotButton {
-    position: fixed; /* Đặt vị trí cố định */
-    bottom: 20px; /* Cách từ đáy 20px */
-    right: 20px; /* Cách từ bên phải 20px */
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 50%; /* Bo tròn hoàn toàn */
-    padding: 0; /* Không có padding để căn giữa chính xác */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff; /* Màu nền của nút */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 1.5rem; /* Kích thước font lớn hơn */
-    width: 60px; /* Chiều rộng cố định */
-    height: 60px; /* Chiều cao cố định */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: flex; /* Sử dụng flexbox */
-    align-items: center; /* Căn giữa theo chiều dọc */
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    transition: background-color 0.2s, transform 0.2s; /* Thêm hiệu ứng cho hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
 }
 
 .addSlotButton:hover {
-    background-color: #218838; /* Thay đổi màu khi hover */
-    transform: scale(1.1); /* Tăng kích thước khi hover */
+    background-color: #004794;
+    transform: scale(1.1);
 }
 
 .manageSlotsPopup {
@@ -101,7 +140,7 @@
 .manageSlotsPopupContent {
     background: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 400px;
 }
@@ -158,7 +197,7 @@
 .popupContent {
     background: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 300px;
     text-align: center;
@@ -183,4 +222,72 @@
     background-color: #e7f1ff;
 }
 
+.deleteConfirmPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
 
+.confirmDeleteButton,
+.cancelDeleteButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.confirmDeleteButton {
+    background-color: #008CBA; /* Màu xanh dương */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.confirmDeleteButton:hover {
+    background-color: #007BB5;
+}
+
+.cancelDeleteButton {
+    background-color: #f44336; /* Màu đỏ */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.cancelDeleteButton:hover {
+    background-color: #e53935; /* Màu đỏ đậm khi di chuột qua */
+}
+
+.closeButton {
+    background-color: #960606; /* Màu xám */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.closeButton:hover {
+    background-color: #460404; /* Màu xám đậm khi di chuột qua */
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}

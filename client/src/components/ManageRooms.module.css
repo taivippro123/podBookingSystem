@@ -1,0 +1,111 @@
+/* ManageRoom.module.css */
+
+/* Reset margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container for the Manage Room component */
+.manageRoomContainer {
+    max-width: 800px; /* Set a max-width for the container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding */
+    background-color: #f9f9f9; /* Light gray background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Heading styles */
+.manageRoomContainer h2 {
+    font-size: 24px;
+    margin-bottom: 20px; /* Space below heading */
+    color: #333; /* Dark gray text */
+}
+
+/* Image gallery */
+.imageGallery {
+    display: flex;
+    gap: 10px; /* Space between images */
+    margin-bottom: 20px; /* Space below image gallery */
+}
+
+/* Individual image styles */
+.imageGallery img {
+    width: 150px;
+    height: auto;
+    border-radius: 4px; /* Rounded corners for images */
+    object-fit: cover; /* Ensure the image fits within the box */
+}
+
+/* Room information styles */
+.roomInfo {
+    margin-bottom: 20px; /* Space below room information */
+}
+
+.roomInfo strong {
+    color: #555; /* Medium gray for labels */
+}
+
+/* Form styles */
+.formInput {
+    width: 100%; /* Full width */
+    padding: 10px; /* Add padding */
+    margin-bottom: 15px; /* Space below each input */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+}
+
+/* Textarea styles */
+.formTextarea {
+    width: 100%;
+    height: 100px; /* Set height for text area */
+}
+
+/* Select dropdown styles */
+.formSelect {
+    width: 100%; /* Full width */
+    padding: 10px; /* Add padding */
+    margin-bottom: 15px; /* Space below select */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+}
+
+/* File input styles */
+.fileInput {
+    margin-bottom: 15px; /* Space below file input */
+}
+
+/* Button styles */
+.button {
+    padding: 10px 15px; /* Add padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+    margin-right: 10px; /* Space between buttons */
+}
+
+.buttonUpdate {
+    background-color: #4caf50; /* Green background */
+    color: white; /* White text */
+}
+
+.buttonDelete {
+    background-color: #f44336; /* Red background */
+    color: white; /* White text */
+}
+
+/* Button hover effects */
+.button:hover {
+    opacity: 0.9; /* Slightly transparent on hover */
+}
+
+/* Error message styles */
+.errorMessage {
+    color: #f44336; /* Red text for errors */
+    margin-top: 10px; /* Space above error message */
+}

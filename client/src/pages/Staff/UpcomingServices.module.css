@@ -1,84 +1,280 @@
-.pageContainer {
-    width: 100%; /* Đảm bảo container bao trùm toàn bộ trang */
-    padding: 0; /* Loại bỏ padding */
-    margin: 0; /* Loại bỏ margin */
+/* Liên kết font Inter hoặc Roboto từ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* Áp dụng font chữ cho toàn bộ giao diện */
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', 'Roboto', sans-serif;
 }
 
-.servicesTable {
-    width: 100%; /* Sử dụng toàn bộ chiều rộng của trang */
-    border-collapse: collapse; /* Gộp các đường viền bảng */
-    margin: 0;
+/* Container */
+.container {
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
 }
 
-.servicesTable th, .servicesTable td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
+/* Tăng hiệu ứng hover cho container */
+.container:hover {
+    box-shadow: 0px 18px 40px rgba(0, 0, 0, 0.3); /* Đổ bóng mạnh hơn khi hover */
 }
 
-.servicesTable th:nth-child(1),
-.servicesTable td:nth-child(1),
-.servicesTable th:nth-child(2),
-.servicesTable td:nth-child(2) {
-    width: 150px;
+/* Header Title */
+/* Header Title */
+/* Header Title */
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
 }
 
-.servicesTable th:nth-child(3),
-.servicesTable td:nth-child(3) {
-    width: 300px;
-}
 
-.servicesTable th:nth-child(4),
-.servicesTable td:nth-child(4) {
-    width: 150px;
-}
 
-.servicesTable th:nth-child(5),
-.servicesTable td:nth-child(5) {
-    width: 400px;
-}
 
-.servicesTable th {
-    background-color: #f2f2f2;
-    color: #333;
-}
-
-.servicesTable tr:hover {
-    background-color: #e6e6e6;
-}
-
-.loading {
-    text-align: center;
-    font-size: 18px;
-    color: #999;
-}
-
-.errorMessage {
-    text-align: center;
-    color: red;
-    font-size: 16px;
-    margin-top: 20px;
-}
-
+/* Search */
 .searchContainer {
     display: flex;
-    justify-content: left;
-    margin-bottom: 20px;
-    padding-left: 20px; /* Tạo khoảng cách nhỏ bên trái */
+    justify-content: flex-start;
+    margin: 50px 0 20px;
 }
 
 .searchInput {
-    padding: 10px;
-    width: 400px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 10px;
+    width: 80%;
+    max-width: 400px;
+    padding: 14px; /* Thay đổi padding */
+    font-size: 1.2rem; /* Tăng kích thước chữ */
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Thay đổi độ đổ bóng */
+    transition: all 0.3s ease;
 }
 
-body, html {
-    background-color: white; /* Màu nền cho toàn bộ màn hình */
-    margin: 0;
-    padding: 0;
-    height: 100%; /* Đảm bảo trang chiếm toàn bộ chiều cao */
+.searchInput:focus {
+    border-color: #415c77;
+    box-shadow: 0px 4px 12px rgba(0, 128, 0, 0.2);
 }
+
+/* Table */
+.servicesTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); /* Tăng độ đổ bóng cho bảng */
+    margin: 20px 0; /* Tăng margin giữa bảng và container */
+}
+
+/* Thay đổi kiểu chữ cho bảng */
+.servicesTable th,
+.servicesTable td {
+    padding: 14px 20px; /* Tăng padding */
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.servicesTable th {
+    background-color: #415c77;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px; /* Thêm khoảng cách giữa các chữ cái */
+}
+
+.servicesTable tr:hover {
+    background-color: #e0e8f0; /* Chỉnh sửa màu hover */
+}
+
+.servicesTable td:last-child {
+    text-align: center;
+}
+
+/* View Details Button */
+.viewButton {
+    background-color: #415c77;
+    color: white;
+    padding: 12px 20px; /* Tăng padding cho button */
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px; /* Thay đổi radius */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng cho button */
+}
+
+.viewButton:hover {
+    background-color: #29286b;
+    transform: translateY(-2px);
+}
+
+/* Loading and Error Messages */
+.loading,
+.errorMessage {
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    padding: 20px;
+}
+
+/* Popup Overlay */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Popup Content */
+.popupContent {
+    background-color: white;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: left;
+}
+
+.popupContent h3 {
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.popupContent p {
+    font-size: 1rem;
+    color: #555;
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.popupContent p strong {
+    color: #333;
+}
+
+/* Close Button */
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #d31e1e;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .servicesTable th,
+    .servicesTable td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .popupContent {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+/* Phân trang */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pageButton {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pageButton:hover {
+    background-color: #45a049;
+}
+
+.activePage {
+    background-color: #388e3c;
+    color: white;
+    font-weight: bold;
+}
+
+.serviceNameDropdown {
+    padding: 1px 3px;              /* Giảm padding để nút nhỏ gọn hơn */
+    font-size: 14px;               /* Chữ lớn để dễ đọc */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    width: auto;                   /* Chiều rộng phụ thuộc vào nội dung */
+    max-width: 110px;               /* Giảm chiều rộng tối đa để nút thon hơn */
+    white-space: nowrap;           /* Giữ nội dung trên một dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;       /* Thêm dấu ba chấm nếu nội dung quá dài */
+    transition: all 0.2s ease;
+}
+
+.serviceNameDropdown:hover {
+    border-color: #888;
+    background-color: #c7bbbb;
+}
+
+.serviceNameDropdown:focus {
+    outline: none;
+    border-color: #5c9ded;
+    background-color: #f1f8ff;
+}
+
+.serviceNameDropdown option {
+    background-color: #ffffff;
+    color: #333;
+}
+

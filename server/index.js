@@ -857,6 +857,24 @@ app.delete('/rooms/:roomId', (req, res) => {
     });
 });
 
+
+// DELETE /room-image/:imageId: Delete a specific image by imageId
+app.delete('/room-image/:imageId', (req, res) => {
+    const { imageId } = req.params;
+    const sql = 'DELETE FROM RoomImages WHERE imageId = ?';
+
+    db.query(sql, [imageId], (err, result) => {
+        if (err) {
+            console.error('Error deleting image:', err);
+            return res.status(500).send('Failed to delete image');
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).send('Image not found');
+        }
+        res.json({ message: 'Image deleted successfully' });
+    });
+});
+
 //--------------------------------------------------------STAFF ROUTE------------------------------------------
 //STAFF
 app.get('/staff/upcoming-bookings', (req, res) => {

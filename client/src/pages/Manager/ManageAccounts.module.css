@@ -1,53 +1,88 @@
 .container {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center content horizontally */
+    width: 100%; /* Tăng độ rộng container */
+    max-width: 1450px; /* Giảm chiều dài tối đa của container */
+    margin: 20px auto; /* Giảm margin-top để đưa header gần hơn với bảng */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px; 
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: box-shadow 0.3s ease; 
+    margin-top: 70px;
+}
+
+.headerTitle {
+    color: rgb(10, 10, 10);
+    text-align: center; /* Căn chỉnh tiêu đề sang bên trái */
+    margin: 0; /* Loại bỏ margin tự động */
+    font-size: 1.5rem; /* Kích thước tiêu đề */
+    font-weight: 700; 
+    padding: 10px 30px; /* Giữ padding bên trái, giảm padding trên và dưới */
+    border-radius: 10px; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 30%; /* Đảm bảo tiêu đề chiếm toàn bộ chiều rộng */
+    max-width: 700px; /* Giữ chiều rộng tối đa như trước */
+    position: absolute; /* Đặt vị trí của tiêu đề ở trên cùng của container */
+    top: 0; /* Đưa tiêu đề lên đầu container */
+    left: 0; /* Đưa tiêu đề sát bên trái container */
 }
 
 .table {
-    width: 90%; /* Set width to 90% for better visibility */
+    width: 100%;
     border-collapse: collapse;
-    margin: 20px 0; /* Add margin for spacing */
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Tăng độ đổ bóng cho bảng */
+    margin: 70px 0; /* Tăng margin giữa bảng và container */
 }
 
 .table th {
-    background-color: #858585; /* Set header color to gray */
-    color: white; /* Change text color to white */
-    padding: 12px; /* Increase padding for better spacing */
+    background-color: #415c77; /* Màu nền của tiêu đề */
+    color: white; /* Màu chữ */
+    padding: 12px; /* Tăng padding cho khoảng cách tốt hơn */
 }
 
 .table th, .table td {
-    border: 2px solid #fffffff6; /* Thicker border for better visibility */
-    padding: 12px; /* Increase padding for better spacing */
+    padding: 14px 20px; /* Tăng padding */
     text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f1f1;
 }
 
 .table tr:hover {
-    background-color: #d3d3d3; /* Highlight row on hover */
+    background-color: #d8eaf1; /* Nổi bật hàng khi di chuột */
 }
 
 .actions button {
     margin-right: 5px;
     cursor: pointer;
-    transition: transform 0.2s; /* Smooth transition */
+    transition: transform 0.2s; /* Hiệu ứng chuyển tiếp mượt mà */
 }
 
 .actions button:hover {
-    transform: scale(1.1); /* Slightly enlarge button on hover */
+    transform: scale(1.1); /* Phóng to nút khi di chuột */
 }
 
 .addAccountButton {
-    position: fixed; /* Fix position to bottom right */
-    bottom: 20px; /* Distance from bottom */
-    right: 20px; /* Distance from right */
-    padding: 10px 15px;
-    background-color: gray; /* Change background color to gray */
-    color: white;
-    border: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff; /* Màu nền của nút */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    border-radius: 50%; /* Make button round */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.addAccountButton:hover {
+    background-color: #004794;
 }
 
 .popupOverlay {
@@ -56,56 +91,143 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000; /* Đảm bảo popup hiển thị trên tất cả các phần khác */
 }
 
 .popupForm {
     background-color: white;
-    padding: 30px; /* Increase padding for the form */
-    border-radius: 10px; /* Round the corners of the popup */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Add shadow for popup */
-    width: 500px; /* Fixed width for the form */
+    padding: 30px; /* Tăng padding cho popup */
+    border-radius: 10px; /* Bo góc cho popup */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Thêm bóng cho popup */
+    width: 500px; /* Đặt chiều rộng cố định cho popup */
 }
 
 .popupForm input, .popupForm select {
     display: block;
-    margin-bottom: 15px; /* Increase margin for spacing */
-    padding: 12px; /* Increase padding for better input area */
+    margin-bottom: 15px; /* Tăng khoảng cách giữa các phần tử */
+    padding: 12px; /* Tăng padding cho khu vực nhập liệu */
     width: 100%;
-    border: 1px solid #ddd; /* Add border to inputs */
-    border-radius: 5px; /* Round the input corners */
-    font-size: 1em; /* Set font size */
+    border: 1px solid #ddd; /* Đường viền cho các phần tử nhập liệu */
+    border-radius: 5px; /* Bo góc cho các phần tử nhập liệu */
+    font-size: 1em; /* Đặt kích thước chữ */
 }
 
 .popupForm button {
-    padding: 12px 20px; /* Increase padding for buttons */
-    margin-right: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: #007bff; /* Change button color */
+    padding: 12px 20px; /* Tăng padding cho nút */
+    margin-right: 10px; /* Khoảng cách giữa các nút */
+    background-color: #007bff; /* Màu chính cho nút */
     color: white;
-    border-radius: 5px; /* Round button corners */
-    transition: background-color 0.3s; /* Smooth transition */
+    border: none;
+    border-radius: 5px; /* Bo góc cho nút */
+    cursor: pointer;
+    transition: background-color 0.2s; /* Hiệu ứng chuyển tiếp mượt mà */
 }
 
 .popupForm button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #0056b3; /* Màu tối hơn khi di chuột */
 }
 
-/* ManageAccounts.module.css */
+.cancelButton {
+    background-color: red; /* Màu khác cho nút hủy */
+}
 
-.notificationPopup {
+.cancelButton:hover {
+    background-color: darkred; /* Màu tối hơn khi di chuột cho nút hủy */
+}
+
+.successMessage {
+    color: green; /* Màu cho thông báo thành công */
+    margin-top: 20px; /* Khoảng cách trên thông báo thành công */
+}
+
+.errorMessage {
+    color: red; /* Màu cho thông báo lỗi */
+    margin-bottom: 15px; /* Khoảng cách dưới thông báo lỗi */
+}
+
+.successPopupOverlay {
     position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 15px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.successPopup {
+    background: white;
+    padding: 20px;
     border-radius: 5px;
-    z-index: 1000;
-    transition: opacity 0.5s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.pagination {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: flex-end; /* Align items to the right */
+    margin-top: 20px; /* Space above the pagination */
+    gap: 10px; /* Space between buttons and text */
+    width: 100%; /* Make pagination take full width of the table */
+    max-width: 1300px; /* Match the table's max width */
+}
+
+/* Pagination button styles */
+.pagination button {
+    padding: 10px 15px; /* Padding for buttons */
+    border: none; /* Remove default border */
+    background-color: white; /* Golden background color */
+    color: black; /* Black text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+/* Pagination button hover effect */
+.pagination button:hover {
+    background-color: grey; /* Darker shade on hover */
+}
+
+/* Disabled button style */
+.pagination button:disabled {
+    background-color: #ccc; /* Grey background for disabled button */
+    cursor: not-allowed; /* Not allowed cursor */
+    color: #666; /* Darker text color for disabled button */
+}
+
+/* Pagination text style */
+.pagination span {
+    align-self: center; /* Center vertically */
+    font-weight: bold; /* Bold text */
+    color: #333; /* Text color */
+}
+
+/* Phần nút bộ lọc vai trò */
+.roleFilter {
+    display: flex; /* Sử dụng flexbox để căn chỉnh các nút */
+    justify-content: flex-start; /* Căn chỉnh nút về phía bên phải */
+    margin-bottom: 10px; /* Khoảng cách dưới nút */
+    width: 90%; /* Đặt chiều rộng giống như bảng */
+}
+
+.roleFilter button {
+    margin-left: 10px; /* Khoảng cách giữa các nút */
+    padding: 8px 12px;
+    border: none;
+    background-color: #415c77;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 50px;
+    margin-bottom: -50px;
+}
+
+.roleFilter button:hover {
+    background-color: #293b4d; /* Màu tối hơn khi di chuột */
 }
