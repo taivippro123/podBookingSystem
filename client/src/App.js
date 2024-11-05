@@ -13,12 +13,13 @@ import ManageServices from './pages/Manager/ManageServices.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
 import Profile from './components/Profile.js';
-import ViewBooking from './components/ViewBooking.js';
+import ViewBooking from './components/ViewBooking.jsx';
 import Payment from './components/Payment.js';
 import ManageRoom from './components/ManageRoom';
 import Home from './pages/Home/Home.jsx';
 import ComHeader from './components/ComHeader/ComHeader.jsx';
 import ComHeaderCostomer from './components/ComHeaderCustomer/ComheaderCustome.jsx';
+import PaymentAddService from './pages/Booking/PaymentAddService.jsx'; // Adjust the import based on your structure
 
 import LoginPage from './pages/Login/LoginPage.jsx';
 import ListRoom from './pages/ListRoom/ListRoom.jsx';
@@ -49,15 +50,19 @@ function App() {
         {/* <Route path="/room-details/:id" element={<RoomDetail />} /> */}
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<ComHeaderCostomer><Profile /></ComHeaderCostomer>} />
-        <Route path="/viewbookings/:userId" element={ <ComHeaderCostomer> <ViewBooking /> </ComHeaderCostomer>} />
-        <Route path="/payment" element={ <ComHeaderCostomer> <Payment /> </ComHeaderCostomer>} />
-        <Route path="/rooms/:id" element={<ManageRoom />} />  
-        <Route path="/login2" element={ <ComHeaderCostomer> <Login /> </ComHeaderCostomer>} />
+        {/* <Route path="/viewbookings/:userId" element={ <ComHeaderCostomer> <ViewBooking /> </ComHeaderCostomer>} /> */}
+        <Route path="/payment" element={<ComHeaderCostomer> <Payment /> </ComHeaderCostomer>} />
+        <Route path="/rooms/:id" element={<ManageRoom />} />
+        <Route path="/login2" element={<ComHeaderCostomer> <Login /> </ComHeaderCostomer>} />
+        <Route path="/paymentservice" element={<ComHeaderCostomer> <PaymentAddService /> </ComHeaderCostomer>} />
 
-         {/* Customer Protected Routes */}
-         <Route path="/customer" element={
+
+        {/* Customer Protected Routes */}
+        <Route path="/customer" element={
           <ProtectedRoute allowedRoles={[4]}>
             <ComHeaderCostomer><Customer /></ComHeaderCostomer>
+            
+
           </ProtectedRoute>
         }>
           <Route path="/customer/room/:id" element={
@@ -65,6 +70,13 @@ function App() {
               <ComHeaderCostomer><RoomDetail /></ComHeaderCostomer>
             </ProtectedRoute>
           } />
+
+          <Route path="/customer/viewbookings/:userId" element={
+            <ProtectedRoute allowedRoles={[4]}>
+               <ViewBooking />
+            </ProtectedRoute>
+          } />
+
         </Route>
 
 
