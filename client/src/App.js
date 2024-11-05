@@ -51,7 +51,7 @@ function App() {
         {/* <Route path="/room-details/:id" element={<RoomDetail />} /> */}
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/profile/:userId" element={<ComHeaderCostomer><Profile /></ComHeaderCostomer>} />
-        {/* <Route path="/viewbookings/:userId" element={ <ComHeaderCostomer> <ViewBooking /> </ComHeaderCostomer>} /> */}
+        <Route path="/viewbookings/:userId" element={ <ComHeaderCostomer> <ViewBooking /> </ComHeaderCostomer>} />
         <Route path="/payment" element={<ComHeaderCostomer> <Payment /> </ComHeaderCostomer>} />
         <Route path="/rooms/:id" element={<ManageRoom />} />
         <Route path="/login2" element={<ComHeaderCostomer> <Login /> </ComHeaderCostomer>} />
@@ -71,13 +71,6 @@ function App() {
               <ComHeaderCostomer><RoomDetail /></ComHeaderCostomer>
             </ProtectedRoute>
           } />
-
-          <Route path="/customer/viewbookings/:userId" element={
-            <ProtectedRoute allowedRoles={[4]}>
-               <ViewBooking />
-            </ProtectedRoute>
-          } />
-
         </Route>
 
         {/* Đường dẫn cho Staff */}
