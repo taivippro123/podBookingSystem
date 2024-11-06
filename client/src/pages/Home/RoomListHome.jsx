@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 export default function ListRoom() {
   const [searchParams, setSearchParams] = useState({
     name: "",
-    minPrice: "",
-    maxPrice: "",
+    minPrice: "0",
+    maxPrice: "99999999999",
     capacity: "",
     equipment: "",
     type: "",
@@ -43,9 +43,9 @@ export default function ListRoom() {
       return (
         room.roomName.toLowerCase().includes(searchParams.name.toLowerCase()) &&
         (searchParams.minPrice === "" ||
-          room.pricePerHour >= parseInt(searchParams.minPrice)) &&
+          room.roomPricePerSlot >= parseInt(searchParams.minPrice)) &&
         (searchParams.maxPrice === "" ||
-          room.pricePerHour <= parseInt(searchParams.maxPrice)) &&
+          room.roomPricePerSlot <= parseInt(searchParams.maxPrice)) &&
         (searchParams.capacity === "" ||
           room.capacity >= parseInt(searchParams.capacity)) &&
         (searchParams.equipment === "" ||
