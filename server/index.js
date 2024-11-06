@@ -450,6 +450,16 @@ app.get('/services', (req, res) => {
     });
 });
 //For manage
+
+// Fetch services
+app.get('/manage/services', (req, res) => {
+    const sql = 'SELECT * FROM Services';
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching services' });
+        res.json(results);
+    });
+});
+
 // Create a new service
 app.post('/services', (req, res) => {
     const { serviceName, serviceDescription, servicePrice, serviceStatus } = req.body;
@@ -1266,7 +1276,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://0ee4-113-161-52-4.ngrok-free.app/callback",
+        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1511,7 +1521,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://0ee4-113-161-52-4.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
