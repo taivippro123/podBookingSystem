@@ -66,6 +66,14 @@ function ViewFeedbacks() {
         }
     };
 
+    // Render sort arrow based on current sort field and order
+    const renderSortArrow = (field) => {
+        if (sortField === field) {
+            return sortOrder === 'asc' ? '↑' : '↓';
+        }
+        return null;
+    };
+
     return (
         <div className={styles['feedback-container']}>
             <h1 className={styles.headerTitle}>FEEDBACKS</h1>
@@ -73,12 +81,22 @@ function ViewFeedbacks() {
                 <table className={styles['feedback-table']}>
                     <thead>
                         <tr>
-                            <th onClick={() => sortFeedbacks('feedbackId')}>Feedback ID</th>
-                            <th onClick={() => sortFeedbacks('bookingId')}>Booking ID</th>
-                            <th onClick={() => sortFeedbacks('userId')}>User ID</th>
-                            <th onClick={() => sortFeedbacks('rating')}>Rating</th>
+                            <th onClick={() => sortFeedbacks('feedbackId')}>
+                                Feedback ID {renderSortArrow('feedbackId')}
+                            </th>
+                            <th onClick={() => sortFeedbacks('bookingId')}>
+                                Booking ID {renderSortArrow('bookingId')}
+                            </th>
+                            <th onClick={() => sortFeedbacks('userId')}>
+                                User ID {renderSortArrow('userId')}
+                            </th>
+                            <th onClick={() => sortFeedbacks('rating')}>
+                                Rating {renderSortArrow('rating')}
+                            </th>
                             <th>Feedback</th>
-                            <th onClick={() => sortFeedbacks('feedbackDate')}>Feedback Date</th>
+                            <th onClick={() => sortFeedbacks('feedbackDate')}>
+                                Feedback Date {renderSortArrow('feedbackDate')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

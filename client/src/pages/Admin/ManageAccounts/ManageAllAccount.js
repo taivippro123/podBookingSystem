@@ -293,11 +293,11 @@ const ManageAllAccounts = () => {
             {/* Confirm Delete Modal */}
             {deleteAccountId && (
                 <div className={styles.modal}>
-                    <div className={styles['modal-content']}>
-                        <h3>Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this account?</p>
-                        <button onClick={handleDelete} className={styles.deleteButton}>Yes</button>
-                        <button onClick={() => setDeleteAccountId(null)} className={styles.cancelButton}>No</button>
+                    <div className={styles.modalContent}>
+                        
+                        <h2>Are you sure you want to delete this account?</h2>
+                        <button onClick={handleDelete} className={styles.confirmDeleteButton}>Yes</button>
+                        <button onClick={() => setDeleteAccountId(null)} className={styles.cancelDeleteButton}>No</button>
                     </div>
                 </div>
             )}

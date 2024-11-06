@@ -293,10 +293,10 @@ const ManageAccounts = () => {
             {isDeleteConfirmOpen && (
                 <div className={styles.deleteConfirmOverlay}>
                     <div className={styles.deleteConfirm}>
-                        <h2>Confirm Delete</h2>
-                        <p>Are you sure you want to delete this account?</p>
-                        <button onClick={handleDeleteAccount}>Yes, Delete</button>
-                        <button onClick={() => setIsDeleteConfirmOpen(false)}>Cancel</button>
+                        
+                        <h2>Are you sure you want to delete this account?</h2>
+                        <button onClick={handleDeleteAccount} className={styles.confirmDeleteButton}>Yes</button>
+                        <button onClick={() => setIsDeleteConfirmOpen(false)} className={styles.cancelDeleteButton}>No</button>
                     </div>
                 </div>
             )}

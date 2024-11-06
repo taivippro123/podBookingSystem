@@ -19,7 +19,7 @@ const ManageServices = () => {
     }, []);
 
     const fetchServices = async () => {
-        const response = await fetch('http://localhost:5000/services');
+        const response = await fetch('http://localhost:5000/manage/services');
         const data = await response.json();
         setServices(data);
     };
@@ -28,7 +28,7 @@ const ManageServices = () => {
         const newService = {
             serviceName,
             serviceDescription,
-            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')),
+            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')), // Chuyển đổi giá thành số
             serviceStatus,
         };
 
@@ -52,7 +52,7 @@ const ManageServices = () => {
     const handleEditService = (service) => {
         setServiceName(service.serviceName);
         setServiceDescription(service.serviceDescription);
-        setServicePrice(formatInputPrice(service.servicePrice));
+        setServicePrice(formatInputPrice(service.servicePrice)); // Định dạng giá tiền
         setServiceStatus(service.serviceStatus);
         setEditingServiceId(service.serviceId);
         setIsPopupOpen(true);
@@ -62,7 +62,7 @@ const ManageServices = () => {
         const updatedService = {
             serviceName,
             serviceDescription,
-            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')),
+            servicePrice: parseFloat(servicePrice.replace(/\./g, '').replace(',', '.')), // Chuyển đổi giá thành số
             serviceStatus,
         };
 
@@ -130,6 +130,7 @@ const ManageServices = () => {
         return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
     };
 
+    // Hàm định dạng khi nhập giá
     const formatInputPrice = (value) => {
         const numericValue = value.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
         return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
@@ -167,8 +168,6 @@ const ManageServices = () => {
                                 <td className={styles['manageservices-td']}>{service.serviceDescription}</td>
                                 <td className={styles['manageservices-td']}>{formatPrice(service.servicePrice)}</td>
                                 <td className={styles['manageservices-td']}>{service.serviceStatus}</td>
-                               
-
                                 <td className={`${styles['manageservices-td']} ${styles['actions-td']}`}>
                                     <div className={styles['actions-container']}>
                                         <button
@@ -213,48 +212,30 @@ const ManageServices = () => {
                             type="text"
                             placeholder="Service Price"
                             value={servicePrice}
-                            onChange={handleServicePriceChange}
+                            onChange={handleServicePriceChange} // Thay đổi hàm xử lý
                         />
                         <select
                             value={serviceStatus}
                             onChange={(e) => setServiceStatus(e.target.value)}
                         >
+                            <option value="">Select Status</option>
                             <option value="Available">Available</option>
                             <option value="Unavailable">Unavailable</option>
                         </select>
-                        <div className={styles['popup-buttons']}>
-                            <button
-                                className={styles['manageservices-button']}
-                                onClick={editingServiceId ? handleUpdateService : handleAddService}
-                            >
-                                {editingServiceId ? 'Update Service' : 'Add Service'}
-                            </button>
-                            <button
-                                className={styles['manageservices-button']}
-                                onClick={closePopup}
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                        <button onClick={editingServiceId ? handleUpdateService : handleAddService}>
+                            {editingServiceId ? 'Update Service' : 'Add Service'}
+                        </button>
+                        <button onClick={closePopup}>Close</button>
                     </div>
                 </div>
             )}
 
             {isDeleteConfirmationOpen && (
-                <div className={styles['delete-confirmation-overlay']}>
-                    <div className={styles['delete-confirmation-box']}>
-                        <h3>Are you sure you want to delete this service?</h3>
-                        <div className={styles['popup-buttons']}>
-                            <button className={styles['manageservices-button']} onClick={handleDeleteService}>
-                                Yes, Delete
-                            </button>
-                            <button
-                                className={styles['manageservices-button']}
-                                onClick={() => setIsDeleteConfirmationOpen(false)}
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                <div className={styles['manageservices-popup-overlay2']}>
+                    <div className={styles['confirmation-popup']}>
+                        <p>Are you sure you want to delete this service?</p>
+                        <button onClick={handleDeleteService}>Yes</button>
+                        <button onClick={() => setIsDeleteConfirmationOpen(false)}>No</button>
                     </div>
                 </div>
             )}

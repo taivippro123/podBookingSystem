@@ -224,51 +224,55 @@ body{
 
 .deleteConfirmPopup {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 40px; /* Tăng padding trong modal */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Tăng bóng cho modal */
+    width: 550px; /* Chiều rộng của modal */
+    max-height: 70%; /* Để ngăn modal quá cao */
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    position: relative;
+    text-align: center;
 }
 
 .confirmDeleteButton,
 .cancelDeleteButton {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
 .confirmDeleteButton {
-    background-color: #008CBA; /* Màu xanh dương */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    background-color: #28a745; /* Màu xanh lá cho nút Yes */
+    margin-right: 10px;
 }
 
 .confirmDeleteButton:hover {
-    background-color: #007BB5;
+    background-color: #218838;
 }
 
 .cancelDeleteButton {
-    background-color: #f44336; /* Màu đỏ */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    background-color: #dc3545; /* Màu đỏ cho nút No */
 }
 
 .cancelDeleteButton:hover {
-    background-color: #e53935; /* Màu đỏ đậm khi di chuột qua */
+    background-color: #c82333;
 }
 
 .closeButton {
