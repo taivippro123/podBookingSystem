@@ -12,7 +12,7 @@ import Manager from './pages/Manager/Manager.js';
 import ManageServices from './pages/Manager/ManageServices.js';
 import ProtectedRoute from './components/ProtectedRoute.js';
 import Booking from './components/Booking.js';
-import Profile from './components/Profile.js';
+import Profile from './components/Profile.jsx';
 import ViewBooking from './components/ViewBooking.jsx';
 import Payment from './components/Payment.js';
 import ManageRoom from './components/ManageRoom';
