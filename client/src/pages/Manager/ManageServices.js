@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './ManageServices.module.css';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { Modal, notification } from 'antd';
 
 const ManageServices = () => {
     const [services, setServices] = useState([]);
@@ -10,8 +11,6 @@ const ManageServices = () => {
     const [serviceStatus, setServiceStatus] = useState('');
     const [editingServiceId, setEditingServiceId] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [notification, setNotification] = useState('');
-    const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
     const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
     const [serviceToDelete, setServiceToDelete] = useState(null);
 
@@ -20,7 +19,7 @@ const ManageServices = () => {
     }, []);
 
     const fetchServices = async () => {
-        const response = await fetch('http://localhost:5000/services');
+        const response = await fetch('http://localhost:5000/manage/services');
         const data = await response.json();
         setServices(data);
     };
@@ -43,10 +42,10 @@ const ManageServices = () => {
 
         if (response.ok) {
             fetchServices();
-            showNotification('Service added successfully!');
+            showNotification('Service added successfully!', 'success');
             closePopup();
         } else {
-            showNotification('Failed to add service.');
+            showNotification('Failed to add service.', 'error');
         }
     };
 
@@ -77,10 +76,10 @@ const ManageServices = () => {
 
         if (response.ok) {
             fetchServices();
-            showNotification('Service updated successfully!');
+            showNotification('Service updated successfully!', 'success');
             closePopup();
         } else {
-            showNotification('Failed to update service.');
+            showNotification('Failed to update service.', 'error');
         }
     };
 
@@ -96,21 +95,19 @@ const ManageServices = () => {
 
         if (response.ok) {
             fetchServices();
-            showNotification('Service deleted successfully!');
+            showNotification('Service deleted successfully!', 'success');
         } else {
-            showNotification('Failed to delete service.');
+            showNotification('Failed to delete service.', 'error');
         }
         setIsDeleteConfirmationOpen(false);
         setServiceToDelete(null);
     };
 
-    const showNotification = (message) => {
-        setNotification(message);
-        setIsNotificationPopupOpen(true);
-        setTimeout(() => {
-            setIsNotificationPopupOpen(false);
-            setNotification('');
-        }, 3000);
+    const showNotification = (message, type) => {
+        notification[type]({
+            message: message,
+            duration: 3,
+        });
     };
 
     const closePopup = () => {
@@ -132,7 +129,6 @@ const ManageServices = () => {
         if (!amount) return "0 VND";
         return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND";
     };
-    
 
     // Hàm định dạng khi nhập giá
     const formatInputPrice = (value) => {
@@ -150,10 +146,6 @@ const ManageServices = () => {
             setServicePrice(formattedPrice); // Chỉ thêm "VND" khi hiển thị
         }
     };
-    
-    
-    
-    
 
     return (
         <div className={styles.container}>
@@ -245,12 +237,6 @@ const ManageServices = () => {
                         <button onClick={handleDeleteService}>Yes</button>
                         <button onClick={() => setIsDeleteConfirmationOpen(false)}>No</button>
                     </div>
-                </div>
-            )}
-
-            {isNotificationPopupOpen && (
-                <div className={styles['notification-popup']}>
-                    <p>{notification}</p>
                 </div>
             )}
         </div>

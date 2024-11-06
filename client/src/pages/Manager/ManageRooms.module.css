@@ -149,10 +149,11 @@ body{
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Tăng độ mờ cho modal */
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }
 
 .modalContent {
@@ -164,7 +165,10 @@ body{
     max-height: 70%; /* Để ngăn modal quá cao */
     overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
     position: relative;
+    text-align: center;
 }
+
+
 
 .closeIcon {
     position: absolute;
@@ -256,4 +260,39 @@ body{
 
 .closeModalButton:hover {
     background-color: #005f86; /* Màu xanh dương đậm hơn khi di chuột qua */
+}
+
+.confirmDeleteButton,
+.cancelDeleteButton {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.confirmDeleteButton {
+    background-color: #28a745; /* Màu xanh lá cho nút Yes */
+    margin-right: 10px;
+}
+
+.confirmDeleteButton:hover {
+    background-color: #218838;
+}
+
+.cancelDeleteButton {
+    background-color: #dc3545; /* Màu đỏ cho nút No */
+}
+
+.cancelDeleteButton:hover {
+    background-color: #c82333;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: center; /* Center align buttons horizontally */
+    gap: 10px;
+    margin-top: 20px;
 }

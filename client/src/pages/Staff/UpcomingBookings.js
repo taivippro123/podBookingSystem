@@ -14,6 +14,7 @@ const UpcomingBookings = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
 
     useEffect(() => {
         const fetchUpcomingBookings = async () => {
@@ -42,15 +43,30 @@ const UpcomingBookings = () => {
         } else {
             filtered = upcomingBookings.filter((booking) => {
                 return (
-                    booking.bookingId.toString().includes(value) || 
+                    booking.bookingId.toString().includes(value) ||
                     booking.roomId.toString().includes(value)
                 );
             });
         }
-        
+
         setFilteredBookings(filtered);
         setCurrentPage(1);
         setTotalPages(Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    };
+
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+
+        const sortedData = [...filteredBookings].sort((a, b) => {
+            if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+            if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+        setFilteredBookings(sortedData);
     };
 
     const openPopup = (booking) => {
@@ -63,6 +79,11 @@ const UpcomingBookings = () => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
+    };
+
+    // Hàm định dạng giá tiền
+    const formatCurrency = (amount) => {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     };
 
     if (loading) {
@@ -78,9 +99,7 @@ const UpcomingBookings = () => {
     const currentItems = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
-        
         <div className={styles.container}>
-            {/* Thêm thẻ header ở đây, bên ngoài container chính */}
             <h1 className={styles.headerTitle}>UPCOMING BOOKINGS</h1>
             <div className={styles.searchContainer}>
                 <input
@@ -98,10 +117,18 @@ const UpcomingBookings = () => {
                     <table className={styles.bookingsTable}>
                         <thead>
                             <tr>
-                                <th>Booking ID</th>
-                                <th>Room ID</th>
-                                <th>Start Day</th>
-                                <th>End Day</th>
+                                <th onClick={() => handleSort('bookingId')}>
+                                    Booking ID {sortConfig.key === 'bookingId' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('roomId')}>
+                                    Room ID {sortConfig.key === 'roomId' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('bookingStartDay')}>
+                                    Start Day {sortConfig.key === 'bookingStartDay' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                                </th>
+                                <th onClick={() => handleSort('bookingEndDay')}>
+                                    End Day {sortConfig.key === 'bookingEndDay' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                                </th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -121,7 +148,6 @@ const UpcomingBookings = () => {
                             ))}
                         </tbody>
                     </table>
-                    {/* Sử dụng component Pagination */}
                     <Pagination
                         totalItems={filteredBookings.length}
                         itemsPerPage={ITEMS_PER_PAGE}
@@ -130,8 +156,7 @@ const UpcomingBookings = () => {
                     />
                 </>
             )}
-            
-            {/* Popup chi tiết */}
+
             {selectedBooking && (
                 <div className={styles.popup}>
                     <div className={styles.popupContent}>
@@ -141,7 +166,7 @@ const UpcomingBookings = () => {
                         <p><strong>Room ID:</strong> {selectedBooking.roomId}</p>
                         <p><strong>Start Day:</strong> {new Date(selectedBooking.bookingStartDay).toLocaleDateString()}</p>
                         <p><strong>End Day:</strong> {new Date(selectedBooking.bookingEndDay).toLocaleDateString()}</p>
-                        <p><strong>Total Price:</strong> {selectedBooking.totalPrice} VND</p>
+                        <p><strong>Total Price:</strong> {formatCurrency(selectedBooking.totalPrice)} VND</p>
                         <p><strong>Status:</strong> {selectedBooking.bookingStatus}</p>
                         <p><strong>Created At:</strong> {new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
                         <button onClick={closePopup} className={styles.closeButton}>Close</button>

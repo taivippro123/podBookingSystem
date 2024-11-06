@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
+import { Modal, notification } from 'antd'; // Import Modal và notification từ antd
 import styles from './ManageBookings.module.css'; // Import CSS module
-
-// Đặt thuộc tính cho modal
-Modal.setAppElement('#root'); // Cung cấp app root element cho accessibility
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
-  const [statusMessage, setStatusMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Modal for viewing details
-  const [selectedBooking, setSelectedBooking] = useState(null); // Booking details for selected booking
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [bookingsPerPage] = useState(10);
 
@@ -25,7 +20,10 @@ const ManageBookings = () => {
         setFilteredBookings(response.data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
-        setStatusMessage('Error fetching bookings. Please try again later.');
+        notification.error({
+          message: 'Error',
+          description: 'Error fetching bookings. Please try again later.',
+        });
       }
     };
 
@@ -35,11 +33,11 @@ const ManageBookings = () => {
   const handleStatusUpdate = async (bookingId, newStatus) => {
     try {
       const response = await axios.put(`http://localhost:5000/manage/bookings/${bookingId}/status`, { bookingStatus: newStatus });
-      setStatusMessage(response.data.message);
-      setIsModalOpen(true);
-      setTimeout(() => {
-        setIsModalOpen(false);
-      }, 3000);
+      
+      notification.success({
+        message: 'Success',
+        description: response.data.message,
+      });
 
       const updatedBookings = bookings.map(booking =>
         booking.bookingId === bookingId ? { ...booking, bookingStatus: newStatus } : booking
@@ -49,7 +47,10 @@ const ManageBookings = () => {
       setFilteredBookings(updatedBookings);
     } catch (error) {
       console.error('Error updating booking status:', error);
-      setStatusMessage('Failed to update booking status. Please try again.');
+      notification.error({
+        message: 'Error',
+        description: 'Failed to update booking status. Please try again.',
+      });
     }
   };
 
@@ -63,7 +64,6 @@ const ManageBookings = () => {
     setCurrentPage(1);
   };
 
-  // Pagination logic
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
   const currentBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
@@ -85,7 +85,6 @@ const ManageBookings = () => {
     setSelectedBooking(null);
   };
 
-  // Function to format total price
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' VND';
   };
@@ -94,7 +93,6 @@ const ManageBookings = () => {
     <div className={styles.container}>
       <h1 className={styles.headerTitle}>MANAGE BOOKINGS</h1>
 
-      {/* Filter buttons for status */}
       <div className={styles.roleFilter}>
         <button onClick={() => filterByStatus('All')}>All</button>
         <button onClick={() => filterByStatus('Cancelled')}>Cancelled</button>
@@ -143,7 +141,6 @@ const ManageBookings = () => {
         </tbody>
       </table>
 
-      {/* Pagination controls */}
       <div className={styles.pagination}>
         <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
           &lt;
@@ -162,42 +159,27 @@ const ManageBookings = () => {
         </button>
       </div>
 
-      {/* Modal for status update message */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        contentLabel="Status Update"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <h2>Status Update</h2>
-        <p>{statusMessage}</p>
-      </Modal>
-
       {/* Modal for viewing booking details */}
       <Modal
-        isOpen={isDetailsModalOpen}
-        onRequestClose={closeDetailsModal}
-        contentLabel="Booking Details"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        {selectedBooking && (
-          <div>
-            <h2>Booking Details</h2>
+    title="Booking Details"
+    visible={isDetailsModalOpen}
+    onCancel={closeDetailsModal}
+    footer={null}  // Xóa footer để không hiển thị nút "Close"
+>
+    {selectedBooking && (
+        <div>
             <p><strong>User ID:</strong> {selectedBooking.userId}</p>
             <p><strong>Room ID:</strong> {selectedBooking.roomId}</p>
             <p><strong>Start Day:</strong> {new Date(selectedBooking.bookingStartDay).toLocaleDateString()}</p>
             <p><strong>End Day:</strong> {new Date(selectedBooking.bookingEndDay).toLocaleDateString()}</p>
-            <p><strong>Total Price:</strong> {formatPrice(selectedBooking.totalPrice)}</p> {/* Use the formatPrice function */}
+            <p><strong>Total Price:</strong> {formatPrice(selectedBooking.totalPrice)}</p>
             <p><strong>Created At:</strong> {new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
-            <button onClick={closeDetailsModal}>Close</button>
-          </div>
-        )}
-      </Modal>
+        </div>
+    )}
+</Modal>
+
     </div>
   );
 };
 
 export default ManageBookings;
-  

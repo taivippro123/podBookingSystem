@@ -231,3 +231,56 @@
 .roleFilter button:hover {
     background-color: #293b4d; /* Màu tối hơn khi di chuột */
 }
+
+.deleteConfirmOverlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.deleteConfirm{
+    background-color: white;
+    padding: 40px; /* Tăng padding trong modal */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Tăng bóng cho modal */
+    width: 550px; /* Chiều rộng của modal */
+    max-height: 70%; /* Để ngăn modal quá cao */
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    position: relative;
+    text-align: center;
+}
+
+.confirmDeleteButton,
+.cancelDeleteButton {
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.confirmDeleteButton {
+    background-color: #28a745; /* Màu xanh lá cho nút Yes */
+    margin-right: 10px;
+}
+
+.confirmDeleteButton:hover {
+    background-color: #218838;
+}
+
+.cancelDeleteButton {
+    background-color: #dc3545; /* Màu đỏ cho nút No */
+}
+
+.cancelDeleteButton:hover {
+    background-color: #c82333;
+}

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './ManageSlots.module.css';
 import { FaPlus } from 'react-icons/fa';
+import { Modal, notification } from 'antd';
 
 function ManageSlots() {
     const [slots, setSlots] = useState([]);
@@ -16,7 +17,7 @@ function ManageSlots() {
     });
     const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
     const [slotToDelete, setSlotToDelete] = useState(null);
-    const [popupMessage, setPopupMessage] = useState("");
+    
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [hoveredSlotId, setHoveredSlotId] = useState(null);
 
@@ -29,8 +30,8 @@ function ManageSlots() {
             const response = await axios.get('http://localhost:5000/slots');
             setSlots(response.data);
         } catch (error) {
-            setPopupMessage('Error fetching slots');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error fetching slots' });
+            
             console.error('Error fetching slots:', error);
         }
     };
@@ -48,39 +49,44 @@ function ManageSlots() {
 
     const handleAddSlot = async () => {
         const lastSlot = slots[slots.length - 1];
-
+        const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
+        const newEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
+        const oneHourInMillis = 60 * 60 * 1000;  // 1 hour in milliseconds
+    
+        // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
         if (lastSlot) {
             const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime}`);
-            const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
-            const thirtyMinutes = 30 * 60 * 1000;
-
-            if (newStartTime < lastEndTime.getTime() + thirtyMinutes) {
-                setPopupMessage(`Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!`);
+            if (newStartTime < lastEndTime.getTime() + oneHourInMillis) {
+                notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime})!` });
                 setIsPopupVisible(true);
                 return;
             }
         }
-
-        const isDuplicate = slots.some(slot => {
-            const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
-            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
-            const newStart = new Date(`1970-01-01T${formData.slotStartTime}`);
-            const newEnd = new Date(`1970-01-01T${formData.slotEndTime}`);
-            const thirtyMinutes = 30 * 60 * 1000;
-
-            return (
-                (newStart >= existingStart && newStart < existingEnd + thirtyMinutes) ||
-                (newEnd > existingStart - thirtyMinutes && newEnd <= existingEnd) ||
-                (newStart <= existingStart && newEnd >= existingEnd + thirtyMinutes)
-            );
-        });
-
-        if (isDuplicate) {
-            setPopupMessage("Slot already exists or overlaps with at least 30 minutes!");
+    
+        // Kiểm tra nếu End Time phải lớn hơn Start Time ít nhất 1 tiếng
+        if (newEndTime <= newStartTime || (newEndTime - newStartTime) < oneHourInMillis) {
+            notification.error({ message: 'Error', description: 'End time must be more than 1 hour after start time!' });
             setIsPopupVisible(true);
             return;
         }
-
+    
+        // Kiểm tra trùng lặp hoặc chồng chéo với các slot hiện tại
+        const isDuplicate = slots.some(slot => {
+            const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
+            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
+    
+            return (
+                (newStartTime >= existingStart && newStartTime < existingEnd + oneHourInMillis) ||
+                (newEndTime > existingStart - oneHourInMillis && newEndTime <= existingEnd) ||
+                (newStartTime <= existingStart && newEndTime >= existingEnd + oneHourInMillis)
+            );
+        });
+    
+        if (isDuplicate) {
+            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with at least 1 hour!' });
+            return;
+        }
+    
         try {
             const response = await axios.post('http://localhost:5000/slots', {
                 ...formData,
@@ -89,14 +95,13 @@ function ManageSlots() {
             setSlots([...slots, { ...formData, slotId: response.data.slotId }]);
             setIsAddingSlot(false);
             resetForm();
-            setPopupMessage("Add Slot Successfully!");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Add Slot Successfully!' });
         } catch (error) {
-            setPopupMessage('Error adding slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error adding slot' });
             console.error('Error adding slot:', error);
         }
     };
+    
 
     const handleUpdateSlot = async () => {
         if (!currentSlot) return;
@@ -111,14 +116,13 @@ function ManageSlots() {
             ));
             setIsEditMode(false);
             resetForm();
-            setPopupMessage("Update Successfully");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Update Successfully' });
         } catch (error) {
-            setPopupMessage('Error updating slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error updating slot' });
             console.error('Error updating slot:', error);
         }
     };
+
 
     const handleDeleteClick = (slotId) => {
         setSlotToDelete(slotId);
@@ -132,11 +136,9 @@ function ManageSlots() {
             await axios.delete(`http://localhost:5000/slots/${slotToDelete}`);
             setSlots(slots.filter(slot => slot.slotId !== slotToDelete));
             setIsDeleteConfirmVisible(false);
-            setPopupMessage("Delete Successfully");
-            setIsPopupVisible(true);
+            notification.success({ message: 'Success', description: 'Delete Successfully' });
         } catch (error) {
-            setPopupMessage('Error deleting slot');
-            setIsPopupVisible(true);
+            notification.error({ message: 'Error', description: 'Error deleting slot' });
             console.error('Error deleting slot:', error);
         }
     };
@@ -304,9 +306,9 @@ function ManageSlots() {
 
             {isDeleteConfirmVisible && (
                 <div className={styles.deleteConfirmPopup}>
-                    <h2>Confirm Deletion</h2>
-                    <p>Are you sure you want to delete this slot?</p>
-                    <div className={styles.buttonContainer}>
+                    <div className={styles.modalContent}>
+                    <h2>Are you sure you want to delete this slot?</h2>
+                    
                         <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
                         <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
                     </div>
@@ -315,14 +317,7 @@ function ManageSlots() {
             )}
 
 
-            {isPopupVisible && (
-                <div className={styles.popup}>
-                    <div className={styles.popupContent}>
-                        <p>{popupMessage}</p>
-                        <button onClick={closePopup} className={styles.popupCloseButton}>Close</button>
-                    </div>
-                </div>
-            )}
+           
             <div className={styles.addSlotButton} onClick={() => setIsAddingSlot(true)}>
             <FaPlus size={30} color="white" />
             </div>

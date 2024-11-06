@@ -33,19 +33,9 @@ const Staff = () => {
                 </Link>
                 <ul>
                     <li>
-                        <Link 
-                            to="/staff" 
-                            className={`${styles.navLink} ${activeLink === '/staff' ? styles.active : ''}`} 
-                            onClick={() => handleLinkClick('/staff')}
-                        >
-                            <FaHome className={styles.icon} />
-                            <span>Staff Dashboard</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            to="/staff/upcoming-bookings" 
-                            className={`${styles.navLink} ${activeLink === '/staff/upcoming-bookings' ? styles.active : ''}`} 
+                        <Link
+                            to="/staff/upcoming-bookings"
+                            className={`${styles.navLink} ${activeLink === '/staff/upcoming-bookings' ? styles.active : ''}`}
                             onClick={() => handleLinkClick('/staff/upcoming-bookings')}
                         >
                             <FaCalendarAlt className={styles.icon} />
@@ -53,9 +43,9 @@ const Staff = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link 
-                            to="/staff/upcoming-services" 
-                            className={`${styles.navLink} ${activeLink === '/staff/upcoming-services' ? styles.active : ''}`} 
+                        <Link
+                            to="/staff/upcoming-services"
+                            className={`${styles.navLink} ${activeLink === '/staff/upcoming-services' ? styles.active : ''}`}
                             onClick={() => handleLinkClick('/staff/upcoming-services')}
                         >
                             <FaClipboardList className={styles.icon} />
@@ -67,9 +57,9 @@ const Staff = () => {
                     <LogoutButton />
                 </div>
             </nav>
-            <button 
-                className={`${styles.menuToggle} ${isMenuVisible ? styles.menuToggleVisible : styles.menuToggleHidden}`} 
-                onClick={toggleMenu} 
+            <button
+                className={`${styles.menuToggle} ${isMenuVisible ? styles.menuToggleVisible : styles.menuToggleHidden}`}
+                onClick={toggleMenu}
                 aria-label={isMenuVisible ? 'Hide menu' : 'Show menu'}
             >
                 <FaBars />

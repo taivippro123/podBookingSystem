@@ -2,19 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styles from './ManageAccounts.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa';
+import { Modal, notification } from 'antd';
 
-// Component cho thông báo thành công
-const SuccessPopup = ({ message, onClose }) => {
-    return (
-        <div className={styles.successPopupOverlay}>
-            <div className={styles.successPopup}>
-                <h2>Success</h2>
-                <p>{message}</p>
-                <button onClick={onClose}>Close</button>
-            </div>
-        </div>
-    );
-};
+
 
 const ManageAccounts = () => {
     const [accounts, setAccounts] = useState([]);
@@ -26,7 +16,7 @@ const ManageAccounts = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [accountToDelete, setAccountToDelete] = useState(null);
-    const [successMessage, setSuccessMessage] = useState('');
+    
     const [errorMessage, setErrorMessage] = useState('');
 
     // Trạng thái cho phân trang
@@ -94,19 +84,21 @@ const ManageAccounts = () => {
 
             if (response.ok) {
                 await fetchAccounts();
-                setSuccessMessage('Account added successfully!');
+                notification.success({
+                    message: 'Success',
+                    description: 'Account added successfully!', // Sử dụng thông báo thành công của antd
+                });
                 closePopup();
-
-                setTimeout(() => {
-                    setSuccessMessage('');
-                }, 2000);
             } else {
                 const errorData = await response.json();
                 setErrorMessage(`Error adding account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error adding account:', error);
-            setErrorMessage('An unexpected error occurred. Please try again.');
+            notification.error({
+                message: 'Error',
+                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+            });
         }
     };
 
@@ -141,19 +133,21 @@ const ManageAccounts = () => {
 
             if (response.ok) {
                 await fetchAccounts();
-                setSuccessMessage('Account updated successfully!');
+                notification.success({
+                    message: 'Success',
+                    description: 'Account updated successfully!', // Sử dụng thông báo thành công của antd
+                });
                 closePopup();
-
-                setTimeout(() => {
-                    setSuccessMessage('');
-                }, 2000);
             } else {
                 const errorData = await response.json();
                 setErrorMessage(`Error updating account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Error updating account:', error);
-            setErrorMessage('An unexpected error occurred. Please try again.');
+            notification.error({
+                message: 'Error',
+                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+            });
         }
     };
 
@@ -172,20 +166,21 @@ const ManageAccounts = () => {
 
             if (response.ok) {
                 await fetchAccounts();
-                setSuccessMessage('Account deleted successfully!');
-                setIsDeleteConfirmOpen(false);
-                setAccountToDelete(null);
-
-                setTimeout(() => {
-                    setSuccessMessage('');
-                }, 2000);
+                notification.success({
+                    message: 'Success',
+                    description: 'Account updated successfully!', // Sử dụng thông báo thành công của antd
+                });
+                closePopup();
             } else {
                 const errorData = await response.json();
-                setErrorMessage(`Error deleting account: ${errorData.message || 'Please try again.'}`);
-                setIsDeleteConfirmOpen(false);
+                setErrorMessage(`Error updating account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
-            console.error('Error deleting account:', error);
+            console.error('Error updating account:', error);
+            notification.error({
+                message: 'Error',
+                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+            });
         }
     };
 
@@ -298,10 +293,10 @@ const ManageAccounts = () => {
             {isDeleteConfirmOpen && (
                 <div className={styles.deleteConfirmOverlay}>
                     <div className={styles.deleteConfirm}>
-                        <h2>Confirm Delete</h2>
-                        <p>Are you sure you want to delete this account?</p>
-                        <button onClick={handleDeleteAccount}>Yes, Delete</button>
-                        <button onClick={() => setIsDeleteConfirmOpen(false)}>Cancel</button>
+                        
+                        <h2>Are you sure you want to delete this account?</h2>
+                        <button onClick={handleDeleteAccount} className={styles.confirmDeleteButton}>Yes</button>
+                        <button onClick={() => setIsDeleteConfirmOpen(false)} className={styles.cancelDeleteButton}>No</button>
                     </div>
                 </div>
             )}
@@ -324,10 +319,7 @@ const ManageAccounts = () => {
                 </button>
             </div>
 
-            {/* Thông báo thành công */}
-            {successMessage && (
-                <SuccessPopup message={successMessage} onClose={() => setSuccessMessage('')} />
-            )}
+            
 
             <button className={styles.addAccountButton} onClick={() => setIsPopupOpen(true)}>
             <FaPlus size={30} color="white" />

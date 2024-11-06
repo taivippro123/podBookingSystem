@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import styles from './ManageAllAccounts.module.css';
+import { Modal, notification } from 'antd';
 
 const ManageAllAccounts = () => {
     const [accounts, setAccounts] = useState([]);
     const [viewAccount, setViewAccount] = useState(null); // State for viewing account details
     const [editedAccountId, setEditedAccountId] = useState(null);
     const [userName, setUserName] = useState('');
+    const [userEmail, setUserEmail] = useState(''); // New state for user email
+    const [userPhone, setUserPhone] = useState(''); // New state for user phone
+    const [userPoint, setUserPoint] = useState(''); // New state for user points
     const [userRole, setUserRole] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const accountsPerPage = 10;
@@ -26,6 +30,7 @@ const ManageAllAccounts = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('Error fetching accounts:', error);
+            notification.error({ message: 'Error fetching accounts', description: 'Could not load accounts. Please try again later.' });
         }
     };
 
@@ -40,7 +45,29 @@ const ManageAllAccounts = () => {
     const handleEditClick = (account) => {
         setEditedAccountId(account.userId);
         setUserName(account.userName);
+        setUserEmail(account.userEmail); // Set email when editing
+        setUserPhone(account.userPhone); // Set phone when editing
+        setUserPoint(account.userPoint); // Set points when editing
         setUserRole(account.userRole);
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.put(`http://localhost:5000/admin/accounts/${editedAccountId}`, {
+                userName,
+                userEmail,
+                userPhone,
+                userPoint,
+                userRole
+            });
+            fetchAccounts(); // Refresh accounts after edit
+            notification.success({ message: 'Success', description: 'Account updated successfully.' });
+            setEditedAccountId(null);
+        } catch (error) {
+            console.error('Error updating account:', error);
+            notification.error({ message: 'Update Failed', description: 'Could not update account. Please try again.' });
+        }
     };
 
     const handleDeleteRequest = (userId) => {
@@ -52,9 +79,11 @@ const ManageAllAccounts = () => {
             try {
                 await axios.delete(`http://localhost:5000/admin/accounts/${deleteAccountId}`);
                 fetchAccounts();
+                notification.success({ message: 'Success', description: 'Account deleted successfully.' });
                 setDeleteAccountId(null);
             } catch (error) {
                 console.error('Error deleting account:', error);
+                notification.error({ message: 'Delete Failed', description: 'Could not delete account. Please try again.' });
             }
         }
     };
@@ -132,16 +161,18 @@ const ManageAllAccounts = () => {
                 </div>
             </div>
 
-
             {/* Accounts Table */}
             <table className={styles.table}>
                 <thead>
                     <tr>
                         <th>User ID</th>
                         <th>Name</th>
+                        <th>Email</th> {/* New column for Email */}
+                        <th>Phone</th> {/* New column for Phone */}
+                        <th>Points</th> {/* New column for Points */}
                         <th>Role</th>
                         <th>Actions</th>
-                        <th></th> {/* New column for View Details button */}
+
                     </tr>
                 </thead>
                 <tbody>
@@ -150,6 +181,9 @@ const ManageAllAccounts = () => {
                             <tr key={account.userId}>
                                 <td>{account.userId}</td>
                                 <td>{account.userName}</td>
+                                <td>{account.userEmail}</td> {/* Display email */}
+                                <td>{account.userPhone}</td> {/* Display phone */}
+                                <td>{account.userPoint}</td> {/* Display points */}
                                 <td>{getRoleName(account.userRole)}</td>
                                 <td>
                                     <button onClick={() => handleEditClick(account)} title="Edit">
@@ -159,32 +193,87 @@ const ManageAllAccounts = () => {
                                         <FaTrash color="red" size={30} />
                                     </button>
                                 </td>
-                                <td>
-                                    <button
-                                        onClick={() => handleViewDetails(account)}
-                                        className={styles.viewDetailsButton}
-                                        title="View Details"
-                                    >
-                                        View Details
-                                    </button>
-                                </td>
+
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="5" className={styles.noAccounts}>No accounts available</td>
+                            <td colSpan="8" className={styles.noAccounts}>No accounts available</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            {/* Pagination Controls */}
+            {/* Edit Account Modal */}
+            {editedAccountId && (
+                <div className={styles.modal}>
+                    <div className={styles['modal-content']}>
+                        <h3>Edit Account</h3>
+                        <form onSubmit={handleEditSubmit}>
+                            <div>
+                                <label>Name:</label>
+                                <input
+                                    type="text"
+                                    value={userName}
+                                    onChange={(e) => setUserName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    value={userEmail}
+                                    onChange={(e) => setUserEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Phone:</label>
+                                <input
+                                    type="text"
+                                    value={userPhone}
+                                    onChange={(e) => setUserPhone(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Points:</label>
+                                <input
+                                    type="number"
+                                    value={userPoint}
+                                    onChange={(e) => setUserPoint(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Role:</label>
+                                <select
+                                    value={userRole}
+                                    onChange={(e) => setUserRole(e.target.value)}
+                                    required
+                                >
+                                    <option value="1">Admin</option>
+                                    <option value="2">Manager</option>
+                                    <option value="3">Staff</option>
+                                    <option value="4">User</option>
+                                </select>
+                            </div>
+                            <button type="submit" className={styles.submitButton}>Update</button>
+                            <button
+                                type="button"
+                                onClick={() => setEditedAccountId(null)}
+                                className={styles.cancelButton}
+                            >
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             <div className={styles.pagination}>
-                <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    title="Previous Page"
-                >
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                     &lt;
                 </button>
                 {Array.from({ length: totalPages }, (_, index) => (
@@ -196,36 +285,19 @@ const ManageAllAccounts = () => {
                         {index + 1}
                     </button>
                 ))}
-                <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    title="Next Page"
-                >
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
                     &gt;
                 </button>
             </div>
 
-            {/* Modal for Viewing Account Details */}
-            {viewAccount && (
-                <div className={styles.modal}>
-                    <div className={styles['modal-content']}>
-                        <h3>Account Details</h3>
-                        <p><strong>Email:</strong> {viewAccount.userEmail}</p>
-                        <p><strong>Phone:</strong> {viewAccount.userPhone}</p>
-                        <p><strong>Points:</strong> {viewAccount.userPoint}</p>
-                        <button onClick={() => setViewAccount(null)}>Close</button>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal for Confirming Deletion */}
+            {/* Confirm Delete Modal */}
             {deleteAccountId && (
                 <div className={styles.modal}>
-                    <div className={styles['modal-content']}>
-                        <h3>Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this account?</p>
-                        <button onClick={handleDelete}>Yes, delete</button>
-                        <button onClick={() => setDeleteAccountId(null)}>Cancel</button>
+                    <div className={styles.modalContent}>
+                        
+                        <h2>Are you sure you want to delete this account?</h2>
+                        <button onClick={handleDelete} className={styles.confirmDeleteButton}>Yes</button>
+                        <button onClick={() => setDeleteAccountId(null)} className={styles.cancelDeleteButton}>No</button>
                     </div>
                 </div>
             )}
