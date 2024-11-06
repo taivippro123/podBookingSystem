@@ -6,7 +6,7 @@ import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { notification } from 'antd'; // Import notification from antd
 import styles from './ManageRooms.module.css';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd'
+import { Button } from 'antd';
 
 function ManageRooms() {
     const [rooms, setRooms] = useState([]);
@@ -24,7 +24,7 @@ function ManageRooms() {
     const [tempImageUrl, setTempImageUrl] = useState('');
     const [imageUrls, setImageUrls] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // New state for edit modal
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [roomToEdit, setRoomToEdit] = useState({
         roomId: '',
         roomName: '',
@@ -35,11 +35,9 @@ function ManageRooms() {
         roomPricePerDay: 0,
         roomPricePerWeek: 0,
         roomStatus: 'Available',
-        images: [], // Initialize with an empty array
+        images: [],
     });
 
-
-    // New state for delete confirmation modal
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [roomToDelete, setRoomToDelete] = useState(null);
 
@@ -100,12 +98,11 @@ function ManageRooms() {
         const selectedFile = e.target.files[0];
         setImage(selectedFile);
 
-        // Tạo URL tạm thời để hiển thị
         if (selectedFile) {
             const url = URL.createObjectURL(selectedFile);
-            setTempImageUrl(url); // Lưu URL vào state
+            setTempImageUrl(url);
         }
-    }
+    };
 
     const handleCreateRoom = async () => {
         if (!newRoom.roomName || !newRoom.roomType || !newRoom.roomDescription || !newRoom.roomDetailsDescription ||
@@ -189,9 +186,8 @@ function ManageRooms() {
             formData.append('roomPricePerWeek', roomToEdit.roomPricePerWeek);
             formData.append('roomStatus', roomToEdit.roomStatus);
 
-            // Append all images to formData
             roomToEdit.images.forEach((img) => {
-                formData.append('roomImages', img); // Ensure your backend can handle multiple images
+                formData.append('roomImages', img);
             });
 
             if (image) {
@@ -207,7 +203,7 @@ function ManageRooms() {
                 description: 'Room updated successfully.',
             });
             fetchRooms();
-            closeEditModal(); // Close modal after update
+            closeEditModal();
         } catch (error) {
             notification.error({
                 message: 'Error',
@@ -218,7 +214,6 @@ function ManageRooms() {
         setTempImageUrl(null);
     };
 
-
     const openEditModal = (room) => {
         setRoomToEdit(room);
         setIsEditModalOpen(true);
@@ -227,10 +222,9 @@ function ManageRooms() {
     const closeEditModal = () => {
         setIsEditModalOpen(false);
         setRoomToEdit(null);
-        setImage(null); // Reset image when modal is closed
+        setImage(null);
     };
 
-    // New function to open delete confirmation modal
     const openDeleteModal = (roomId) => {
         setRoomToDelete(roomId);
         setIsDeleteModalOpen(true);
@@ -241,8 +235,8 @@ function ManageRooms() {
             try {
                 await axios.delete(`http://localhost:5000/rooms/${roomToDelete}`);
                 fetchRooms();
-                setIsDeleteModalOpen(false); // Close modal after deletion
-                setRoomToDelete(null); // Reset roomToDelete
+                setIsDeleteModalOpen(false);
+                setRoomToDelete(null);
                 notification.success({
                     message: 'Success',
                     description: 'Room deleted successfully.',
@@ -257,33 +251,17 @@ function ManageRooms() {
         }
     };
 
-    const handleDeleteImage = (index) => {
-        // Tạo bản sao của danh sách hình ảnh và xóa hình ảnh theo chỉ số đã cho
-        const updatedImages = roomToEdit.images.filter((_, i) => i !== index);
-
-        // Cập nhật state với danh sách hình ảnh đã xóa
-        setRoomToEdit({ ...roomToEdit, images: updatedImages });
-
-        // Nếu bạn cần gọi API để xóa hình ảnh trên server, làm điều đó ở đây
-        // await deleteImageFromServer(imageId); // Thay đổi theo logic của bạn
-
-        notification.success({
-            message: 'Success',
-            description: 'Image deleted successfully.',
-        });
-    };
-
-
     const closeModal = () => {
         setIsModalOpen(false);
         resetForm();
     };
 
-    // Close delete confirmation modal
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false);
-        setRoomToDelete(null); // Reset roomToDelete
+        setRoomToDelete(null);
     };
+
+
 
     return (
         <div>
@@ -465,7 +443,7 @@ function ManageRooms() {
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() => handleDeleteImage(index)}
+                                                
                                                 style={{
                                                     marginTop: '5px',
                                                     background: 'none',

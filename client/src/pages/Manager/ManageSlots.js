@@ -49,39 +49,44 @@ function ManageSlots() {
 
     const handleAddSlot = async () => {
         const lastSlot = slots[slots.length - 1];
-
+        const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
+        const newEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
+        const oneHourInMillis = 60 * 60 * 1000;  // 1 hour in milliseconds
+    
+        // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
         if (lastSlot) {
             const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime}`);
-            const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
-            const thirtyMinutes = 30 * 60 * 1000;
-
-            if (newStartTime < lastEndTime.getTime() + thirtyMinutes) {
-                notification.error({ message: 'Error', description: `Start time must be at least 30 minutes after the end time of the last slot (${lastSlot.slotEndTime})!` });
+            if (newStartTime < lastEndTime.getTime() + oneHourInMillis) {
+                notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime})!` });
                 setIsPopupVisible(true);
                 return;
             }
         }
-
+    
+        // Kiểm tra nếu End Time phải lớn hơn Start Time ít nhất 1 tiếng
+        if (newEndTime <= newStartTime || (newEndTime - newStartTime) < oneHourInMillis) {
+            notification.error({ message: 'Error', description: 'End time must be more than 1 hour after start time!' });
+            setIsPopupVisible(true);
+            return;
+        }
+    
+        // Kiểm tra trùng lặp hoặc chồng chéo với các slot hiện tại
         const isDuplicate = slots.some(slot => {
             const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
             const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
-            const newStart = new Date(`1970-01-01T${formData.slotStartTime}`);
-            const newEnd = new Date(`1970-01-01T${formData.slotEndTime}`);
-            const thirtyMinutes = 30 * 60 * 1000;
-
+    
             return (
-                (newStart >= existingStart && newStart < existingEnd + thirtyMinutes) ||
-                (newEnd > existingStart - thirtyMinutes && newEnd <= existingEnd) ||
-                (newStart <= existingStart && newEnd >= existingEnd + thirtyMinutes)
+                (newStartTime >= existingStart && newStartTime < existingEnd + oneHourInMillis) ||
+                (newEndTime > existingStart - oneHourInMillis && newEndTime <= existingEnd) ||
+                (newStartTime <= existingStart && newEndTime >= existingEnd + oneHourInMillis)
             );
         });
-
+    
         if (isDuplicate) {
-            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with at least 30 minutes!' });
-            
+            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with at least 1 hour!' });
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:5000/slots', {
                 ...formData,
@@ -96,6 +101,7 @@ function ManageSlots() {
             console.error('Error adding slot:', error);
         }
     };
+    
 
     const handleUpdateSlot = async () => {
         if (!currentSlot) return;

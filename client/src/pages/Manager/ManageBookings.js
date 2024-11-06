@@ -161,26 +161,23 @@ const ManageBookings = () => {
 
       {/* Modal for viewing booking details */}
       <Modal
-        title="Booking Details"
-        visible={isDetailsModalOpen}
-        onCancel={closeDetailsModal}
-        footer={[
-          <button key="close" onClick={closeDetailsModal}>
-            Close
-          </button>,
-        ]}
-      >
-        {selectedBooking && (
-          <div>
+    title="Booking Details"
+    visible={isDetailsModalOpen}
+    onCancel={closeDetailsModal}
+    footer={null}  // Xóa footer để không hiển thị nút "Close"
+>
+    {selectedBooking && (
+        <div>
             <p><strong>User ID:</strong> {selectedBooking.userId}</p>
             <p><strong>Room ID:</strong> {selectedBooking.roomId}</p>
             <p><strong>Start Day:</strong> {new Date(selectedBooking.bookingStartDay).toLocaleDateString()}</p>
             <p><strong>End Day:</strong> {new Date(selectedBooking.bookingEndDay).toLocaleDateString()}</p>
             <p><strong>Total Price:</strong> {formatPrice(selectedBooking.totalPrice)}</p>
             <p><strong>Created At:</strong> {new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
-          </div>
-        )}
-      </Modal>
+        </div>
+    )}
+</Modal>
+
     </div>
   );
 };
