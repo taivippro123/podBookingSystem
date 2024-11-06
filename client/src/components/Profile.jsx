@@ -192,7 +192,7 @@ export default function Profile({ onProfileUpdate }) {
           )}
           <Button
             icon={<HomeOutlined />}
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/')}
             style={{ marginTop: '16px', width: '100%', height: '40px', borderRadius: '20px' }}
           >
             Back To Home
