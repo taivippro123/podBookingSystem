@@ -1,5 +1,6 @@
+// src/views/ViewBookings.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
   Layout,
@@ -9,14 +10,10 @@ import {
   Button,
   Spin,
   Alert,
-  Modal,
-  Form,
-  message,
-  Input,
   Pagination,
-  Checkbox,
   Row,
   Col,
+  message,
 } from "antd";
 import {
   LoadingOutlined,
@@ -28,6 +25,11 @@ import {
   MenuFoldOutlined,
 } from "@ant-design/icons";
 import { Header } from "antd/es/layout/layout";
+import AddServiceModal from "../pages/Booking/AddServiceModal";
+import FeedbackModal from "../pages/Booking/FeedbackModal";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
+
 const { Sider, Content } = Layout;
 
 function ViewBookings() {
@@ -37,10 +39,9 @@ function ViewBookings() {
   const [error, setError] = useState(null);
   const { userId } = useParams();
   const [collapsed, setCollapsed] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAddServiceModalVisible, setIsAddServiceModalVisible] = useState(false);
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [feedback, setFeedback] = useState("");
   const [services, setServices] = useState([]);
 
   // Pagination states
@@ -50,121 +51,112 @@ function ViewBookings() {
 
   const { Meta } = Card;
 
-  useEffect(() => {
+  // Fetch bookings from API
+  const fetchBookings = async () => {
     if (!userId) {
       console.error("User ID is missing from URL.");
       alert("User ID is missing from URL.");
       return;
     }
 
-    const fetchBookings = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/viewbookings/${userId}`
-        );
-        const { history, upcoming } = response.data;
-        setHistoryBookings(history);
-        setUpcomingBookings(upcoming);
-      } catch (error) {
-        console.error("Error fetching view bookings:", error);
-        alert(`Failed to fetch bookings: ${error.message}`);
-        setError("Failed to fetch bookings. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/viewbookings/${userId}`
+      );
+      const { history, upcoming } = response.data;
 
-    const fetchServices = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/services");
-        setServices(
-          response.data.map((service) => ({ ...service, selected: false }))
-        );
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
+      const transformBookings = (bookings) =>
+        bookings.map((booking) => ({
+          ...booking,
+          id: userId, // Alias '_id' to 'id'
+        }));
 
-    fetchBookings();
+      setHistoryBookings(transformBookings(history));
+      setUpcomingBookings(transformBookings(upcoming));
+    } catch (error) {
+      console.error("Error fetching view bookings:", error);
+      alert(`Failed to fetch bookings: ${error.message}`);
+      setError("Failed to fetch bookings. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/services");
+      setServices(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings(); // Initial fetch
     fetchServices();
   }, [userId]);
 
-  if (loading) {
-    return (
-      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+  const addServiceToBooking = async (bookingId, serviceId) => {
+    try {
+        const response = await axios.post(
+            `http://localhost:5000/booking/${bookingId}/add-service`,
+            { serviceId }
+        );
+        message.success(response.data.message); // Show success message
+        return true; // Indicate success
+    } catch (error) {
+        console.error("Error adding service:", error);
+        message.error(error.response?.data?.error || "Failed to add service.");
+        return false; // Indicate failure
+    }
+};
+  const handleAddServiceSuccess = async (addedServiceIds) => {
+    setIsAddServiceModalVisible(false);
+    setSelectedBooking(null);
+
+    // Logic to integrate added services with the selected booking
+    const successfulAdds = await Promise.all(
+      addedServiceIds.map(async (serviceId) => {
+        return await addServiceToBooking(selectedBooking.id, serviceId);
+      })
     );
-  }
 
-  if (error) {
-    return <Alert message="Error" description={error} type="error" showIcon />;
-  }
+    // Update the upcoming bookings state if all adds were successful
+    if (successfulAdds.every(success => success)) {
+      const updatedUpcomingBookings = upcomingBookings.map(booking => {
+        if (booking.id === selectedBooking.id) {
+          const newServices = selectedBooking.services.filter(service => addedServiceIds.includes(service.id)); // Example logic
+          booking.services = [...booking.services, ...newServices]; // Append new services
+          // Update total price
+          booking.totalPrice += newServices.reduce((total, service) => total + service.servicePrice, 0);
+        }
+        return booking;
+      });
 
-  const showModal = (booking) => {
-    setSelectedBooking(booking);
-    setIsModalVisible(true);
+      setUpcomingBookings(updatedUpcomingBookings); // Update state
+    }
+  };
+
+  const showAddServiceModal = (booking) => {
+    console.log("Selected Booking for Add Service:", booking);
+    setSelectedBooking(booking); // Set selectedBooking correctly
+    setIsAddServiceModalVisible(true); // Open the modal
   };
 
   const showFeedbackModal = (booking) => {
+    console.log("Selected Booking for Feedback:", booking);
     setSelectedBooking(booking);
     setIsFeedbackModalVisible(true);
   };
 
-  const handleFeedbackSubmit = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/feedback", {
-        bookingId: selectedBooking.id,
-        feedback,
-      });
-
-      if (response.status === 200) {
-        message.success("Feedback submitted successfully!");
-        setIsFeedbackModalVisible(false);
-        setFeedback("");
-      } else {
-        message.error("Failed to submit feedback.");
-      }
-    } catch (error) {
-      console.error("Error submitting feedback:", error);
-      message.error("Failed to submit feedback. Please try again later.");
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setServices(services.map((service) => ({ ...service, selected: false })));
-  };
-
-  const handleOk = async () => {
-    const selectedServices = services.filter((service) => service.selected);
-    if (selectedServices.length === 0) {
-      message.warning("Please select at least one service.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("http://localhost:5000/services", {
-        bookingId: selectedBooking.id,
-        services: selectedServices,
-      });
-
-      if (response.status === 200) {
-        message.success("Services added successfully!");
-      } else {
-        message.error("Failed to add services.");
-      }
-
-      setIsModalVisible(false);
-      setServices(services.map((service) => ({ ...service, selected: false })));
-    } catch (error) {
-      console.error("Error adding services to booking:", error);
-      message.error(
-        "Failed to add services to the booking. Please try again later."
-      );
-    }
+  const handleFeedbackSuccess = () => {
+    setIsFeedbackModalVisible(false);
+    setSelectedBooking(null);
   };
 
   const renderBookingItem = (booking) => {
+    console.log("Rendering booking:", booking);
     let actionButton = null;
 
     if (
@@ -181,16 +173,18 @@ function ViewBookings() {
       booking.bookingStatus === "Using"
     ) {
       actionButton = (
-        <Button type="primary" onClick={() => showModal(booking)}>
-          Add Services
+        <Button type="primary" onClick={() => showAddServiceModal(booking)}>
+          Add Service
         </Button>
       );
     } else {
       console.log("Unrecognized booking status:", booking.bookingStatus);
     }
 
+    const bookingKey = booking.id;
+
     return (
-      <Col span={12} key={booking.id}>
+      <Col span={12} key={bookingKey}>
         <Card
           title={`Room: ${booking.roomName}`}
           extra={actionButton}
@@ -198,17 +192,17 @@ function ViewBookings() {
             marginBottom: 16,
             display: "flex",
             flexDirection: "column",
-            height: "100%", // Allow card to fill the height of the row
+            height: "100%",
           }}
         >
           <div className="booking-header" style={{ marginBottom: 16 }}>
             <strong>Status: {booking.bookingStatus}</strong>
-            <br></br>    
-
-            <strong>Start: </strong>{new Date(booking.bookingStartDay).toLocaleDateString()}
-            <br></br>
-
-            <strong>End: </strong>{new Date(booking.bookingEndDay).toLocaleDateString()}
+            <br />
+            <strong>Start: </strong>
+            {new Date(booking.bookingStartDay).toLocaleDateString()}
+            <br />
+            <strong>End: </strong>
+            {new Date(booking.bookingEndDay).toLocaleDateString()}
           </div>
           <div style={{ flexGrow: 1 }}>
             <div style={{ marginBottom: "10px" }}>
@@ -278,15 +272,22 @@ function ViewBookings() {
         {bookings.map((booking, index) => (
           <React.Fragment key={booking.id}>
             {renderBookingItem(booking)}
-            {(index + 1) % 2 === 0 && (
-              <div style={{ flexBasis: "100%" }} />
-            )}{" "}
-            {/* Force a new row every 2 cards */}
+            {(index + 1) % 2 === 0 && <div style={{ flexBasis: "100%" }} />}
           </React.Fragment>
         ))}
       </Row>
     );
   };
+
+  if (loading) {
+    return (
+      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+    );
+  }
+
+  if (error) {
+    return <Alert message="Error" description={error} type="error" showIcon />;
+  }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -328,6 +329,7 @@ function ViewBookings() {
                     pageSize={itemsPerPage}
                     total={upcomingBookings.length}
                     onChange={(page) => setUpcomingCurrentPage(page)}
+                    style={{ marginTop: 16, textAlign: "center" }}
                   />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Booking History" key="2">
@@ -341,6 +343,7 @@ function ViewBookings() {
                     pageSize={itemsPerPage}
                     total={historyBookings.length}
                     onChange={(page) => setHistoryCurrentPage(page)}
+                    style={{ marginTop: 16, textAlign: "center" }}
                   />
                 </Tabs.TabPane>
               </Tabs>
@@ -349,61 +352,27 @@ function ViewBookings() {
         </Layout>
       </Layout>
 
-      {/* Add Services Modal */}
-      <Modal
-        title="Add Services"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Select Services">
-            <Checkbox.Group>
-              <Row>
-                {services.map((service) => (
-                  <Col span={8} key={service.id}>
-                    <Checkbox
-                      value={service.id}
-                      checked={service.selected}
-                      onChange={() => {
-                        setServices(
-                          services.map((s) =>
-                            s.id === service.id
-                              ? { ...s, selected: !s.selected }
-                              : s
-                          )
-                        );
-                      }}
-                    >
-                      {service.serviceName} (
-                      {Number(service.servicePrice).toLocaleString("vi-VN")}{" "}
-                      VND)
-                    </Checkbox>
-                  </Col>
-                ))}
-              </Row>
-            </Checkbox.Group>
-          </Form.Item>
-        </Form>
-      </Modal>
-
+      {/* Add Service Modal */}
+      <AddServiceModal
+        visible={isAddServiceModalVisible}
+        onOk={handleAddServiceSuccess}
+        onCancel={() => {
+          setIsAddServiceModalVisible(false);
+          setSelectedBooking(null); // Clear selection when modal closes
+        }}
+        selectedBooking={selectedBooking} // Pass the selected booking
+      />
       {/* Feedback Modal */}
-      <Modal
-        title="Feedback"
+      <FeedbackModal
         visible={isFeedbackModalVisible}
-        onOk={handleFeedbackSubmit}
-        onCancel={() => setIsFeedbackModalVisible(false)}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Your Feedback">
-            <Input.TextArea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              rows={4}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+        onOk={handleFeedbackSuccess}
+        onCancel={() => {
+          setIsFeedbackModalVisible(false);
+          setSelectedBooking(null);
+        }}
+        selectedBooking={selectedBooking}
+        userId={userId}
+      />
     </Layout>
   );
 }
