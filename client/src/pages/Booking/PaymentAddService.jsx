@@ -8,6 +8,9 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
     if (visible) {
       document.body.style.overflow = 'hidden';
 
+      // Log the payment data to ensure userId is included
+      console.log("Payment Data:", paymentData);
+
       // Fetch available payment methods
       fetch("http://localhost:5000/getPaymentMethods")
         .then((response) => response.json())
@@ -24,7 +27,7 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
         document.body.style.overflow = 'auto';
       };
     }
-  }, [visible]);
+  }, [visible, paymentData]);
 
   const handleConfirmPayment = () => {
     if (!selectedMethod) {
@@ -35,7 +38,7 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
     // Build the payment payload
     const paymentPayload = {
       bookingId: paymentData.bookingId,
-      userId: paymentData.userId,
+      userId: paymentData.userId, // Ensure this is being set correctly
       selectedServices: paymentData.selectedServices.map(service => ({
         serviceId: service.serviceId,
         serviceName: service.serviceName,

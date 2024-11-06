@@ -1266,7 +1266,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://ae16-118-69-182-149.ngrok-free.app/callback",
+        callback_url: "https://0ee4-113-161-52-4.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1511,7 +1511,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://ae16-118-69-182-149.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://0ee4-113-161-52-4.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
@@ -1631,7 +1631,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
     try {
         // Fetch history bookings (Completed or Cancelled)
         const historyQuery = `
-            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userID
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
             WHERE b.userId = ? AND (b.bookingStatus = 'Completed' OR b.bookingStatus = 'Cancelled' OR b.bookingStatus = 'Refunded')
@@ -1640,7 +1640,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
 
         // Fetch upcoming bookings (Pending, Confirmed, Using)
         const upcomingQuery = `
-            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userID
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
             WHERE b.userId = ? AND (b.bookingStatus = 'Upcoming' OR b.bookingStatus = 'Using')

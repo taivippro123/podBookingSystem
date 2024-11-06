@@ -28,11 +28,17 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
     }
   }, [visible]);
 
+  // Get booked service IDs based on the selected booking
+  const bookedServiceIds = selectedBooking?.services?.map(service => service.serviceId) || [];
+
+  // Filter to get only available services that are not booked
+  const availableServices = services.filter(service => !bookedServiceIds.includes(service.serviceId));
+
   const handleServiceChange = (checkedValues) => {
-    const newTotalPrice = services
+    const newTotalPrice = availableServices
       .filter(service => checkedValues.includes(service.serviceId))
       .reduce((sum, service) => sum + parseInt(service.servicePrice, 10), 0);
-    
+
     setSelectedServiceIds(checkedValues);
     setTotalPrice(newTotalPrice);
   };
@@ -43,30 +49,30 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
       return;
     }
 
-    // Get selected services with their details
-    const selectedServices = services
+    const selectedServices = availableServices
       .filter(service => selectedServiceIds.includes(service.serviceId))
       .map(service => ({
         serviceId: service.serviceId,
         serviceName: service.serviceName,
         servicePrice: service.servicePrice,
       }));
+      
 
     const newPaymentData = {
-      bookingId: selectedBooking.bookingId, // Ensure bookingId is included
-      userId: selectedBooking.userId, // Ensure userId is included
-      selectedServices: selectedServices, // Ensure selected services are included
-      totalPrice: totalPrice, // Total price calculated
+      bookingId: selectedBooking.bookingId,
+      userId: selectedBooking.userID,
+      selectedServices: selectedServices,
+      totalPrice: totalPrice,
       methodId: null // Initially set to null, will be selected in payment modal
     };
 
-    setPaymentData(newPaymentData); // Set payment data
-    setPaymentModalVisible(true); // Show the Payment Modal
-    onCancel(); // Close the AddServiceModal
+    setPaymentData(newPaymentData);
+    setPaymentModalVisible(true);
+    onCancel();
   };
 
   const handlePaymentModalClose = () => {
-    setPaymentModalVisible(false); // Hide the Payment Modal
+    setPaymentModalVisible(false);
   };
 
   return (
@@ -88,7 +94,7 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
           <h3>Select Services to Add</h3>
           <List
             bordered
-            dataSource={services}
+            dataSource={availableServices}
             renderItem={service => (
               <List.Item>
                 <Checkbox 

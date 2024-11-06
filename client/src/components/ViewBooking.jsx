@@ -69,7 +69,7 @@ function ViewBookings() {
       const transformBookings = (bookings) =>
         bookings.map((booking) => ({
           ...booking,
-          id: booking._id, // Alias '_id' to 'id'
+          id: userId, // Alias '_id' to 'id'
         }));
 
       setHistoryBookings(transformBookings(history));
