@@ -48,7 +48,16 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
       message.warning("Please select at least one service.");
       return;
     }
-
+  
+    // Debugging: Log the selected booking to verify its structure
+    console.log("Selected Booking:", selectedBooking);
+  
+    // Check if userId is valid
+    if (selectedBooking.userId == null) {
+      message.error("Invalid user. Please ensure that the user is correctly selected.");
+      return;
+    }
+  
     const selectedServices = availableServices
       .filter(service => selectedServiceIds.includes(service.serviceId))
       .map(service => ({
@@ -56,20 +65,20 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
         serviceName: service.serviceName,
         servicePrice: service.servicePrice,
       }));
-      
-
+  
     const newPaymentData = {
       bookingId: selectedBooking.bookingId,
-      userId: selectedBooking.userID,
+      userId: selectedBooking.userId,
       selectedServices: selectedServices,
       totalPrice: totalPrice,
       methodId: null // Initially set to null, will be selected in payment modal
     };
-
+  
     setPaymentData(newPaymentData);
     setPaymentModalVisible(true);
     onCancel();
   };
+  
 
   const handlePaymentModalClose = () => {
     setPaymentModalVisible(false);
