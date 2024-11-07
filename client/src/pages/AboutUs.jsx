@@ -1,219 +1,177 @@
-import React from 'react';
-
-export default function EnhancedAboutUs() {
+import { Image } from "antd"
+import { Building2, Users2, Briefcase } from "lucide-react"
+import wk from '../assets/workspace.webp';
+import en from '../assets/enterprise.webp';
+import home1 from '../assets/home1.jpg';
+import home2 from '../assets/home2.jpg';
+import { Link } from "react-router-dom";
+import { FaUsers, FaHandshake, FaBuilding } from "react-icons/fa";
+export default function Component() {
   return (
-    <div style={{ backgroundColor: 'white' }}>
+    <div className="max-w-7xl mx-auto px-4 py-12">
       {/* Hero Section */}
-      <section
-        style={{
-          position: 'relative',
-          height: '80vh',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundImage: "url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200&ixlib=rb-4.0.3')",
-        }}
-      >
-        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'black', opacity: 0.5 }}></div>
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            textAlign: 'center',
-            color: 'white',
-          }}
-        >
-          <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem', animation: 'fadeInDown 1s' }}>
-            About Us
-          </h1>
-          <p style={{ fontSize: '1.5rem', maxWidth: '42rem', animation: 'fadeInUp 1s' }}>
-            We are a team of dedicated professionals providing the best technological solutions for your business.
-          </p>
-          <button
-            style={{
-              marginTop: '2rem',
-              backgroundColor: 'white',
-              color: 'black',
-              padding: '1rem 2rem',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f1f1f1')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'white')}
-          >
-            Discover Now
-          </button>
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h1 className="text-6xl font-bold mb-4">
+              <span className="text-gray-400">About</span> WorkZone
+            </h1>
+            <p className="text-xl mb-12">Creating a workspace that enhances well-being and work-life harmony</p>
+
+            <div className="grid grid-cols-3 gap-8">
+  <div className="flex items-center space-x-4">
+    <FaUsers className="text-4xl text-orange-500" />
+    <div>
+      <p className="text-4xl font-bold">
+        1500<span className="text-orange-500">+</span>
+      </p>
+      <p className="text-gray-600">Members</p>
+    </div>
+  </div>
+
+  <div className="flex items-center space-x-4">
+    <FaHandshake className="text-4xl text-orange-500" />
+    <div>
+      <p className="text-4xl font-bold">
+        50<span className="text-orange-500">+</span>
+      </p>
+      <p className="text-gray-600">Partners</p>
+    </div>
+  </div>
+
+  <div className="flex items-center space-x-4">
+    <FaBuilding className="text-4xl text-orange-500" />
+    <div>
+      <p className="text-4xl font-bold">
+        600<span className="text-orange-500">+</span>
+      </p>
+      <p className="text-gray-600">Clients</p>
+    </div>
+  </div>
+</div>
+          </div>
         </div>
-      </section>
+
+
+        <div className="flex flex-col items-start space-y-4">
+          <Image
+            src={home1}
+            alt="Working environment"
+            width={700}
+            height={350}
+            className="rounded-lg object-cover"
+          />
+        </div>
+
+
+      </div>
 
       {/* Mission Section */}
-      <section style={{ padding: '4rem 1rem', maxWidth: '72rem', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gap: '3rem', alignItems: 'center', gridTemplateColumns: '1fr 1fr' }}>
+      <div className="mt-24">
+        <h2 className="text-2xl font-bold mb-12">WorkZone's Mission</h2>
+
+        <div className="grid md:grid-cols-3 gap-12">
           <div>
-            <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem', color: '#3182ce' }}>
-              Our Mission
-            </h2>
-            <p style={{ color: '#718096', marginBottom: '1.5rem' }}>
-              We are committed to providing advanced technological solutions and high-quality services to help your business grow and succeed in the digital age.
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <Building2 className="w-6 h-6 text-orange-500" />
+            </div>
+            <h3 className="font-semibold mb-2">Space</h3>
+            <p className="text-gray-600 leading-relaxed">
+            Providing an innovative, secure workspace environment that maximizes support for career growth and personal development.
             </p>
-            <button
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'transparent',
-                border: '1px solid black',
-                cursor: 'pointer',
-                transition: 'transform 0.3s',
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = 'translateX(0.25rem)')}
-              onMouseOut={(e) => (e.currentTarget.style.transform = 'translateX(0)')}
-            >
-              Learn More <span style={{ marginLeft: '0.5rem' }}>→</span>
-            </button>
           </div>
-          <div
-            style={{
-              aspectRatio: '16/9',
-              backgroundColor: '#edf2f7',
-              borderRadius: '0.5rem',
-              overflow: 'hidden',
-              boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
-              transform: 'scale(1)',
-              transition: 'transform 0.3s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800&ixlib=rb-4.0.3"
-              alt="Our Mission"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+
+          <div>
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <Briefcase className="w-6 h-6 text-orange-500" />
+            </div>
+            <h3 className="font-semibold mb-2">Services</h3>
+            <p className="text-gray-600 leading-relaxed">
+            Offering diverse, adaptable office solutions tailored to meet the strategic goals of each unique business.
+            </p>
+          </div>
+
+          <div>
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <Users2 className="w-6 h-6 text-orange-500" />
+            </div>
+            <h3 className="font-semibold mb-2">Community</h3>
+            <p className="text-gray-600 leading-relaxed">
+            Building a cohesive member network that fosters collaboration, ignites new ideas, and cultivates talent development.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="relative h-[400px] w-full">
+            <Image
+              src={wk}
+              alt="Two men working on laptops in a modern office space"
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg"
+            />
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-left">WorkZone
+              made simple</h2>
+            <p className="text-lg text-gray-700 text-left">
+              Whatever your budget or need, we make finding the perfect WorkZone easy. From flexible memberships to move-in ready offices, we give you the space and solutions to do your best work.
+            </p>
+            <Link href="#">
+              <a className="text-blue-600 hover:underline text-left">Learn more ➝</a>
+            </Link>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-left">Enterprise-grade solutions to power your hybrid strategy</h2>
+            <p className="text-lg text-gray-700 text-left">
+              Give your real estate portfolio more flexibility while saving on costs by combining our turnkey offices, coworking spaces, and space management technology.
+            </p>
+            <Link href="#">
+              <a className="text-blue-600 hover:underline text-left">Learn more ➝</a>
+            </Link>
+          </div>
+          <div className="relative h-[400px] w-full">
+            <Image
+              src={en}
+              alt="Two men working on laptops in a modern office space"
+              layout="fill"
+              objectFit="cover"
+              className="rounded-lg"
             />
           </div>
         </div>
-      </section>
-
-      {/* Values Section */}
-      <section style={{ background: 'linear-gradient(to bottom, #ebf8ff, #ffffff)', padding: '4rem 1rem' }}>
-        <div style={{ maxWidth: '72rem', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '3rem', textAlign: 'center', color: '#3182ce' }}>
-            Core Values
-          </h2>
-          <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: '1fr 1fr 1fr' }}>
-            {[
-              { title: 'Innovation', description: 'Always seeking creative and advanced solutions', icon: '💡' },
-              { title: 'Quality', description: 'Committed to delivering high-quality products and services', icon: '🏆' },
-              { title: 'Customer Focus', description: 'Placing customers at the center of every decision', icon: '🤝' },
-            ].map((value, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: 'white',
-                  padding: '1.5rem',
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                  transition: 'box-shadow 0.3s',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.2)')}
-                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)')}
-              >
-                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{value.icon}</div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#3182ce' }}>
-                  {value.title}
-                </h3>
-                <p style={{ color: '#718096' }}>{value.description}</p>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="relative h-[300px] w-full">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/7LzIRUT4hu0"
+              title="YouTube video player"
+              frameBorder="15"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="rounded-lg"
+            ></iframe>
           </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section style={{ padding: '4rem 1rem', maxWidth: '72rem', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '3rem', textAlign: 'center', color: '#3182ce' }}>
-          Our Team
-        </h2>
-        <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
-          {[
-            { name: 'Ngo Dang Khoa', role: 'CEO', image: 'https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/387814835_2073352139691152_6825952868184174048_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=W_3YyEzrMa8Q7kNvgEzzEpS&_nc_zt=23&_nc_ht=scontent.fhan3-2.fna&_nc_gid=A-6dmfO68omY8I522uPT75L&oh=00_AYA8dy4aI-evNxK61pncJmTAR5Aej8-iB186YdoBianlAQ&oe=6721AFB5' },
-            { name: 'Phan Vo Thanh Tai', role: 'CTO', image: 'https://scontent.xx.fbcdn.net/v/t1.15752-9/462544088_1281568609694674_6629086467066014754_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=0024fc&_nc_ohc=WRjq4vXfJfkQ7kNvgEYSxTE&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.xx&_nc_gid=AJW6ktZSMO2eMXwvq68xPnv&oh=03_Q7cD1QFKOHdWeQnJ58tsZCa6UoI37B3EnOdslmgHwffJgNc6Cw&oe=67436566' },
-            { name: 'Nguyen Tan Thuan', role: 'COO', image: 'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.15752-9/462584110_547398751227173_8309664508823726202_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=FpYGk-Twty4Q7kNvgFvuVPs&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=AyjrIxozdWoQgnceyycK4O1&oh=03_Q7cD1QHjjUnfdBYcKEv9HfBKT4OsghuNlLncyptZCzZIqLr-oA&oe=674365EE' },
-            
-          ].map((member, index) => (
-            <div key={index} style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  width: '10rem',
-                  height: '10rem',
-                  margin: '0 auto',
-                  backgroundColor: '#e2e8f0',
-                  borderRadius: '50%',
-                  marginBottom: '1rem',
-                  overflow: 'hidden',
-                  boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
-                  transition: 'box-shadow 0.3s',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 15px 20px rgba(0, 0, 0, 0.2)')}
-                onMouseOut={(e) => (e.currentTarget.style.boxShadow = '0 10px 15px rgba(0, 0, 0, 0.1)')}
-              >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-                  onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-                  onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem', color: '#3182ce' }}>
-                {member.name}
-              </h3>
-              <p style={{ color: '#718096' }}>{member.role}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonial Section */}
-      <section style={{ backgroundColor: '#3182ce', color: 'white', padding: '4rem 1rem' }}>
-        <div style={{ maxWidth: '64rem', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>What Clients Say About Us</h2>
-          <div style={{ backgroundColor: 'white', color: '#2d3748', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)' }}>
-            <p style={{ fontSize: '1.25rem', fontStyle: 'italic', marginBottom: '1rem' }}>
-              "Workflow helped us increase productivity by 200%. They truly understand business needs and offer excellent solutions."
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-left">WorkZone
+              made simple</h2>
+            <p className="text-lg text-gray-700 text-left">
+              Whatever your budget or need, we make finding the perfect WorkZone easy. From flexible memberships to move-in ready offices, we give you the space and solutions to do your best work.
             </p>
-            <p style={{ fontWeight: 'bold' }}>- Tran Van E, Director of XYZ Company</p>
+            <Link href="#">
+              <a className="text-blue-600 hover:underline text-left">Learn more ➝</a>
+            </Link>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* CTA Section */}
-      <section style={{ background: 'linear-gradient(to right, #3182ce, #6b46c1)', color: 'white', padding: '4rem 1rem' }}>
-        <div style={{ maxWidth: '64rem', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Ready to Get Started?</h2>
-          <p style={{ fontSize: '1.25rem', marginBottom: '2rem' }}>
-            Contact us today to discover how we can help your business grow.
-          </p>
-          <button
-            style={{
-              padding: '1rem 2rem',
-              backgroundColor: 'white',
-              color: '#3182ce',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              transition: 'background-color 0.3s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f1f1f1')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'white')}
-          >
-            Contact Now
-          </button>
-        </div>
-      </section>
+
     </div>
-  );
+  )
 }

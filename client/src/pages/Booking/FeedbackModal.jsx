@@ -21,44 +21,44 @@ const FeedbackModal = ({
   }, [visible]);
 
   const extractBookingId = (booking) => {
+    // Prioritize bookingId over id
+    if (booking.bookingId) return booking.bookingId;
     if (booking.id) return booking.id;
     if (booking._id) return booking._id;
-    if (booking.bookingId) return booking.bookingId;
-    // Add more conditions if necessary
-    return null;
+    return null; // Return null if no ID is found
   };
-
+  
+  console.log("Selected Booking:", selectedBooking);
   const handleSubmit = async () => {
     if (rating === 0) {
       message.warning("Please provide a rating.");
       return;
     }
-
+  
     if (!feedback.trim()) {
       message.warning("Please enter your feedback.");
       return;
     }
-
+  
     if (!selectedBooking) {
       message.error("No booking selected.");
       return;
     }
-
+  
     const bookingId = extractBookingId(selectedBooking);
-
+  
     if (!bookingId) {
       console.error("Booking ID not found in selectedBooking:", selectedBooking);
-      message.error("Invalid booking ID.");
+      message.error("Invalid booking ID. Please check the booking details.");
       return;
     }
-
-    // Log all relevant data before making the API call
+  
     console.log("Submitting Feedback with the following data:");
     console.log("bookingId:", bookingId);
     console.log("userId:", userId);
     console.log("rating:", rating);
     console.log("feedback:", feedback);
-
+  
     try {
       const payload = {
         bookingId,
@@ -66,13 +66,13 @@ const FeedbackModal = ({
         rating,
         feedback,
       };
-
+  
       console.log("Payload being sent to the API:", payload);
-
+  
       const response = await axios.post("http://localhost:5000/feedback", payload);
-
+  
       console.log("API Response:", response);
-
+  
       if (response.status === 201) {
         message.success("Feedback submitted successfully!");
         onOk();
@@ -90,6 +90,7 @@ const FeedbackModal = ({
       }
     }
   };
+  
 
   return (
     <Modal

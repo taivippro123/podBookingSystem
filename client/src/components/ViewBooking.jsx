@@ -76,12 +76,14 @@ function ViewBookings() {
       setUpcomingBookings(transformBookings(upcoming));
     } catch (error) {
       console.error("Error fetching view bookings:", error);
-      alert(`Failed to fetch bookings: ${error.message}`);
-      setError("Failed to fetch bookings. Please try again later.");
+      setHistoryBookings([]); // Set to empty on error
+      setUpcomingBookings([]); // Set to empty on error
+      setError(null); // Clear the error state
     } finally {
       setLoading(false);
     }
   };
+
 
   const fetchServices = async () => {
     try {
@@ -99,18 +101,18 @@ function ViewBookings() {
 
   const addServiceToBooking = async (bookingId, serviceId) => {
     try {
-        const response = await axios.post(
-            `http://localhost:5000/booking/${bookingId}/add-service`,
-            { serviceId }
-        );
-        message.success(response.data.message); // Show success message
-        return true; // Indicate success
+      const response = await axios.post(
+        `http://localhost:5000/booking/${bookingId}/add-service`,
+        { serviceId }
+      );
+      message.success(response.data.message); // Show success message
+      return true; // Indicate success
     } catch (error) {
-        console.error("Error adding service:", error);
-        message.error(error.response?.data?.error || "Failed to add service.");
-        return false; // Indicate failure
+      console.error("Error adding service:", error);
+      message.error(error.response?.data?.error || "Failed to add service.");
+      return false; // Indicate failure
     }
-};
+  };
   const handleAddServiceSuccess = async (addedServiceIds) => {
     setIsAddServiceModalVisible(false);
     setSelectedBooking(null);
@@ -322,7 +324,7 @@ function ViewBookings() {
                   {upcomingBookings.length > 0 ? (
                     renderBookings(upcomingBookingsPaginated)
                   ) : (
-                    <p>No upcoming bookings found.</p>
+                    <p style={{ textAlign: 'center', color: '#999' }}>No upcoming bookings found.</p>
                   )}
                   <Pagination
                     current={upcomingCurrentPage}
@@ -336,7 +338,7 @@ function ViewBookings() {
                   {historyBookings.length > 0 ? (
                     renderBookings(historyBookingsPaginated)
                   ) : (
-                    <p>No booking history found.</p>
+                    <p style={{ textAlign: 'center', color: '#999' }}>No booking history found.</p>
                   )}
                   <Pagination
                     current={historyCurrentPage}

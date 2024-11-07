@@ -1641,7 +1641,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
     try {
         // Fetch history bookings (Completed or Cancelled)
         const historyQuery = `
-            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userID
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userId
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
             WHERE b.userId = ? AND (b.bookingStatus = 'Completed' OR b.bookingStatus = 'Cancelled' OR b.bookingStatus = 'Refunded')
@@ -1650,7 +1650,7 @@ app.get('/viewbookings/:userId', async (req, res) => {
 
         // Fetch upcoming bookings (Pending, Confirmed, Using)
         const upcomingQuery = `
-            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userID
+            SELECT b.bookingId, b.roomId, r.roomName, b.bookingStatus, b.bookingStartDay, b.bookingEndDay, b.totalPrice, b.userId
             FROM Booking b
             JOIN Room r ON b.roomId = r.roomId
             WHERE b.userId = ? AND (b.bookingStatus = 'Upcoming' OR b.bookingStatus = 'Using')

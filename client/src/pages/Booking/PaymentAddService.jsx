@@ -9,7 +9,7 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
       document.body.style.overflow = 'hidden';
 
       // Log the payment data to ensure userId is included
-      console.log("Payment Data:", paymentData);
+     
 
       // Fetch available payment methods
       fetch("http://localhost:5000/getPaymentMethods")
@@ -29,6 +29,7 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
     }
   }, [visible, paymentData]);
 
+  console.log("Payment Data:", paymentData);
   const handleConfirmPayment = () => {
     if (!selectedMethod) {
       alert("Please select a payment method!");
