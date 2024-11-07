@@ -158,31 +158,32 @@ const ManageAccounts = () => {
 
     const handleDeleteAccount = async () => {
         if (!accountToDelete) return;
-
+    
         try {
             const response = await fetch(`http://localhost:5000/manage/accounts/${accountToDelete}`, {
                 method: 'DELETE',
             });
-
+    
             if (response.ok) {
                 await fetchAccounts();
                 notification.success({
                     message: 'Success',
-                    description: 'Account updated successfully!', // Sử dụng thông báo thành công của antd
+                    description: 'Account deleted successfully!', // Sử dụng thông báo thành công của antd
                 });
-                closePopup();
+                setIsDeleteConfirmOpen(false); // Đóng popup xác nhận xóa sau khi thành công
             } else {
                 const errorData = await response.json();
-                setErrorMessage(`Error updating account: ${errorData.message || 'Please try again.'}`);
+                setErrorMessage(`Error deleting account: ${errorData.message || 'Please try again.'}`);
             }
         } catch (error) {
-            console.error('Error updating account:', error);
+            console.error('Error deleting account:', error);
             notification.error({
                 message: 'Error',
                 description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
             });
         }
     };
+    
 
     const closePopup = () => {
         setUserName('');

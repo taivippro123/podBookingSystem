@@ -259,14 +259,17 @@ const ManageAllAccounts = () => {
                                     <option value="4">User</option>
                                 </select>
                             </div>
-                            <button type="submit" className={styles.submitButton}>Update</button>
-                            <button
-                                type="button"
-                                onClick={() => setEditedAccountId(null)}
-                                className={styles.cancelButton}
-                            >
-                                Cancel
-                            </button>
+                            <div className={styles.buttonContainer}>
+                                <button type="submit" className={styles.submitButton}>Update</button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditedAccountId(null)}
+                                    className={styles.cancelButton}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -294,7 +297,7 @@ const ManageAllAccounts = () => {
             {deleteAccountId && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        
+
                         <h2>Are you sure you want to delete this account?</h2>
                         <button onClick={handleDelete} className={styles.confirmDeleteButton}>Yes</button>
                         <button onClick={() => setDeleteAccountId(null)} className={styles.cancelDeleteButton}>No</button>
