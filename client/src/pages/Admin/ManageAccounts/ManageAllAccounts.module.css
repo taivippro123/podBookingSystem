@@ -343,3 +343,17 @@ h2 {
 .cancelDeleteButton:hover {
     background-color: #c82333;
 }
+
+.table th:nth-child(7) {
+    padding-right: 10px; /* Điều chỉnh khoảng cách tùy thích */
+    text-align: center; /* Căn phải nội dung tiêu đề */
+}
+
+/* Styles cho container của các nút */
+.buttonContainer {
+    display: flex; /* Đặt các nút trên cùng một hàng */
+    justify-content: center; /* Tạo khoảng cách giữa các nút */
+    margin-top: 10px; /* Đẩy container xuống dưới */
+    gap: 100px;
+}
+

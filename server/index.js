@@ -544,7 +544,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Endpoint to upload image
 app.post('/upload-image/:roomId', upload.single('image'), (req, res) => {
     const roomId = req.params.roomId;
-    const { imageUrl } = req.body;
+    const imageUrl = req.file ? req.file.path : req.body.imageUrl;
+
+    if (!roomId || !imageUrl) {
+        return res.status(400).send('Missing roomId or imageUrl');
+    }
 
     const query = `INSERT INTO RoomImages (roomId, imageUrl) VALUES (?, ?)`;
     db.execute(query, [roomId, imageUrl], (err, result) => {
@@ -554,6 +558,7 @@ app.post('/upload-image/:roomId', upload.single('image'), (req, res) => {
         res.status(200).send('Image uploaded successfully');
     });
 });
+
 
 
 //GET room details with images
@@ -743,56 +748,64 @@ app.post('/rooms', upload.single('roomImage'), async (req, res) => {
     const { roomName, roomType, roomDescription, roomDetailsDescription, roomPricePerSlot, roomPricePerDay, roomPricePerWeek, roomStatus } = req.body;
     let imageUrl = null;
 
-    if (req.file && req.file.buffer) {
-        const bucket = admin.storage().bucket();
-        const fileName = `${Date.now()}_${req.file.originalname}`; // Use a unique name for the file
-        const file = bucket.file(fileName);
+    try {
+        // Upload image to Firebase Storage if provided
+        if (req.file && req.file.buffer) {
+            const bucket = admin.storage().bucket();
+            const fileName = `${Date.now()}_${req.file.originalname}`; // Use a unique name for the file
+            const file = bucket.file(fileName);
 
-        try {
             await file.save(req.file.buffer, {
-                metadata: {
-                    contentType: req.file.mimetype,
-                }
+                metadata: { contentType: req.file.mimetype }
             });
 
             // Make the file publicly accessible
             await file.makePublic();
-
             // Get the public URL
             imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-        } catch (error) {
-            console.error('Error uploading file to Firebase:', error);
-            return res.status(500).json({ error: 'Failed to upload image to Firebase', details: error.message });
+            console.log("Image uploaded to Firebase with URL:", imageUrl);
+        } else if (req.file) {
+            console.error('File received but buffer is undefined');
+            return res.status(400).json({ error: 'Invalid file data received' });
         }
-    } else if (req.file) {
-        console.error('File received but buffer is undefined');
-        return res.status(400).json({ error: 'Invalid file data received' });
+
+        // Insert Room data into Room table
+        const sqlRoom = `INSERT INTO Room (roomName, roomType, roomDescription, roomDetailsDescription, roomPricePerSlot, roomPricePerDay, roomPricePerWeek, roomStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        
+        db.query(sqlRoom, [roomName, roomType, roomDescription, roomDetailsDescription, roomPricePerSlot, roomPricePerDay, roomPricePerWeek, roomStatus], (err, result) => {
+            if (err) {
+                console.error('Error inserting room:', err);
+                return res.status(500).json({ error: 'Failed to create room' });
+            }
+
+            const roomId = result.insertId; // Get the new roomId
+            console.log("Room created with roomId:", roomId);
+
+            // Insert image URL into RoomImages table if an image was uploaded
+            if (imageUrl) {
+                const sqlImage = `INSERT INTO RoomImages (roomId, imageUrl) VALUES (?, ?)`;
+                db.query(sqlImage, [roomId, imageUrl], (err, imageResult) => {
+                    if (err) {
+                        console.error('Error inserting image URL into RoomImages table:', err);
+                        return res.status(500).json({ error: 'Failed to upload image URL' });
+                    }
+                    console.log("Image URL inserted into RoomImages table with roomId:", roomId);
+                    
+                    // Success response after both room and image are successfully inserted
+                    res.json({ message: 'Room and image created successfully', roomId, imageId: imageResult.insertId });
+                });
+            } else {
+                // Success response if only the room was created without an image
+                res.json({ message: 'Room created successfully without an image', roomId });
+            }
+        });
+    } catch (error) {
+        console.error('Error creating room or uploading image:', error);
+        res.status(500).json({ error: 'An error occurred while creating room or uploading image' });
     }
-
-    // Insert Room data into Room table
-    const sqlRoom = `INSERT INTO Room (roomName, roomType, roomDescription, roomDetailsDescription, roomPricePerSlot, roomPricePerDay, roomPricePerWeek, roomStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    db.query(sqlRoom, [roomName, roomType, roomDescription, roomDetailsDescription, roomPricePerSlot, roomPricePerDay, roomPricePerWeek, roomStatus], (err, result) => {
-        if (err) {
-            console.error('Error inserting room:', err);
-            return res.status(500).send('Failed to create room');
-        }
-
-        const roomId = result.insertId; // Get the new roomId
-
-        // Insert image URL into RoomImages table if an image was uploaded
-        if (imageUrl) {
-            const sqlImage = `INSERT INTO RoomImages (roomId, imageUrl) VALUES (?, ?)`;
-            db.query(sqlImage, [roomId, imageUrl], (err) => {
-                if (err) {
-                    console.error('Error inserting image URL:', err);
-                    return res.status(500).send('Failed to upload image URL');
-                }
-            });
-        }
-
-        res.json({ message: 'Room created successfully', roomId });
-    });
 });
+
+
 
 // PUT /rooms/:roomId: Update an existing room
 app.put('/rooms/:roomId', upload.single('roomImage'), async (req, res) => {
@@ -868,12 +881,12 @@ app.delete('/rooms/:roomId', (req, res) => {
 });
 
 
-// DELETE /room-image/:imageId: Delete a specific image by imageId
-app.delete('/room-image/:imageId', (req, res) => {
-    const { imageId } = req.params;
-    const sql = 'DELETE FROM RoomImages WHERE imageId = ?';
+// DELETE /room-image/:imageUrl: Delete a specific image by imageUrl
+app.delete('/room-image/:imageUrl', (req, res) => {
+    const { imageUrl } = req.params;
+    const sql = 'DELETE FROM RoomImages WHERE imageUrl = ?';
 
-    db.query(sql, [imageId], (err, result) => {
+    db.query(sql, [imageUrl], (err, result) => {
         if (err) {
             console.error('Error deleting image:', err);
             return res.status(500).send('Failed to delete image');
@@ -884,6 +897,7 @@ app.delete('/room-image/:imageId', (req, res) => {
         res.json({ message: 'Image deleted successfully' });
     });
 });
+
 
 //--------------------------------------------------------STAFF ROUTE------------------------------------------
 //STAFF
@@ -1276,7 +1290,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback",
+        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1521,7 +1535,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
@@ -1734,7 +1748,7 @@ app.get('/getPaymentMethods', async (req, res) => {
 
 
 //----------------------------CRUD FEEDBACK------------------------------
-// Create a new feedback
+// Create a new feedback and award points to the user
 app.post('/feedback', (req, res) => {
     const { bookingId, userId, rating, feedback } = req.body;
 
@@ -1743,16 +1757,36 @@ app.post('/feedback', (req, res) => {
         return res.status(400).json({ error: 'bookingId, userId, rating, and feedback are required' });
     }
 
+    // Assign points based on the rating, multiplied by 1000
+    const pointsToAdd = Math.floor(rating) * 1000;  // 1000 points for each rating value
+
+    // Insert feedback into the database
     const sql = `
         INSERT INTO Feedback (bookingId, userId, rating, feedback)
         VALUES (?, ?, ?, ?)
     `;
 
     db.query(sql, [bookingId, userId, rating, feedback], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Error creating feedback' });
-        res.status(201).json({ message: 'Sent feedback successfully', feedbackId: results.insertId });
+        if (err) {
+            return res.status(500).json({ error: 'Error creating feedback' });
+        }
+
+        // Update the user's points after successfully inserting the feedback
+        const updatePointsSql = `
+            UPDATE User
+            SET userPoint = userPoint + ?
+            WHERE userId = ?
+        `;
+
+        db.query(updatePointsSql, [pointsToAdd, userId], (err, updateResult) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error updating user points' });
+            }
+            res.status(201).json({ message: 'Sent feedback successfully and awarded points', feedbackId: results.insertId });
+        });
     });
 });
+
 
 // Update a feedback
 app.put('/feedback/:feedbackId', (req, res) => {

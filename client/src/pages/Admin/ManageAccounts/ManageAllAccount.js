@@ -12,6 +12,7 @@ const ManageAllAccounts = () => {
     const [userEmail, setUserEmail] = useState(''); // New state for user email
     const [userPhone, setUserPhone] = useState(''); // New state for user phone
     const [userPoint, setUserPoint] = useState(''); // New state for user points
+    const [userPassword, setUserPassword    ] = useState('');
     const [userRole, setUserRole] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const accountsPerPage = 10;
@@ -57,6 +58,7 @@ const ManageAllAccounts = () => {
             await axios.put(`http://localhost:5000/admin/accounts/${editedAccountId}`, {
                 userName,
                 userEmail,
+                userPassword,  // Thêm userPassword để khớp với API
                 userPhone,
                 userPoint,
                 userRole
@@ -69,6 +71,7 @@ const ManageAllAccounts = () => {
             notification.error({ message: 'Update Failed', description: 'Could not update account. Please try again.' });
         }
     };
+    
 
     const handleDeleteRequest = (userId) => {
         setDeleteAccountId(userId);
@@ -205,72 +208,84 @@ const ManageAllAccounts = () => {
             </table>
 
             {/* Edit Account Modal */}
-            {editedAccountId && (
-                <div className={styles.modal}>
-                    <div className={styles['modal-content']}>
-                        <h3>Edit Account</h3>
-                        <form onSubmit={handleEditSubmit}>
-                            <div>
-                                <label>Name:</label>
-                                <input
-                                    type="text"
-                                    value={userName}
-                                    onChange={(e) => setUserName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Email:</label>
-                                <input
-                                    type="email"
-                                    value={userEmail}
-                                    onChange={(e) => setUserEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Phone:</label>
-                                <input
-                                    type="text"
-                                    value={userPhone}
-                                    onChange={(e) => setUserPhone(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Points:</label>
-                                <input
-                                    type="number"
-                                    value={userPoint}
-                                    onChange={(e) => setUserPoint(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Role:</label>
-                                <select
-                                    value={userRole}
-                                    onChange={(e) => setUserRole(e.target.value)}
-                                    required
-                                >
-                                    <option value="1">Admin</option>
-                                    <option value="2">Manager</option>
-                                    <option value="3">Staff</option>
-                                    <option value="4">User</option>
-                                </select>
-                            </div>
-                            <button type="submit" className={styles.submitButton}>Update</button>
-                            <button
-                                type="button"
-                                onClick={() => setEditedAccountId(null)}
-                                className={styles.cancelButton}
-                            >
-                                Cancel
-                            </button>
-                        </form>
-                    </div>
+{editedAccountId && (
+    <div className={styles.modal}>
+        <div className={styles['modal-content']}>
+            <h3>Edit Account</h3>
+            <form onSubmit={handleEditSubmit}>
+                <div>
+                    <label>Name:</label>
+                    <input
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        required
+                    />
                 </div>
-            )}
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        value={userPassword}
+                        onChange={(e) => setUserPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Phone:</label>
+                    <input
+                        type="text"
+                        value={userPhone}
+                        onChange={(e) => setUserPhone(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Points:</label>
+                    <input
+                        type="number"
+                        value={userPoint}
+                        onChange={(e) => setUserPoint(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Role:</label>
+                    <select
+                        value={userRole}
+                        onChange={(e) => setUserRole(e.target.value)}
+                        required
+                    >
+                        <option value="1">Admin</option>
+                        <option value="2">Manager</option>
+                        <option value="3">Staff</option>
+                        <option value="4">User</option>
+                    </select>
+                </div>
+                <div className={styles.buttonContainer}>
+                    <button type="submit" className={styles.submitButton}>Update</button>
+                    <button
+                        type="button"
+                        onClick={() => setEditedAccountId(null)}
+                        className={styles.cancelButton}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+)}
+
 
             <div className={styles.pagination}>
                 <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
@@ -294,7 +309,7 @@ const ManageAllAccounts = () => {
             {deleteAccountId && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>
-                        
+
                         <h2>Are you sure you want to delete this account?</h2>
                         <button onClick={handleDelete} className={styles.confirmDeleteButton}>Yes</button>
                         <button onClick={() => setDeleteAccountId(null)} className={styles.cancelDeleteButton}>No</button>
