@@ -33,7 +33,7 @@ const ManageBookings = () => {
   const handleStatusUpdate = async (bookingId, newStatus) => {
     try {
       const response = await axios.put(`http://localhost:5000/manage/bookings/${bookingId}/status`, { bookingStatus: newStatus });
-      
+
       notification.success({
         message: 'Success',
         description: response.data.message,
@@ -106,6 +106,8 @@ const ManageBookings = () => {
         <thead>
           <tr>
             <th>Booking ID</th>
+            <th>User ID</th>
+            <th>Room ID</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -115,6 +117,8 @@ const ManageBookings = () => {
             currentBookings.map((booking) => (
               <tr key={booking.bookingId}>
                 <td>{booking.bookingId}</td>
+                <td>{booking.userId}</td>
+                <td>{booking.roomId}</td>
                 <td>
                   <select
                     className={styles.statusSelect}
@@ -135,11 +139,12 @@ const ManageBookings = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="3">No bookings available.</td>
+              <td colSpan="5">No bookings available.</td>
             </tr>
           )}
         </tbody>
       </table>
+
 
       <div className={styles.pagination}>
         <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
@@ -161,22 +166,22 @@ const ManageBookings = () => {
 
       {/* Modal for viewing booking details */}
       <Modal
-    title="Booking Details"
-    visible={isDetailsModalOpen}
-    onCancel={closeDetailsModal}
-    footer={null}  // Xóa footer để không hiển thị nút "Close"
->
-    {selectedBooking && (
-        <div>
+        title="Booking Details"
+        visible={isDetailsModalOpen}
+        onCancel={closeDetailsModal}
+        footer={null}  // Xóa footer để không hiển thị nút "Close"
+      >
+        {selectedBooking && (
+          <div>
             <p><strong>User ID:</strong> {selectedBooking.userId}</p>
             <p><strong>Room ID:</strong> {selectedBooking.roomId}</p>
             <p><strong>Start Day:</strong> {new Date(selectedBooking.bookingStartDay).toLocaleDateString()}</p>
             <p><strong>End Day:</strong> {new Date(selectedBooking.bookingEndDay).toLocaleDateString()}</p>
             <p><strong>Total Price:</strong> {formatPrice(selectedBooking.totalPrice)}</p>
             <p><strong>Created At:</strong> {new Date(selectedBooking.createdAt).toLocaleDateString()}</p>
-        </div>
-    )}
-</Modal>
+          </div>
+        )}
+      </Modal>
 
     </div>
   );
