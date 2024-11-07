@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 export default function ListRoom() {
   const [searchParams, setSearchParams] = useState({
     name: "",
-    minPrice: "0",
-    maxPrice: "99999999999",
+    minPrice: "",
+    maxPrice: "",
     capacity: "",
     equipment: "",
     type: "",
