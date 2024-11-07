@@ -1,167 +1,168 @@
-import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from 'react'
 
-export default function Contact() {
+export default function ContractPage() {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    company: '',
+    phoneNumber: '',
+    officeSize: '',
+    startDate: '',
+    duration: '',
+    additionalRequests: ''
+  })
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSelectChange = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Simulating form submission logic, you can add your API request here
-    const isFormValid = true; // Replace with actual validation logic
-
-    if (isFormValid) {
-      toast.success('Message sent successfully!');
-    } else {
-      toast.error('Failed to send the message. Please try again.');
-    }
-  };
+    e.preventDefault()
+    console.log('Form submitted:', formData)
+    // Here you would typically send the form data to your backend
+  }
 
   return (
-    <div style={{ background: 'linear-gradient(to bottom, #ebf8ff, #ffffff)', minHeight: '100vh' }}>
-      {/* Toast Container */}
-      <ToastContainer />
-
-      {/* Hero Section */}
-      <section
-        style={{
-          position: 'relative',
-          height: '40vh',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&q=80&w=1200&ixlib=rb-4.0.3')",
-        }}
-      >
-        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(29, 78, 216, 0.7)' }}></div>
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            textAlign: 'center',
-            color: 'white',
-          }}
-        >
-          <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>Contact Us</h1>
-          <p style={{ fontSize: '1.25rem', maxWidth: '42rem' }}>
-            We're always ready to listen and support you. Get in touch today!
-          </p>
-        </div>
-      </section>
-
-      {/* Contact Form and Info Section */}
-      <section style={{ padding: '4rem 1rem', maxWidth: '72rem', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gap: '3rem', alignItems: 'start', gridTemplateColumns: '1fr 1fr' }}>
-          {/* Contact Form */}
-          <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#3182ce' }}>Send us a message</h2>
-            <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4a5568' }}>
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  placeholder="Enter your full name"
-                  style={{
-                    padding: '0.5rem',
-                    width: '100%',
-                    borderRadius: '0.25rem',
-                    border: '1px solid #e2e8f0',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                />
-              </div>
-              <div>
-                <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4a5568' }}>
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  style={{
-                    padding: '0.5rem',
-                    width: '100%',
-                    borderRadius: '0.25rem',
-                    border: '1px solid #e2e8f0',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                />
-              </div>
-              <div>
-                <label htmlFor="phone" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4a5568' }}>
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  placeholder="Enter your phone number"
-                  style={{
-                    padding: '0.5rem',
-                    width: '100%',
-                    borderRadius: '0.25rem',
-                    border: '1px solid #e2e8f0',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                />
-              </div>
-              <div>
-                <label htmlFor="message" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4a5568' }}>
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  placeholder="Enter your message"
-                  rows={4}
-                  style={{
-                    padding: '0.5rem',
-                    width: '100%',
-                    borderRadius: '0.25rem',
-                    border: '1px solid #e2e8f0',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  backgroundColor: '#3182ce',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  borderRadius: '0.25rem',
-                  transition: 'background-color 0.3s',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2b6cb0')}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3182ce')}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Office Rental Contract</h1>
+      
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-2">Request a Contract</h2>
+          <p className="text-gray-600 mb-4">Fill out this form to start the contracting process</p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="fullName" className="block font-medium">Full Name</label>
+              <input
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="email" className="block font-medium">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="company" className="block font-medium">Company Name</label>
+              <input
+                id="company"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phoneNumber" className="block font-medium">Phone Number</label>
+              <input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="officeSize" className="block font-medium">Desired Office Size</label>
+              <select
+                name="officeSize"
+                onChange={(e) => handleSelectChange('officeSize', e.target.value)}
+                className="w-full border rounded-md p-2"
+                required
               >
-                Send Message
-              </button>
-            </form>
+                <option value="">Select office size</option>
+                <option value="small">Small (1-5 people)</option>
+                <option value="medium">Medium (6-15 people)</option>
+                <option value="large">Large (16-30 people)</option>
+                <option value="enterprise">Enterprise (31+ people)</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="startDate" className="block font-medium">Desired Start Date</label>
+              <input
+                id="startDate"
+                name="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={handleInputChange}
+                required
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="duration" className="block font-medium">Contract Duration</label>
+              <select
+                name="duration"
+                onChange={(e) => handleSelectChange('duration', e.target.value)}
+                className="w-full border rounded-md p-2"
+                required
+              >
+                <option value="">Select duration</option>
+                <option value="3months">3 months</option>
+                <option value="6months">6 months</option>
+                <option value="1year">1 year</option>
+                <option value="2years">2 years</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="additionalRequests" className="block font-medium">Additional Requests</label>
+              <textarea
+                id="additionalRequests"
+                name="additionalRequests"
+                value={formData.additionalRequests}
+                onChange={handleInputChange}
+                placeholder="Any specific requirements or questions?"
+                className="w-full border rounded-md p-2"
+              />
+            </div>
+            <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">
+              Submit Contract Request
+            </button>
+          </form>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-2">Contracting Process</h2>
+            <p className="text-gray-600 mb-4">What to expect when requesting a contract</p>
+            <ol className="list-decimal list-inside space-y-2">
+              <li>Submit your contract request form</li>
+              <li>Our team reviews your request (1-2 business days)</li>
+              <li>We send you a draft contract for review</li>
+              <li>Negotiate and finalize terms</li>
+              <li>Sign the contract and secure your office space</li>
+            </ol>
           </div>
 
-          {/* Contact Info */}
-          <div>
-            {/* ... (rest of the contact info section) */}
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-2">Need Help?</h2>
+            <p className="text-gray-600 mb-4">If you have any questions about the contracting process, please don't hesitate to contact our support team.</p>
+            <button className="w-full bg-gray-300 text-gray-700 p-2 rounded-md">
+              Contact Support
+            </button>
           </div>
         </div>
-      </section>
-
-      {/* FAQ Section */}
-      {/* ... (rest of the FAQ section) */}
-
-      {/* CTA Section */}
-      {/* ... (rest of the CTA section) */}
+      </div>
     </div>
-  );
+  )
 }
