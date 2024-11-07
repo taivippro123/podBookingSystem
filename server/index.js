@@ -1290,7 +1290,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback",
+        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1535,7 +1535,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://09e2-2402-800-63af-f7a4-658d-5a9f-efa2-35a1.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
@@ -1748,7 +1748,7 @@ app.get('/getPaymentMethods', async (req, res) => {
 
 
 //----------------------------CRUD FEEDBACK------------------------------
-// Create a new feedback
+// Create a new feedback and award points to the user
 app.post('/feedback', (req, res) => {
     const { bookingId, userId, rating, feedback } = req.body;
 
@@ -1757,16 +1757,36 @@ app.post('/feedback', (req, res) => {
         return res.status(400).json({ error: 'bookingId, userId, rating, and feedback are required' });
     }
 
+    // Assign points based on the rating, multiplied by 1000
+    const pointsToAdd = Math.floor(rating) * 1000;  // 1000 points for each rating value
+
+    // Insert feedback into the database
     const sql = `
         INSERT INTO Feedback (bookingId, userId, rating, feedback)
         VALUES (?, ?, ?, ?)
     `;
 
     db.query(sql, [bookingId, userId, rating, feedback], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Error creating feedback' });
-        res.status(201).json({ message: 'Sent feedback successfully', feedbackId: results.insertId });
+        if (err) {
+            return res.status(500).json({ error: 'Error creating feedback' });
+        }
+
+        // Update the user's points after successfully inserting the feedback
+        const updatePointsSql = `
+            UPDATE User
+            SET userPoint = userPoint + ?
+            WHERE userId = ?
+        `;
+
+        db.query(updatePointsSql, [pointsToAdd, userId], (err, updateResult) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error updating user points' });
+            }
+            res.status(201).json({ message: 'Sent feedback successfully and awarded points', feedbackId: results.insertId });
+        });
     });
 });
+
 
 // Update a feedback
 app.put('/feedback/:feedbackId', (req, res) => {
