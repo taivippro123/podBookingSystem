@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './ManageAccounts.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa';
-import { Modal, notification } from 'antd';
-
-
+import { Modal, notification, Input } from 'antd';
 
 const ManageAccounts = () => {
     const [accounts, setAccounts] = useState([]);
@@ -18,13 +16,16 @@ const ManageAccounts = () => {
     const [accountToDelete, setAccountToDelete] = useState(null);
     
     const [errorMessage, setErrorMessage] = useState('');
-
+    
     // Trạng thái cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
     const accountsPerPage = 5;
 
     // Trạng thái cho loại người dùng được chọn
-    const [filterRole, setFilterRole] = useState(''); // "" để hiện tất cả, "3" cho Staff, "4" cho User
+    const [filterRole, setFilterRole] = useState('');
+    
+    // Trạng thái cho tìm kiếm
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         fetchAccounts();
@@ -86,7 +87,7 @@ const ManageAccounts = () => {
                 await fetchAccounts();
                 notification.success({
                     message: 'Success',
-                    description: 'Account added successfully!', // Sử dụng thông báo thành công của antd
+                    description: 'Account added successfully!',
                 });
                 closePopup();
             } else {
@@ -97,9 +98,13 @@ const ManageAccounts = () => {
             console.error('Error adding account:', error);
             notification.error({
                 message: 'Error',
-                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+                description: 'An unexpected error occurred. Please try again.',
             });
         }
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
     };
 
     const handleEditAccount = (account) => {
@@ -135,7 +140,7 @@ const ManageAccounts = () => {
                 await fetchAccounts();
                 notification.success({
                     message: 'Success',
-                    description: 'Account updated successfully!', // Sử dụng thông báo thành công của antd
+                    description: 'Account updated successfully!',
                 });
                 closePopup();
             } else {
@@ -146,7 +151,7 @@ const ManageAccounts = () => {
             console.error('Error updating account:', error);
             notification.error({
                 message: 'Error',
-                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+                description: 'An unexpected error occurred. Please try again.',
             });
         }
     };
@@ -168,9 +173,9 @@ const ManageAccounts = () => {
                 await fetchAccounts();
                 notification.success({
                     message: 'Success',
-                    description: 'Account deleted successfully!', // Sử dụng thông báo thành công của antd
+                    description: 'Account deleted successfully!',
                 });
-                setIsDeleteConfirmOpen(false); // Đóng popup xác nhận xóa sau khi thành công
+                setIsDeleteConfirmOpen(false);
             } else {
                 const errorData = await response.json();
                 setErrorMessage(`Error deleting account: ${errorData.message || 'Please try again.'}`);
@@ -179,11 +184,10 @@ const ManageAccounts = () => {
             console.error('Error deleting account:', error);
             notification.error({
                 message: 'Error',
-                description: 'An unexpected error occurred. Please try again.', // Sử dụng thông báo lỗi của antd
+                description: 'An unexpected error occurred. Please try again.',
             });
         }
     };
-    
 
     const closePopup = () => {
         setUserName('');
@@ -199,8 +203,15 @@ const ManageAccounts = () => {
     const indexOfLastAccount = currentPage * accountsPerPage;
     const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
 
-    // Lọc tài khoản dựa trên vai trò
-    const filteredAccounts = filterRole ? accounts.filter(account => account.userRole.toString() === filterRole) : accounts;
+    // Lọc tài khoản dựa trên vai trò và tìm kiếm theo tên/email/phone
+    const filteredAccounts = accounts.filter(account => {
+        return (
+            (filterRole ? account.userRole.toString() === filterRole : true) &&
+            (account.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+             account.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) || 
+             account.userPhone.includes(searchTerm))
+        );
+    });
 
     const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
@@ -221,6 +232,15 @@ const ManageAccounts = () => {
                 <button onClick={() => setFilterRole('')}>All</button>
                 <button onClick={() => setFilterRole('3')}>Staff</button>
                 <button onClick={() => setFilterRole('4')}>User</button>
+            </div>
+
+            <div className={styles.search}>
+                <Input
+                    placeholder="Search by Name, Email, or Phone"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    allowClear
+                />
             </div>
 
             <table className={styles.table}>

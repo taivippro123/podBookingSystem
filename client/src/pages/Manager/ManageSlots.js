@@ -51,19 +51,28 @@ function ManageSlots() {
         const lastSlot = slots[slots.length - 1];
         const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
         const newEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
-        const oneHourInMillis = 60 * 60 * 1000;  // 1 hour in milliseconds
+        const oneHourInMillis = 60 * 60 * 1000; // 1 giờ tính bằng mili giây
+    
+        // Kiểm tra nếu thời gian nhập vào là số âm hoặc vượt quá 24 giờ
+        const startHours = parseInt(formData.slotStartTime.split(":")[0], 10);
+        const endHours = parseInt(formData.slotEndTime.split(":")[0], 10);
+        if (startHours < 0 || endHours < 0 || startHours >= 24 || endHours >= 24) {
+            notification.error({ message: 'Error', description: 'Start time and end time must be between 00:00 and 24:00!' });
+            setIsPopupVisible(true);
+            return;
+        }
     
         // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
         if (lastSlot) {
             const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime}`);
-            if (newStartTime < lastEndTime.getTime() + oneHourInMillis) {
+            if (newStartTime < new Date(lastEndTime.getTime() + oneHourInMillis)) {
                 notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime})!` });
                 setIsPopupVisible(true);
                 return;
             }
         }
     
-        // Kiểm tra nếu End Time phải lớn hơn Start Time ít nhất 1 tiếng
+        // Kiểm tra nếu End Time lớn hơn Start Time ít nhất 1 tiếng
         if (newEndTime <= newStartTime || (newEndTime - newStartTime) < oneHourInMillis) {
             notification.error({ message: 'Error', description: 'End time must be more than 1 hour after start time!' });
             setIsPopupVisible(true);
@@ -76,17 +85,19 @@ function ManageSlots() {
             const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
     
             return (
-                (newStartTime >= existingStart && newStartTime < existingEnd + oneHourInMillis) ||
-                (newEndTime > existingStart - oneHourInMillis && newEndTime <= existingEnd) ||
-                (newStartTime <= existingStart && newEndTime >= existingEnd + oneHourInMillis)
+                (newStartTime >= existingStart && newStartTime < existingEnd) ||
+                (newEndTime > existingStart && newEndTime <= existingEnd) ||
+                (newStartTime <= existingStart && newEndTime >= existingEnd)
             );
         });
     
         if (isDuplicate) {
-            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with at least 1 hour!' });
+            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with another slot!' });
+            setIsPopupVisible(true);
             return;
         }
     
+        // Thêm slot mới nếu không có lỗi
         try {
             const response = await axios.post('http://localhost:5000/slots', {
                 ...formData,
@@ -95,17 +106,56 @@ function ManageSlots() {
             setSlots([...slots, { ...formData, slotId: response.data.slotId }]);
             setIsAddingSlot(false);
             resetForm();
-            notification.success({ message: 'Success', description: 'Add Slot Successfully!' });
+            notification.success({ message: 'Success', description: 'Slot added successfully!' });
         } catch (error) {
             notification.error({ message: 'Error', description: 'Error adding slot' });
             console.error('Error adding slot:', error);
         }
     };
     
+    
 
     const handleUpdateSlot = async () => {
         if (!currentSlot) return;
-
+    
+        const updatedStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
+        const updatedEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
+        const oneHourInMillis = 60 * 60 * 1000; // 1 giờ tính bằng mili giây
+    
+        // Kiểm tra nếu thời gian nhập vào là số âm hoặc vượt quá 24 giờ
+        const startHours = parseInt(formData.slotStartTime.split(":")[0], 10);
+        const endHours = parseInt(formData.slotEndTime.split(":")[0], 10);
+        if (startHours < 0 || endHours < 0 || startHours >= 24 || endHours >= 24) {
+            notification.error({ message: 'Error', description: 'Start time and end time must be between 00:00 and 24:00!' });
+            return;
+        }
+    
+        // Kiểm tra nếu End Time phải lớn hơn Start Time ít nhất 1 tiếng
+        if (updatedEndTime <= updatedStartTime || (updatedEndTime - updatedStartTime) < oneHourInMillis) {
+            notification.error({ message: 'Error', description: 'End time must be more than 1 hour after start time!' });
+            return;
+        }
+    
+        // Kiểm tra trùng lặp hoặc chồng chéo với các slot hiện tại (ngoại trừ slot hiện tại đang chỉnh sửa)
+        const isDuplicate = slots.some(slot => {
+            if (slot.slotId === currentSlot.slotId) return false;
+    
+            const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
+            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
+    
+            return (
+                (updatedStartTime >= existingStart && updatedStartTime < existingEnd) ||
+                (updatedEndTime > existingStart && updatedEndTime <= existingEnd) ||
+                (updatedStartTime <= existingStart && updatedEndTime >= existingEnd)
+            );
+        });
+    
+        if (isDuplicate) {
+            notification.error({ message: 'Error', description: 'Slot already exists or overlaps with another slot!' });
+            return;
+        }
+    
+        // Cập nhật slot nếu không có lỗi
         try {
             await axios.put(`http://localhost:5000/slots/${currentSlot.slotId}`, {
                 ...formData,
@@ -122,6 +172,7 @@ function ManageSlots() {
             console.error('Error updating slot:', error);
         }
     };
+    
 
 
     const handleDeleteClick = (slotId) => {
