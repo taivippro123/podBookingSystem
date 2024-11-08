@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Layout, Input, Button, Typography, Card, message, Avatar } from 'antd';
-import { UserOutlined, MailOutlined, PhoneOutlined, LockOutlined, HomeOutlined, DollarTwoTone, DollarOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, PhoneOutlined, LockOutlined, HomeOutlined, DollarOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Content } = Layout;
@@ -14,7 +14,7 @@ export default function Profile({ onProfileUpdate }) {
     userName: '',
     userEmail: '',
     userPhone: '',
-    userPassword: '',
+    userPassword: '',  // Ensure userPassword has a default value
     userPoint: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +45,6 @@ export default function Profile({ onProfileUpdate }) {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
 
-    // Reset error messages on input change
     if (name === 'userEmail') {
       setEmailError('');
     }
@@ -53,8 +52,8 @@ export default function Profile({ onProfileUpdate }) {
       setPhoneError('');
     }
     if (name === 'userPassword') {
-        setPasswordError('');
-      }
+      setPasswordError('');
+    }
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -67,17 +66,17 @@ export default function Profile({ onProfileUpdate }) {
   };
 
   const validatePhoneNumber = (phone) => {
-    const phonePattern = /^(0\d{9,10}|(\+84)\d{9,10})$/; // Must start with 0 or +84, followed by 9 to 10 digits
+    const phonePattern = /^(0\d{9,10}|(\+84)\d{9,10})$/;
     return phonePattern.test(phone);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (profile.userPassword.length < 6) {
-        setPasswordError('Password must be at least 6 characters long');
-        return;
-      }
+    if (profile.userPassword && profile.userPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return;
+    }
 
     if (profile.userPassword !== confirmPassword) {
       setError('Passwords do not match');
@@ -102,18 +101,13 @@ export default function Profile({ onProfileUpdate }) {
     axios.put(`http://localhost:5000/profile/${userId}`, profile)
       .then(() => {
         message.success('Profile updated successfully!');
-
-        // Update local storage with the new user data
         localStorage.setItem('user', JSON.stringify({ ...profile, userId }));
 
-        // Call the callback to update the profile in ComHeader
         if (onProfileUpdate) {
           onProfileUpdate({ ...profile, userId });
         }
 
         setIsEditing(false);
-        
-        // Reload the page to reflect the changes
         window.location.reload();
       })
       .catch(() => {
@@ -156,35 +150,11 @@ export default function Profile({ onProfileUpdate }) {
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <FormItem icon={<UserOutlined />} label="Full Name" name="userName" value={profile.userName} onChange={handleInputChange} />
-              <FormItem 
-                icon={<MailOutlined />} 
-                label="Email" 
-                name="userEmail" 
-                value={profile.userEmail} 
-                onChange={handleInputChange} 
-                type="email" 
-                error={emailError} // Pass the email error to the form item
-                
-              />
-              <FormItem 
-                icon={<PhoneOutlined />} 
-                label="Phone" 
-                name="userPhone" 
-                value={profile.userPhone} 
-                onChange={handleInputChange} 
-                error={phoneError} // Pass the phone error to the form item
-              />
-              <FormItem 
-                icon={<LockOutlined />} 
-                label="Password" 
-                name="userPassword" 
-                value={profile.userPassword} 
-                onChange={handleInputChange} 
-                isPassword 
-                error={passwordError} // Pass the password error to the form item
-              />
+              <FormItem icon={<MailOutlined />} label="Email" name="userEmail" value={profile.userEmail} onChange={handleInputChange} type="email" error={emailError} />
+              <FormItem icon={<PhoneOutlined />} label="Phone" name="userPhone" value={profile.userPhone} onChange={handleInputChange} error={phoneError} />
+              <FormItem icon={<LockOutlined />} label="Password" name="userPassword" value={profile.userPassword} onChange={handleInputChange} isPassword error={passwordError} />
               <FormItem icon={<LockOutlined />} label="Confirm Password" value={confirmPassword} onChange={handleConfirmPasswordChange} isPassword />
-              {error && <p style={{ color: '#ff4d4f', marginTop: '16px', marginBottom: '0' }}>{error}</p>} {/* Adjusted spacing for general error */}
+              {error && <p style={{ color: '#ff4d4f', marginTop: '16px', marginBottom: '0' }}>{error}</p>}
               <Button type="primary" htmlType="submit" style={{ marginTop: '8px', height: '40px', borderRadius: '20px' }}>
                 Save Changes
               </Button>
@@ -225,6 +195,6 @@ const FormItem = ({ icon, label, name, value, onChange, type = 'text', isPasswor
       type={isPassword ? 'password' : type}
       style={{ borderRadius: '20px', height: '40px' }}
     />
-    {error && <p style={{ color: '#ff4d4f', marginTop: '8px', marginBottom: '0' }}>{error}</p>} {/* Adjusted spacing for error message */}
+    {error && <p style={{ color: '#ff4d4f', marginTop: '8px', marginBottom: '0' }}>{error}</p>}
   </div>
 );

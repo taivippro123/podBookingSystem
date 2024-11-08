@@ -36,7 +36,7 @@ import ViewNumberAccounts from './pages/Admin/ViewNumberAccounts/ViewNumberAccou
 import ViewPopularRooms from './pages/Admin/ViewPopularRooms/ViewPopularRooms.js';
 import ViewPopularServices from './pages/Admin/ViewPopularServices/ViewPopularServices.js';
 import ViewFeedbacks from './pages/Admin/ViewFeedbacks/ViewFeedbacks.js';
-
+import ResetPassword from './pages/ResetPassword.jsx';
 function App() {
   return (
     <Router>
@@ -56,7 +56,7 @@ function App() {
         <Route path="/rooms/:id" element={<ManageRoom />} />
         <Route path="/login2" element={<ComHeaderCostomer> <Login /> </ComHeaderCostomer>} />
         <Route path="/paymentservice" element={<ComHeaderCostomer> <PaymentAddService /> </ComHeaderCostomer>} />
-
+        <Route path="/reset-password" element={<ComHeaderCostomer> <ResetPassword /> </ComHeaderCostomer>} />
 
         {/* Customer Protected Routes */}
         <Route path="/customer" element={

@@ -116,8 +116,20 @@ app.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
     try {
-        await sendOtpEmail(email);
-        res.status(200).send('OTP sent successfully.');
+        // Check if the email exists in the database
+        const emailCheckQuery = 'SELECT * FROM User WHERE userEmail = ?';
+        db.query(emailCheckQuery, [email], async (err, results) => {
+            if (err) throw err;
+
+            if (results.length === 0) {
+                // Email does not exist
+                return res.status(404).send('Email not found.');
+            }
+
+            // Email exists, proceed to send OTP
+            await sendOtpEmail(email);
+            res.status(200).send('OTP sent successfully.');
+        });
     } catch (error) {
         console.error('Error sending OTP:', error);
         res.status(500).send('Error sending OTP.');

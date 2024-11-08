@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
-import { jwtDecode } from 'jwt-decode';  // Import named export
+import { jwtDecode } from "jwt-decode"; // Import named export
 import axios from "axios";
-import bgImage from '../../assets/login.png';
+import bgImage from "../../assets/login.png";
 
 import { auth, provider } from "../../components/config";
 
@@ -42,49 +42,48 @@ export default function LoginPage() {
         alert("Login failed. Please check your email and password.");
       });
   };
- 
-  
+
   const handleGoogleSignIn = () => {
     signInWithPopup(auth, provider)
       .then(async (result) => {
-          const user = result.user;
-          const response = await fetch('http://localhost:5000/login-google', { 
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  email: user.email,
-                  displayName: user.displayName || '',
-              })
-          });
-          
-          if (response.ok) {
-              const userData = await response.json();
-              const userId = userData.user.userId; // Extract userId for easier reference
-              
-              // Store necessary user data in localStorage
-              localStorage.setItem("userId", userId);
-              localStorage.setItem("user", JSON.stringify({
-                  userId: userId,
-                  userEmail: userData.user.userEmail,
-                  userName: userData.user.userName,
-                  userRole: userData.user.userRole,
-              }));
-              
-              // Navigate to the Home page
-              navigate('/');
-          } else {
-              console.error("Error:", response.statusText);
-              alert("Failed to log in. Please try again.");
-          }
+        const user = result.user;
+        const response = await fetch("http://localhost:5000/login-google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            displayName: user.displayName || "",
+          }),
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const userId = userData.user.userId; // Extract userId for easier reference
+
+          // Store necessary user data in localStorage
+          localStorage.setItem("userId", userId);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              userId: userId,
+              userEmail: userData.user.userEmail,
+              userName: userData.user.userName,
+              userRole: userData.user.userRole,
+            })
+          );
+
+          // Navigate to the Home page
+          navigate("/");
+        } else {
+          console.error("Error:", response.statusText);
+          alert("Failed to log in. Please try again.");
+        }
       })
       .catch((error) => {
-          console.error("Google login error:", error);
-          alert("Google sign-in failed. Please try again.");
+        console.error("Google login error:", error);
+        alert("Google sign-in failed. Please try again.");
       });
-};
-
-
-
+  };
 
   const navigateBasedOnRole = (userRole) => {
     switch (userRole) {
@@ -135,7 +134,7 @@ export default function LoginPage() {
       {/* Left side - Office Image */}
       <div className="hidden lg:block lg:w-1/2">
         <img
-          src= {bgImage}
+          src={bgImage}
           alt="Modern office space"
           className="object-cover w-full h-full"
         />
@@ -147,20 +146,28 @@ export default function LoginPage() {
           <div className="text-center">
             <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '5rem',
-                height: '5rem',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #6a5acd, #ff7f50)',
-                marginBottom: '1rem',
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "5rem",
+                height: "5rem",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #6a5acd, #ff7f50)",
+                marginBottom: "1rem",
               }}
             >
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffffff' }}>WZ</span>
+              <span
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "#ffffff",
+                }}
+              >
+                WZ
+              </span>
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Welcome back to Work Zone!
+              Welcome back to Work Zone!
             </h2>
             <p className="mt-2 text-sm text-gray-600">
               Please enter your details
@@ -240,12 +247,12 @@ export default function LoginPage() {
                 </label>
               </div>
               <div className="text-sm">
-                <a
-                  href="#"
+                <Link
+                  to="/reset-password"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -256,9 +263,8 @@ export default function LoginPage() {
               >
                 LOG IN
               </button>
-              
             </div>
-                    
+
             <div>
               <button
                 type="button"
@@ -271,21 +277,17 @@ export default function LoginPage() {
                   alt="Google logo"
                 />
                 LOG IN WITH GOOGLE
-                
               </button>
             </div>
             <div className="text-sm ">
-              <a class= "mx-2">
-              Don't have an account?
+              <a class="mx-2">Don't have an account?</a>
+              <a
+                href="/signup"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Register here
               </a>
-                <a
-                  href="/signup"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
-                   Register here
-                </a>
-              </div>      
-            
+            </div>
           </form>
         </div>
       </div>
