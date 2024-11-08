@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 export default function ListRoom() {
   const [searchParams, setSearchParams] = useState({
     name: "",
-    minPrice: "15000",
-    maxPrice: "120000",
+    minPrice: "",
+    maxPrice: "",
     capacity: "",
     equipment: "",
     type: "",
@@ -15,6 +15,7 @@ export default function ListRoom() {
 
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [roomTypes, setRoomTypes] = useState([]); // New state for unique room types
 
   useEffect(() => {
     fetchRooms();
@@ -23,9 +24,13 @@ export default function ListRoom() {
   const fetchRooms = async () => {
     try {
       const response = await axios.get('http://localhost:5000/available-rooms');
-      console.log("Rooms fetched:", response.data);
-      setRooms(response.data); // Set the fetched rooms to the state
-      setFilteredRooms(response.data); // Initialize the filtered rooms with all rooms
+      const fetchedRooms = response.data;
+      setRooms(fetchedRooms);
+      setFilteredRooms(fetchedRooms);
+      
+      // Extract unique room types
+      const uniqueTypes = [...new Set(fetchedRooms.map((room) => room.roomType))];
+      setRoomTypes(uniqueTypes);
     } catch (error) {
       console.error('Error fetching rooms:', error);
     }
@@ -40,14 +45,10 @@ export default function ListRoom() {
     const filtered = rooms.filter((room) => {
       return (
         room.roomName.toLowerCase().includes(searchParams.name.toLowerCase()) &&
-        (searchParams.minPrice === "" ||
-          room.roomPricePerSlot >= parseInt(searchParams.minPrice)) &&
-        (searchParams.maxPrice === "" ||
-          room.roomPricePerSlot <= parseInt(searchParams.maxPrice)) &&
-        (searchParams.capacity === "" ||
-          room.capacity >= parseInt(searchParams.capacity)) &&
-        (searchParams.equipment === "" ||
-          room.equipment.includes(searchParams.equipment)) &&
+        (searchParams.minPrice === "" || room.roomPricePerSlot >= parseInt(searchParams.minPrice)) &&
+        (searchParams.maxPrice === "" || room.roomPricePerSlot <= parseInt(searchParams.maxPrice)) &&
+        (searchParams.capacity === "" || room.capacity >= parseInt(searchParams.capacity)) &&
+        (searchParams.equipment === "" || room.equipment.includes(searchParams.equipment)) &&
         (searchParams.type === "" || room.roomType === searchParams.type)
       );
     });
@@ -60,12 +61,7 @@ export default function ListRoom() {
         <h2 className="text-2xl font-bold mb-4">Search Meeting Rooms</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Room Name
-            </label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -80,12 +76,7 @@ export default function ListRoom() {
             </div>
           </div>
           <div>
-            <label
-              htmlFor="price"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Price Range
-            </label>
+            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
             <div className="flex items-center space-x-2">
               <DollarSign className="text-gray-400" />
               <input
@@ -112,12 +103,7 @@ export default function ListRoom() {
             </div>
           </div>
           <div>
-            <label
-              htmlFor="type"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Room Type
-            </label>
+            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
             <div className="relative">
               <Coffee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <select
@@ -128,11 +114,9 @@ export default function ListRoom() {
                 className="pl-10 w-full p-2 border rounded-md appearance-none"
               >
                 <option value="">All types</option>
-                <option value="Double">Double</option>
-                <option value="Single">Single</option>
-                <option value="Meeting">Meeting</option>
-                <option value="Event">Event</option>
-                <option value="Office">Office</option>
+                {roomTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -147,14 +131,11 @@ export default function ListRoom() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => (
-          <div
-            key={room.roomId}
-            className="bg-white shadow-md rounded-lg overflow-hidden"
-          >
+          <div key={room.roomId} className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="relative h-48">
               {room.imageUrls && room.imageUrls.length > 0 ? (
                 <img
-                  src={room.imageUrls[0]}  // Display the first image
+                  src={room.imageUrls[0]} // Display the first image
                   alt={room.roomName}
                   className="relative h-48 w-full object-cover"
                 />
@@ -170,13 +151,11 @@ export default function ListRoom() {
               </div>
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
-                <span>
-                  Available hours: 9:00AM - 5:00 PM
-                </span>
+                <span>Available hours: 9:00AM - 5:00 PM</span>
               </div>
               <div className="flex items-center text-red-500 mb-4">
-              <DollarSign className="w-4 h-4 mr-1" />
-              <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot </span>
+                <DollarSign className="w-4 h-4 mr-1" />
+                <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot</span>
               </div>
 
               <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">

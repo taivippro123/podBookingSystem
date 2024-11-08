@@ -3,6 +3,7 @@ import { Affix, Dropdown, Menu } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { CalendarIcon } from "lucide-react";
+import axios from "axios"; // For fetching data
 
 const navigation = [
   { name: "Dashboard", href: "/admin/institute", current: false },
@@ -18,12 +19,26 @@ function ComHeader({ children }) {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const [activeCategory, setActiveCategory] = useState(null);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user'))); // User state
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user"))); // User state
+  const [rooms, setRooms] = useState([]); // State to hold room data
+
+  // Fetch room data
+  useEffect(() => {
+    async function fetchRooms() {
+      try {
+        const response = await axios.get("http://localhost:5000/rooms"); // Replace with your actual endpoint
+        setRooms(response.data); // Assuming the response is an array of rooms
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    }
+    fetchRooms();
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setUser(null); // Clear user state
-    navigate('/');
+    navigate("/");
   };
 
   useEffect(() => {
@@ -47,10 +62,14 @@ function ComHeader({ children }) {
   const userMenu = (
     <Menu>
       <Menu.Item>
-        <Link to={`/profile/${user?.userId}`}>View Profile</Link>
+        <Link to={`/profile/${user?.userId}`}>
+          View Profile
+        </Link>
       </Menu.Item>
       <Menu.Item>
-        <Link to={`/viewbookings/${user?.userId}`}>View Booking</Link>
+        <Link to={`/viewbookings/${user?.userId}`}>
+          View Booking
+        </Link>
       </Menu.Item>
       <Menu.Item onClick={handleLogout}>
         <span>Logout</span>
@@ -71,7 +90,10 @@ function ComHeader({ children }) {
             <div className="container mx-auto flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <span className="text-sm">Connect:</span>
-                <Link to="https://www.facebook.com/qv12a" className="text-white hover:text-gray-200 text-lg">
+                <Link
+                  to="https://www.facebook.com/qv12a"
+                  className="text-white hover:text-gray-200 text-lg"
+                >
                   <FaFacebookF />
                 </Link>
                 <Link to="" className="text-white hover:text-gray-200 text-lg">
@@ -80,13 +102,16 @@ function ComHeader({ children }) {
               </div>
               <div className="flex items-center space-x-4 text-sm">
                 {user ? (
-                  <Dropdown overlay={userMenu} trigger={['click']}>
-                    <span className="text-white hover:underline cursor-pointer">
+                  <Dropdown overlay={userMenu} trigger={["click"]}>
+                    <button className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md cursor-pointer">
                       {user.userName}
-                    </span>
+                    </button>
                   </Dropdown>
                 ) : (
-                  <Link to="/login" className="hover:underline cursor-pointer text-white">
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-full cursor-pointer"
+                  >
                     Login
                   </Link>
                 )}
@@ -95,7 +120,10 @@ function ComHeader({ children }) {
           </div>
           <div className="bg-white py-4 px-4 shadow-md">
             <div className="container mx-auto flex justify-between items-center md:px-10">
-              <Link to="/" className="text-2xl font-bold text-blue-900 flex justify-center items-center">
+              <Link
+                to="/"
+                className="text-2xl font-bold text-blue-900 flex justify-center items-center"
+              >
                 <CalendarIcon className="h-6 w-6" /> Work
                 <span className="text-blue-500"> Zone</span>
               </Link>
@@ -105,17 +133,26 @@ function ComHeader({ children }) {
                   <div className="container mx-auto">
                     <ul className="flex justify-center space-x-8 py-3 text-sm font-medium">
                       <li>
-                        <Link to="/rooms" className="text-blue-900 hover:text-blue-700 text-center">
+                        <Link
+                          to="/rooms"
+                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                        >
                           ROOM
                         </Link>
                       </li>
                       <li>
-                        <Link to="/about" className="text-blue-900 hover:text-blue-700 text-center">
+                        <Link
+                          to="/about"
+                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                        >
                           ABOUT US
                         </Link>
                       </li>
                       <li>
-                        <Link to="/contact" className="text-blue-900 hover:text-blue-700 text-center">
+                        <Link
+                          to="/contact"
+                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                        >
                           CONTACT US
                         </Link>
                       </li>
@@ -123,6 +160,7 @@ function ComHeader({ children }) {
                   </div>
                 </nav>
               </div>
+
             </div>
           </div>
         </header>
@@ -138,15 +176,18 @@ function ComHeader({ children }) {
           <div>
             <h3 className="font-bold mb-4">OUR SERVICES</h3>
             <ul className="space-y-2">
-              <li><a href="/rooms" className="hover:underline">All</a></li>
-              <li><a href="/room/8" className="hover:underline">Single POD</a></li>
-              <li><a href="/room/9" className="hover:underline">Double POD</a></li>
-              <li><a href="/room/11" className="hover:underline">Small Meeting Room</a></li>
-              <li><a href="/room/12" className="hover:underline">Large Meeting Room</a></li>
-              <li><a href="/room/13" className="hover:underline">Event Space</a></li>
-              <li><a href="/room/14" className="hover:underline">Office Room</a></li>
-              <li><a href="/room/15" className="hover:underline">Gaming Room</a></li>
-              <li><a href="/room/16" className="hover:underline">Open Space</a></li>
+              <li>
+                <a href="/rooms" className="hover:underline">
+                  All
+                </a>
+              </li>
+              {rooms.map((room) => (
+                <li key={room.roomId}>
+                  <Link to={`/room/${room.roomId}`} className="hover:underline">
+                    {room.roomType}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -154,8 +195,16 @@ function ComHeader({ children }) {
           <div>
             <h3 className="font-bold mb-4">SUPPORT</h3>
             <ul className="space-y-2">
-              <li><a href="/about" className="hover:underline">About us</a></li>
-              <li><a href="/contact" className="hover:underline">Contact</a></li>
+              <li>
+                <a href="/about" className="hover:underline">
+                  About us
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="hover:underline">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -163,9 +212,21 @@ function ComHeader({ children }) {
           <div>
             <h3 className="font-bold mb-4">LEGAL</h3>
             <ul className="space-y-2">
-              <li><a href="/terms" className="hover:underline">Terms of use</a></li>
-              <li><a href="/privacy" className="hover:underline">Privacy policy</a></li>
-              <li><a href="/cookie-policy" className="hover:underline">Cookie policy</a></li>
+              <li>
+                <a href="/terms" className="hover:underline">
+                  Terms of use
+                </a>
+              </li>
+              <li>
+                <a href="/privacy" className="hover:underline">
+                  Privacy policy
+                </a>
+              </li>
+              <li>
+                <a href="/cookie-policy" className="hover:underline">
+                  Cookie policy
+                </a>
+              </li>
             </ul>
           </div>
         </div>

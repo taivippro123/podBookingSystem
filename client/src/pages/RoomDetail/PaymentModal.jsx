@@ -53,6 +53,13 @@ function PaymentModal({ paymentData, closeModal }) {
       })
       .catch((error) => console.error("Error initiating payment:", error));
   };
+  // Hàm format thời gian chỉ lấy giờ và phút
+  const formatTime = (timeString) => {
+    // Kiểm tra nếu thời gian là chuỗi hợp lệ
+    if (!timeString) return "";
+    // Cắt chuỗi thời gian lấy giờ và phút (HH:mm)
+    return timeString.substring(0, 5);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -100,9 +107,7 @@ function PaymentModal({ paymentData, closeModal }) {
                   <ul className="list-disc ml-5 mt-3">
                     {paymentData.selectedSlots.map((slot, index) => (
                       <li key={index} className="flex justify-between">
-                        <span>{slot.slotStartTime}</span>
-                        <span>-</span>
-                        <span>{slot.slotEndTime}</span>
+                        {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
                       </li>
                     ))}
                   </ul>
@@ -134,13 +139,10 @@ function PaymentModal({ paymentData, closeModal }) {
           <div className="border rounded-lg p-4 w-full md:w-1/2 text-left">
             <h4 className="text-lg font-bold mb-2">Payment Summary</h4>
             <div className="flex justify-between mt-3">
-              <span>Amount:</span> <span>₫{(paymentData.totalPrice + paymentData.discount).toLocaleString("vi-VN")}</span>
+              <span>Amount:</span> <span>₫{(paymentData.totalPrice + paymentData.discount ).toLocaleString("vi-VN")}</span>
             </div>
             <div className="flex justify-between mt-3">
               <span>Discount:</span> <span>-₫{paymentData.discount.toLocaleString("vi-VN")}</span>
-            </div>
-            <div className="flex justify-between mt-3">
-              <span>Subtotal:</span> <span>₫{paymentData.totalPrice.toLocaleString("vi-VN")}</span>
             </div>
             <hr className="my-2 mt-10" />
             <div className="flex justify-between font-bold mb-1 text-red-500">
