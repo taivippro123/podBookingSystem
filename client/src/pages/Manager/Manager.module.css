@@ -35,6 +35,7 @@ body {
     transition: transform 0.3s ease;
     /* Thêm hiệu ứng chuyển động */
     width: 300px;
+    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.3);
 }
 
 .manager-hidden {
@@ -108,7 +109,7 @@ body {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.3);
     /* Thêm bóng đổ cho header */
 }
 
@@ -263,8 +264,9 @@ h1 {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.1);
     /* Thêm bóng đổ cho header */
+    
 }
 
 .hidden {

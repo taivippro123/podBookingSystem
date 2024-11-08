@@ -1,25 +1,25 @@
 .logoutButton {
-    cursor: pointer;
-    padding: 15px 30px; /* Tăng kích thước padding để nút lớn hơn */
-    color: black; /* Màu chữ ban đầu */
-    font-weight: bold; /* Độ đậm của chữ */
-    font-size: 18px; /* Tăng kích thước chữ */
-    border: none;
-    background-color: transparent; /* Không có màu nền ban đầu */
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.3s ease, color 0.3s ease, font-weight 0.3s ease; /* Hiệu ứng chuyển màu và độ đậm */
-  }
-  
-  .logoutIcon {
-    margin-right: 10px; /* Khoảng cách giữa icon và chữ */
-    font-size: 28px; /* Tăng kích thước icon */
-  }
-  
-  .logoutButton:hover {
-    background-color: #c0392b; /* Màu nền đỏ khi hover */
-    color: white; /* Chữ màu trắng khi hover */
-    font-weight: bolder; /* Tăng độ đậm khi hover */
-  }
-  
+  cursor: pointer;
+  padding: 15px 30px; /* Tăng kích thước padding để nút lớn hơn */
+  color: black; /* Màu chữ ban đầu */
+  font-weight: bold; /* Độ đậm của chữ */
+  font-size: 18px; /* Tăng kích thước chữ */
+  border: 2px solid black; /* Đường viền đen */
+  background-color: transparent; /* Không có màu nền ban đầu */
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease, font-weight 0.3s ease; /* Hiệu ứng chuyển màu và độ đậm */
+}
+
+.logoutIcon {
+  margin-right: 10px; /* Khoảng cách giữa icon và chữ */
+  font-size: 28px; /* Tăng kích thước icon */
+}
+
+.logoutButton:hover {
+  background-color: #c0392b; /* Màu nền đỏ khi hover */
+  color: white; /* Chữ màu trắng khi hover */
+  font-weight: bolder; /* Tăng độ đậm khi hover */
+  border-color: #c0392b; /* Đổi màu viền thành đỏ khi hover */
+}

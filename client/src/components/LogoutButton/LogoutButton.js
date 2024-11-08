@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdOutlineLogout } from "react-icons/md"; // Sử dụng icon logout mới
+import { AiOutlineLogout } from "react-icons/ai";
 import './LogoutButton.css'; // Import CSS đã thêm cho nút Log Out
 
 const LogoutButton = () => {
@@ -17,7 +17,7 @@ const LogoutButton = () => {
 
   return (
     <button className="logoutButton" onClick={handleLogout}>
-      <MdOutlineLogout className="logoutIcon" />
+      <AiOutlineLogout className="logoutIcon" />
       Log Out
     </button>
   );
