@@ -21,6 +21,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import PaymentModal from "./PaymentModal"; // Import the PaymentModal component
 import RoomListDetail from "./RoomListDetail";
+import { Image } from "antd";
 
 export default function RoomDetail() {
   const [userId, setUserId] = useState(null);
@@ -74,12 +75,32 @@ export default function RoomDetail() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Available slots:", data);
-        setAvailableSlots(data);
+
+        // Lấy giờ hiện tại
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+
+        // Kiểm tra nếu ngày được chọn là hôm nay
+        const isToday = date === now.toISOString().split("T")[0];
+
+        // Cập nhật trạng thái slot nếu ngày được chọn là hôm nay
+        const updatedSlots = data.map((slot) => {
+          const [startHour, startMinute] = slot.slotStartTime.split(":").map(Number);
+          const isExpired =
+            isToday && (startHour < currentHour || (startHour === currentHour && startMinute <= currentMinute));
+
+          // Thêm thuộc tính isExpired vào mỗi slot
+          return { ...slot, isExpired };
+        });
+
+        setAvailableSlots(updatedSlots);
       })
-      .catch((error) =>
-        console.error("Error fetching available slots:", error)
-      );
+      .catch((error) => console.error("Error fetching available slots:", error));
   };
+
+
+
 
   const fetchServices = () => {
     fetch("http://localhost:5000/services")
@@ -100,7 +121,7 @@ export default function RoomDetail() {
     const userData = JSON.parse(localStorage.getItem("user")); // Retrieve the user data
     const userId = userData ? userData.userId : null; // Safely access userId
     console.log("Fetching user points for userId:", userId);
-  
+
     if (userId) {
       fetch(`http://localhost:5000/user-points/${userId}`)
         .then((res) => {
@@ -130,7 +151,7 @@ export default function RoomDetail() {
       setOriginalUserPoints(0); // Set original points to 0 if no userId
     }
   };
-  
+
   // Fetch user points on component mount
   useEffect(() => {
     fetchUserPoints();
@@ -172,6 +193,13 @@ export default function RoomDetail() {
       }
     });
   };
+  // Hàm format thời gian chỉ lấy giờ và phút
+  const formatTime = (timeString) => {
+    // Kiểm tra nếu thời gian là chuỗi hợp lệ
+    if (!timeString) return "";
+    // Cắt chuỗi thời gian lấy giờ và phút (HH:mm)
+    return timeString.substring(0, 5);
+  };
 
   const calculateDaysBetween = (start, end) => {
     const startDate = new Date(start);
@@ -185,7 +213,7 @@ export default function RoomDetail() {
       console.log("Room details not loaded yet");
       return;
     }
-  
+
     let price = 0;
     if (bookingType === "slot") {
       price = selectedSlots.length * (roomDetail?.roomPricePerSlot || 0);
@@ -193,7 +221,7 @@ export default function RoomDetail() {
       const days = calculateDaysBetween(dateRange.start, dateRange.end);
       const weeksCount = Math.floor(days / 7);
       const remainingDays = days % 7;
-  
+
       if (days < 7) {
         price = days * (roomDetail?.roomPricePerDay || 0);
       } else {
@@ -202,23 +230,23 @@ export default function RoomDetail() {
           remainingDays * (roomDetail?.roomPricePerDay || 0);
       }
     }
-  
+
     const selectedServicePrice = services.reduce((sum, service) => {
       return service.selected ? sum + (Number(service.servicePrice) || 0) : sum;
     }, 0);
-  
+
     let discountAmount = 0;
     if (useUserPoints) {
-      discountAmount = Math.min(userPoints, price + selectedServicePrice); 
+      discountAmount = Math.min(userPoints, price + selectedServicePrice);
     }
-  
+
     const discount = discountAmount;
     setDiscount(discount);
-  
+
     // Set the total price with the discount applied
     const finalPrice = price + selectedServicePrice - discount;
     setTotalPrice(finalPrice);
-  
+
     // Update user points based on the discount
     if (useUserPoints) {
       const remainingPoints = userPoints - discount;
@@ -226,17 +254,17 @@ export default function RoomDetail() {
     } else {
       setUserPoints(originalUserPoints);
     }
-  
+
     // Set the discount state so it can be passed to the modal
     setDiscount(discount);
   };
-  
+
   // Handle switch toggle (use points or not)
   const handleUsePointsChange = () => {
     setUseUserPoints(!useUserPoints);
     calculateTotalPrice(); // Recalculate the price when the switch is toggled
   };
-  
+
 
 
   useEffect(() => {
@@ -279,9 +307,35 @@ export default function RoomDetail() {
   }, [userPoints]);
 
   const handleDateSelection = (e) => {
-    setSelectedDate(e.target.value);
-    fetchAvailableSlots(e.target.value);
+    const selectedDate = e.target.value;
+    setSelectedDate(selectedDate);
+    fetchAvailableSlots(selectedDate);
+  
+    // Lấy ngày và giờ hiện tại
+    const now = new Date();
+    const currentDate = now.toISOString().split("T")[0];
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+  
+    // Nếu người dùng chọn ngày hôm nay, kiểm tra các slot đã chọn
+    if (selectedDate === currentDate) {
+      const updatedSelectedSlots = selectedSlots.filter((slot) => {
+        const [startHour, startMinute] = slot.slotStartTime.split(":").map(Number);
+        // Giữ lại các slot mà giờ bắt đầu chưa quá giờ hiện tại
+        return startHour > currentHour || (startHour === currentHour && startMinute > currentMinute);
+      });
+  
+      // Cập nhật danh sách các slot đã chọn
+      setSelectedSlots(updatedSelectedSlots);
+  
+      // Thông báo nếu có slot đã bị loại bỏ do quá giờ
+      if (updatedSelectedSlots.length < selectedSlots.length) {
+        console.log("Một số slot đã quá giờ và bị loại bỏ.");
+      }
+    }
   };
+  
+
 
   const handleNavigateToPayment = (e) => {
     e.preventDefault();
@@ -405,7 +459,7 @@ export default function RoomDetail() {
         <div className="relative w-full lg:w-2/3 mx-auto">
           {/* Main image display with a horizontal frame */}
           <div className="relative w-full h-96 rounded-lg overflow-hidden">
-            <img
+            <Image
               src={room?.images[currentImageIndex]}
               alt={`${room?.roomName} - Image ${currentImageIndex + 1}`}
               className="w-full h-full object-cover"
@@ -435,11 +489,10 @@ export default function RoomDetail() {
                 key={index}
                 src={room.images[index]}
                 onClick={() => setCurrentImageIndex(index)}
-                className={`w-16 h-16 object-cover rounded-lg cursor-pointer ${
-                  index === currentImageIndex
-                    ? "border-2 border-blue-500"
-                    : "border border-transparent"
-                }`}
+                className={`w-16 h-16 object-cover rounded-lg cursor-pointer ${index === currentImageIndex
+                  ? "border-2 border-blue-500"
+                  : "border border-transparent"
+                  }`}
               />
             ))}
           </div>
@@ -505,218 +558,225 @@ export default function RoomDetail() {
           </div>
 
           <form
-  onSubmit={handleNavigateToPayment}
-  className="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto"
->
-  <h2 className="text-3xl font-semibold mb-4 text-gray-900">Select Booking Type</h2>
+            onSubmit={handleNavigateToPayment}
+            className="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto"
+          >
+            <h2 className="text-3xl font-semibold mb-4 text-gray-900">Select Booking Type</h2>
 
-  {/* Booking Type Radio Buttons */}
-  <div className="flex space-x-6 mb-8">
-    <label className="flex items-center space-x-3 cursor-pointer text-lg">
-      <input
-        type="radio"
-        value="slot"
-        checked={bookingType === "slot"}
-        onChange={handleBookingTypeChange}
-        className="text-blue-500 focus:ring-blue-500"
-      />
-      <span className="text-gray-700">Book by Slot</span>
-    </label>
-    <label className="flex items-center space-x-3 cursor-pointer text-lg">
-      <input
-        type="radio"
-        value="range"
-        checked={bookingType === "range"}
-        onChange={handleBookingTypeChange}
-        className="text-blue-500 focus:ring-blue-500"
-      />
-      <span className="text-gray-700">Book by Date Range</span>
-    </label>
-  </div>
-
-  {/* Display error message */}
-  {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-  {/* Booking by Slot */}
-  {bookingType === "slot" && (
-    <div className="mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date</h3>
-      <input
-        type="date"
-        value={selectedDate}
-        onChange={handleDateSelection}
-        min={new Date().toISOString().split("T")[0]}
-        className="border border-gray-300 p-3 rounded-lg w-full mb-5"
-      />
-      {availableSlots.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {availableSlots.map((slot) => (
-            <div
-              key={slot.slotId}
-              className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${
-                selectedSlots.some((s) => s.slotId === slot.slotId)
-                  ? "border-blue-500 bg-blue-50 shadow-md"
-                  : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
-              }`}
-            >
-              <label className="flex items-center space-x-3 cursor-pointer">
+            {/* Booking Type Radio Buttons */}
+            <div className="flex space-x-6 mb-8">
+              <label className="flex items-center space-x-3 cursor-pointer text-lg">
                 <input
-                  type="checkbox"
-                  checked={selectedSlots.some((s) => s.slotId === slot.slotId)}
-                  onChange={() => handleSlotSelection(slot)}
-                  className="sr-only"
+                  type="radio"
+                  value="slot"
+                  checked={bookingType === "slot"}
+                  onChange={handleBookingTypeChange}
+                  className="text-blue-500 focus:ring-blue-500"
                 />
-                <div
-                  className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                    selectedSlots.some((s) => s.slotId === slot.slotId)
-                      ? "bg-blue-500 border-blue-500"
-                      : "bg-gray-200 border-gray-300"
-                  }`}
-                >
-                  {selectedSlots.some((s) => s.slotId === slot.slotId) && (
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <span className="text-gray-700 font-medium">{slot.slotStartTime} - {slot.slotEndTime}</span>
+                <span className="text-gray-700">Book by Slot</span>
+              </label>
+              <label className="flex items-center space-x-3 cursor-pointer text-lg">
+                <input
+                  type="radio"
+                  value="range"
+                  checked={bookingType === "range"}
+                  onChange={handleBookingTypeChange}
+                  className="text-blue-500 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">Book by Date Range</span>
               </label>
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-500 text-center">No available slots</p>
-      )}
-    </div>
-  )}
 
-  {/* Booking by Date Range */}
-  {bookingType === "range" && (
-    <div className="mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date Range</h3>
-      <div className="flex space-x-4">
-        <label className="block text-gray-700 w-full">
-          Start Date:
-          <input
-            type="date"
-            name="start"
-            value={dateRange.start}
-            onChange={handleDateChange}
-            min={new Date().toISOString().split("T")[0]}
-            className="border border-gray-300 p-3 rounded-lg w-full mt-1"
-          />
-        </label>
-        <label className="block text-gray-700 w-full">
-          End Date:
-          <input
-            type="date"
-            name="end"
-            value={dateRange.end}
-            onChange={handleDateChange}
-            min={dateRange.start || new Date().toISOString().split("T")[0]}
-            className="border border-gray-300 p-3 rounded-lg w-full mt-1"
-          />
-        </label>
-      </div>
-      {isRoomAvailable !== null && (
-        <p className={`mt-4 text-center ${isRoomAvailable ? "text-green-500" : "text-red-500"}`}>
-          {isRoomAvailable
-            ? "Room is available for the selected dates."
-            : "Room is not available for the selected dates. Please choose different dates."}
-        </p>
-      )}
-    </div>
-  )}
+            {/* Display error message */}
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-  {/* Available Services Section */}
-  <div className="p-4 bg-gray-50 shadow-md rounded-lg mb-6">
-    <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Services</h2>
-    {services.length > 0 ? (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {services.map((service) => (
-          <div
-            key={service.serviceId}
-            onClick={() => {
-              const updatedServices = services.map((s) =>
-                s.serviceId === service.serviceId ? { ...s, selected: !s.selected } : s
-              );
-              setServices(updatedServices);
-            }}
-            className={`cursor-pointer border-2 rounded-lg px-4 py-2 text-center transition-colors ${
-              service.selected
-                ? "border-blue-500 text-blue-500 bg-blue-50"
-                : "border-gray-300 text-gray-700 bg-white"
-            }`}
-          >
-            {service.serviceName} (₫{service.servicePrice.toLocaleString("vi-VN")})
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-gray-500 text-center">No available services</p>
-    )}
-  </div>
+            {/* Booking by Slot */}
+            {bookingType === "slot" && (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date</h3>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={handleDateSelection}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="border border-gray-300 p-3 rounded-lg w-full mb-5"
+                />
+                {availableSlots.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {availableSlots.map((slot) => {
+                      const canSelectSlot = !selectedDate || !slot.isExpired;
 
- {/* User Points Discount */}
-<div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200 ease-in-out mb-6">
-  <label className="relative inline-flex items-center cursor-pointer">
-    <input
-      type="checkbox"
-      checked={useUserPoints}
-      onChange={() => setUseUserPoints(!useUserPoints)}
-      className="sr-only peer"
-    />
-    <div
-      className={`w-11 h-6 bg-gray-800 rounded-full peer-checked:bg-blue-500 transition-colors duration-300`}
-    >
-      <span
-        className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transform transition-transform duration-300 ${
-          useUserPoints ? "translate-x-5" : ""
-        }`}
-      ></span>
-    </div>
-  </label>
-  <span className="text-gray-800 font-medium">
-    {useUserPoints
-      ? `You have ${userPoints} points after use`
-      : `Use ${userPoints} points for discount`}
-  </span>
-</div>
+                      return (
+                        <div
+                          key={slot.slotId}
+                          className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${selectedSlots.some((s) => s.slotId === slot.slotId)
+                              ? "border-blue-500 bg-blue-50 shadow-md"
+                              : slot.isExpired && selectedDate
+                                ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
+                            }`}
+                        >
+                          <label className="flex items-center space-x-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedSlots.some((s) => s.slotId === slot.slotId)}
+                              onChange={() => handleSlotSelection(slot)}
+                              disabled={!canSelectSlot}
+                              className="sr-only"
+                            />
+                            <div
+                              className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedSlots.some((s) => s.slotId === slot.slotId)
+                                  ? "bg-blue-500 border-blue-500"
+                                  : "bg-gray-200 border-gray-300"
+                                }`}
+                            >
+                              {selectedSlots.some((s) => s.slotId === slot.slotId) && (
+                                <svg
+                                  className="w-3 h-3 text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                            <span className="text-gray-700 font-medium">
+                              {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
+                            </span>
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center">No available slots</p>
+                )}
 
 
 
+              </div>
+            )}
+
+            {/* Booking by Date Range */}
+            {bookingType === "range" && (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date Range</h3>
+                <div className="flex space-x-4">
+                  <label className="block text-gray-700 w-full">
+                    Start Date:
+                    <input
+                      type="date"
+                      name="start"
+                      value={dateRange.start}
+                      onChange={handleDateChange}
+                      min={new Date().toISOString().split("T")[0]}
+                      className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+                    />
+                  </label>
+                  <label className="block text-gray-700 w-full">
+                    End Date:
+                    <input
+                      type="date"
+                      name="end"
+                      value={dateRange.end}
+                      onChange={handleDateChange}
+                      min={dateRange.start || new Date().toISOString().split("T")[0]}
+                      className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+                    />
+                  </label>
+                </div>
+                {isRoomAvailable !== null && (
+                  <p className={`mt-4 text-center ${isRoomAvailable ? "text-green-500" : "text-red-500"}`}>
+                    {isRoomAvailable
+                      ? "Room is available for the selected dates."
+                      : "Room is not available for the selected dates. Please choose different dates."}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Available Services Section */}
+            <div className="p-4 bg-gray-50 shadow-md rounded-lg mb-6">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Services</h2>
+              {services.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {services.map((service) => (
+                    <div
+                      key={service.serviceId}
+                      onClick={() => {
+                        const updatedServices = services.map((s) =>
+                          s.serviceId === service.serviceId ? { ...s, selected: !s.selected } : s
+                        );
+                        setServices(updatedServices);
+                      }}
+                      className={`cursor-pointer border-2 rounded-lg px-4 py-2 text-center transition-colors ${service.selected
+                        ? "border-blue-500 text-blue-500 bg-blue-50"
+                        : "border-gray-300 text-gray-700 bg-white"
+                        }`}
+                    >
+                      {service.serviceName} (₫{service.servicePrice.toLocaleString("vi-VN")})
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center">No available services</p>
+              )}
+            </div>
+
+            {/* User Points Discount */}
+            <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200 ease-in-out mb-6">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useUserPoints}
+                  onChange={() => setUseUserPoints(!useUserPoints)}
+                  className="sr-only peer"
+                />
+                <div
+                  className={`w-11 h-6 bg-gray-800 rounded-full peer-checked:bg-blue-500 transition-colors duration-300`}
+                >
+                  <span
+                    className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transform transition-transform duration-300 ${useUserPoints ? "translate-x-5" : ""
+                      }`}
+                  ></span>
+                </div>
+              </label>
+              <span className="text-gray-800 font-medium">
+                {useUserPoints
+                  ? `You have ${userPoints} points after use`
+                  : `Use ${userPoints} points for discount`}
+              </span>
+            </div>
 
 
 
-  {/* Total Price Section */}
-  <div className="flex justify-between items-center mb-8">
-    <p className="text-2xl font-semibold text-red-600">Total: ₫{totalPrice.toLocaleString("vi-VN")}</p>
-  </div>
 
-  {/* Submit Button */}
-  <button
-    type="submit"
-    disabled={
-      (bookingType === "slot" && !selectedDate) ||
-      (bookingType === "range" && (!dateRange.start || !dateRange.end))
-    }
-    onClick={handleOpenPaymentModal}
-    className={`w-full py-3 px-4 rounded-md font-semibold transition duration-300 ${
-      (bookingType === "slot" && !selectedDate) ||
-      (bookingType === "range" && (!dateRange.start || !dateRange.end))
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-blue-600 text-white hover:bg-blue-700"
-    }`}
-  >
-    Book the Room
-  </button>
-</form>
+
+
+            {/* Total Price Section */}
+            <div className="flex justify-between items-center mb-8">
+              <p className="text-2xl font-semibold text-red-600">Total: ₫{totalPrice.toLocaleString("vi-VN")}</p>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={
+                (bookingType === "slot" && !selectedDate) ||
+                (bookingType === "range" && (!dateRange.start || !dateRange.end))
+              }
+              onClick={handleOpenPaymentModal}
+              className={`w-full py-3 px-4 rounded-md font-semibold transition duration-300 ${(bookingType === "slot" && !selectedDate) ||
+                (bookingType === "range" && (!dateRange.start || !dateRange.end))
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+            >
+              Book the Room
+            </button>
+          </form>
 
         </div>
       </div>
@@ -748,14 +808,12 @@ export default function RoomDetail() {
               boxShadow: "0 10px 15px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.939240793746!2d106.62014161533469!3d10.870047560392325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752b1e7e3456ab%3A0x4e7b4d73a5f6f8d2!2sQTSC%20Building%201!5e0!3m2!1sen!2s!4v1635780245389!5m2!1sen!2s"
-              width="100%"
-              height="100%"
-              style={{ position: "absolute", top: 0, left: 0, border: 0 }}
-              allowFullScreen
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1076.7260332166363!2d106.62678072571467!3d10.852436913084668!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bee0b0ef9e5%3A0x5b4da59e47aa97a8!2zQ8O0bmcgVmnDqm4gUGjhuqduIE3hu4FtIFF1YW5nIFRydW5n!5e0!3m2!1svi!2s!4v1731064745995!5m2!1svi!2s" width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen=""
               loading="lazy"
-            ></iframe>
+              referrerPolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
       </div>
