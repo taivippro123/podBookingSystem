@@ -53,6 +53,13 @@ function PaymentModal({ paymentData, closeModal }) {
       })
       .catch((error) => console.error("Error initiating payment:", error));
   };
+  // Hàm format thời gian chỉ lấy giờ và phút
+  const formatTime = (timeString) => {
+    // Kiểm tra nếu thời gian là chuỗi hợp lệ
+    if (!timeString) return "";
+    // Cắt chuỗi thời gian lấy giờ và phút (HH:mm)
+    return timeString.substring(0, 5);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -100,9 +107,7 @@ function PaymentModal({ paymentData, closeModal }) {
                   <ul className="list-disc ml-5 mt-3">
                     {paymentData.selectedSlots.map((slot, index) => (
                       <li key={index} className="flex justify-between">
-                        <span>{slot.slotStartTime}</span>
-                        <span>-</span>
-                        <span>{slot.slotEndTime}</span>
+                        {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
                       </li>
                     ))}
                   </ul>
