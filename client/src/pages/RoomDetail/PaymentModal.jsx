@@ -134,13 +134,10 @@ function PaymentModal({ paymentData, closeModal }) {
           <div className="border rounded-lg p-4 w-full md:w-1/2 text-left">
             <h4 className="text-lg font-bold mb-2">Payment Summary</h4>
             <div className="flex justify-between mt-3">
-              <span>Amount:</span> <span>₫{(paymentData.totalPrice + paymentData.discount).toLocaleString("vi-VN")}</span>
+              <span>Amount:</span> <span>₫{(paymentData.totalPrice + paymentData.discount ).toLocaleString("vi-VN")}</span>
             </div>
             <div className="flex justify-between mt-3">
               <span>Discount:</span> <span>-₫{paymentData.discount.toLocaleString("vi-VN")}</span>
-            </div>
-            <div className="flex justify-between mt-3">
-              <span>Subtotal:</span> <span>₫{paymentData.totalPrice.toLocaleString("vi-VN")}</span>
             </div>
             <hr className="my-2 mt-10" />
             <div className="flex justify-between font-bold mb-1 text-red-500">

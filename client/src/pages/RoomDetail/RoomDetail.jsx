@@ -38,7 +38,8 @@ export default function RoomDetail() {
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [originalUserPoints, setOriginalUserPoints] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function RoomDetail() {
     const userData = JSON.parse(localStorage.getItem("user")); // Retrieve the user data
     const userId = userData ? userData.userId : null; // Safely access userId
     console.log("Fetching user points for userId:", userId);
-
+  
     if (userId) {
       fetch(`http://localhost:5000/user-points/${userId}`)
         .then((res) => {
@@ -109,22 +110,31 @@ export default function RoomDetail() {
         .then((data) => {
           console.log("Raw user points data:", data);
           if (data && data.userPoint !== undefined) {
-            setUserPoints(Number(data.userPoint));
+            setUserPoints(Number(data.userPoint)); // Set user points from the API response
+            setOriginalUserPoints(Number(data.userPoint)); // Set original points
             console.log("Set user points to:", Number(data.userPoint));
           } else {
             console.error("Invalid user points data:", data);
-            setUserPoints(0); // Handle case where userPoint is not available
+            setUserPoints(0); // Default to 0 if data is invalid
+            setOriginalUserPoints(0); // Set original points to 0 if invalid data
           }
         })
         .catch((error) => {
           console.error("Error fetching user points:", error);
-          setUserPoints(0); // Set to 0 in case of error
+          setUserPoints(0); // Default to 0 in case of error
+          setOriginalUserPoints(0); // Set original points to 0 in case of error
         });
     } else {
       console.error("No userId found in localStorage");
-      setUserPoints(0); // Handle case where userId is missing
+      setUserPoints(0); // Default to 0 if no userId is found
+      setOriginalUserPoints(0); // Set original points to 0 if no userId
     }
   };
+  
+  // Fetch user points on component mount
+  useEffect(() => {
+    fetchUserPoints();
+  }, []);
 
   const handleBookingTypeChange = (e) => {
     setBookingType(e.target.value);
@@ -175,23 +185,15 @@ export default function RoomDetail() {
       console.log("Room details not loaded yet");
       return;
     }
-
-    console.log("Room Detail:", roomDetail);
-    console.log("Booking Type:", bookingType);
-    console.log("Selected Slots:", selectedSlots);
-    console.log("Date Range:", dateRange);
-    console.log("Services:", services);
-
+  
     let price = 0;
     if (bookingType === "slot") {
       price = selectedSlots.length * (roomDetail?.roomPricePerSlot || 0);
-      console.log("Slot Price:", price);
     } else if (bookingType === "range") {
       const days = calculateDaysBetween(dateRange.start, dateRange.end);
-      console.log("Days:", days);
       const weeksCount = Math.floor(days / 7);
       const remainingDays = days % 7;
-
+  
       if (days < 7) {
         price = days * (roomDetail?.roomPricePerDay || 0);
       } else {
@@ -199,25 +201,43 @@ export default function RoomDetail() {
           weeksCount * (roomDetail?.roomPricePerWeek || 0) +
           remainingDays * (roomDetail?.roomPricePerDay || 0);
       }
-      console.log("Range Price:", price);
     }
-
+  
     const selectedServicePrice = services.reduce((sum, service) => {
-      console.log(
-        `Service: ${service.serviceName}, Price: ${service.servicePrice}, Selected: ${service.selected}`
-      );
       return service.selected ? sum + (Number(service.servicePrice) || 0) : sum;
     }, 0);
-    console.log("Total Service Price:", selectedServicePrice);
-
-    const discount = useUserPoints ? userPoints : 0;
-    console.log("Discount:", discount);
-
+  
+    let discountAmount = 0;
+    if (useUserPoints) {
+      discountAmount = Math.min(userPoints, price + selectedServicePrice); 
+    }
+  
+    const discount = discountAmount;
+    setDiscount(discount);
+  
+    // Set the total price with the discount applied
     const finalPrice = price + selectedServicePrice - discount;
-    console.log("Final Price:", finalPrice);
-
     setTotalPrice(finalPrice);
+  
+    // Update user points based on the discount
+    if (useUserPoints) {
+      const remainingPoints = userPoints - discount;
+      setUserPoints(remainingPoints);
+    } else {
+      setUserPoints(originalUserPoints);
+    }
+  
+    // Set the discount state so it can be passed to the modal
+    setDiscount(discount);
   };
+  
+  // Handle switch toggle (use points or not)
+  const handleUsePointsChange = () => {
+    setUseUserPoints(!useUserPoints);
+    calculateTotalPrice(); // Recalculate the price when the switch is toggled
+  };
+  
+
 
   useEffect(() => {
     if (roomDetail) {
@@ -272,7 +292,6 @@ export default function RoomDetail() {
     }
 
     let bookingStartDay, bookingEndDay;
-    const discount = useUserPoints ? userPoints : 0;
 
     if (bookingType === "slot") {
       if (!selectedDate) {
@@ -316,7 +335,6 @@ export default function RoomDetail() {
       discount,
       userId,
     };
-
     navigate("/payment", { state: paymentData });
   };
 
@@ -345,8 +363,6 @@ export default function RoomDetail() {
     }
 
     let bookingStartDay, bookingEndDay;
-    const discount = useUserPoints ? Math.min(userPoints, totalPrice * 0.1) : 0;
-
     if (bookingType === "slot") {
       if (!selectedDate || selectedSlots.length === 0) {
         setError("Please select a date and at least one time slot.");
@@ -489,264 +505,219 @@ export default function RoomDetail() {
           </div>
 
           <form
-            onSubmit={handleNavigateToPayment}
-            className="bg-gray-50 p-2 rounded-lg mb-6"
-          >
-            <h2 className="text-3xl font-bold mb-1 text-gray-800">
-              Book the Room
-            </h2>
+  onSubmit={handleNavigateToPayment}
+  className="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto"
+>
+  <h2 className="text-3xl font-semibold mb-4 text-gray-900">Select Booking Type</h2>
 
-            {/* Booking Type Radio Buttons */}
-            <div className="flex space-x-4 mb-6">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="slot"
-                  checked={bookingType === "slot"}
-                  onChange={handleBookingTypeChange}
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">Book by Slot</span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="range"
-                  checked={bookingType === "range"}
-                  onChange={handleBookingTypeChange}
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">Book by Date Range</span>
-              </label>
-            </div>
+  {/* Booking Type Radio Buttons */}
+  <div className="flex space-x-6 mb-8">
+    <label className="flex items-center space-x-3 cursor-pointer text-lg">
+      <input
+        type="radio"
+        value="slot"
+        checked={bookingType === "slot"}
+        onChange={handleBookingTypeChange}
+        className="text-blue-500 focus:ring-blue-500"
+      />
+      <span className="text-gray-700">Book by Slot</span>
+    </label>
+    <label className="flex items-center space-x-3 cursor-pointer text-lg">
+      <input
+        type="radio"
+        value="range"
+        checked={bookingType === "range"}
+        onChange={handleBookingTypeChange}
+        className="text-blue-500 focus:ring-blue-500"
+      />
+      <span className="text-gray-700">Book by Date Range</span>
+    </label>
+  </div>
 
-            {/* Display error message */}
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+  {/* Display error message */}
+  {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-            {/* Booking by Slot */}
-            {bookingType === "slot" && (
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-2 text-gray-800 text-center">
-                  Available Slots
-                </h3>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={handleDateSelection}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="border border-gray-300 p-2 rounded-md mb-4"
-                />
-                {availableSlots.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {availableSlots.map((slot) => (
-                      <div
-                        key={slot.slotId}
-                        className={`p-4 rounded-lg border transition-all duration-200 ease-in-out ${
-                          selectedSlots.some((s) => s.slotId === slot.slotId)
-                            ? "border-blue-600 bg-blue-50 shadow-md"
-                            : "border-gray-200 bg-white hover:bg-gray-100 shadow-sm"
-                        }`}
-                      >
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              checked={selectedSlots.some(
-                                (s) => s.slotId === slot.slotId
-                              )}
-                              onChange={() => handleSlotSelection(slot)}
-                              className="sr-only" // Hide default checkbox
-                            />
-                            <div
-                              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all duration-200 ease-in-out ${
-                                selectedSlots.some(
-                                  (s) => s.slotId === slot.slotId
-                                )
-                                  ? "bg-blue-600 border-blue-600"
-                                  : "bg-gray-200 border-gray-300"
-                              }`}
-                            >
-                              {selectedSlots.some(
-                                (s) => s.slotId === slot.slotId
-                              ) && (
-                                <svg
-                                  className="w-3 h-3 text-white"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-gray-800 font-medium">
-                            {slot.slotStartTime} - {slot.slotEndTime}
-                          </span>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">No available slots</p>
-                )}
-              </div>
-            )}
-
-            {/* Booking by Date Range */}
-            {bookingType === "range" && (
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-2 text-gray-800 text-center">
-                  Select Date Range
-                </h3>
-                <div className="flex space-x-4">
-                  <label className="block text-gray-700 w-full">
-                    Start Date:
-                    <input
-                      type="date"
-                      name="start"
-                      value={dateRange.start}
-                      onChange={handleDateChange}
-                      min={new Date().toISOString().split("T")[0]}
-                      className="border border-gray-300 p-2 rounded-md mt-1 w-full"
-                    />
-                  </label>
-                  <label className="block text-gray-700 w-full">
-                    End Date:
-                    <input
-                      type="date"
-                      name="end"
-                      value={dateRange.end}
-                      onChange={handleDateChange}
-                      min={
-                        dateRange.start ||
-                        new Date().toISOString().split("T")[0]
-                      }
-                      className="border border-gray-300 p-2 rounded-md mt-1 w-full"
-                    />
-                  </label>
-                </div>
-
-                {isRoomAvailable !== null && (
-                  <p
-                    className={`mt-4 ${
-                      isRoomAvailable ? "text-green-500" : "text-red-500"
-                    }`}
-                  >
-                    {isRoomAvailable
-                      ? "Room is available for the selected dates."
-                      : "Room is not available for the selected dates. Please choose different dates."}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Available Services Section */}
-            <div className="p-1 bg-white shadow-lg rounded-lg mb-1">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                Available Services
-              </h2>
-              {services.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {services.map((service) => (
-                    <div
-                      key={service.serviceId}
-                      onClick={() => {
-                        const updatedServices = services.map((s) =>
-                          s.serviceId === service.serviceId
-                            ? { ...s, selected: !s.selected }
-                            : s
-                        );
-                        setServices(updatedServices);
-                      }}
-                      className={`cursor-pointer border-2 rounded-md px-4 py-2 text-center transition-colors ${
-                        service.selected
-                          ? "border-blue-600 text-blue-600 bg-blue-50"
-                          : "border-gray-300 text-gray-800 bg-white"
-                      }`}
-                    >
-                      {service.serviceName} (₫
-                      {service.servicePrice.toLocaleString("vi-VN")})
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-600">No available services</p>
-              )}
-            </div>
-
-            {/* User Points Discount */}
-            <div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 ease-in-out">
-              <label className="flex items-center cursor-pointer space-x-3">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={useUserPoints}
-                    onChange={() => setUseUserPoints(!useUserPoints)}
-                    className="sr-only" // Hide default checkbox
-                  />
-                  <div
-                    className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all duration-200 ease-in-out ${
-                      useUserPoints
-                        ? "bg-blue-600 border-blue-600"
-                        : "bg-gray-200 border-gray-300"
-                    }`}
-                  >
-                    {useUserPoints && (
-                      <svg
-                        className="w-3 h-3 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </div>
-                <span className="text-gray-800 font-medium">
-                  Use {userPoints} Points for Discount
-                </span>
-              </label>
-            </div>
-
-            {/* Total Price Section */}
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-red-500 text-2xl font-bold">
-                Total: ₫{totalPrice.toLocaleString("vi-VN")}
-              </p>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={
-                (bookingType === "slot" && !selectedDate) ||
-                (bookingType === "range" &&
-                  (!dateRange.start || !dateRange.end))
-              }
-              onClick={handleOpenPaymentModal}
-              className={`w-full py-2 px-4 rounded-md transition duration-300 ${
-                (bookingType === "slot" && !selectedDate) ||
-                (bookingType === "range" &&
-                  (!dateRange.start || !dateRange.end))
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-black text-white hover:bg-gray-800"
+  {/* Booking by Slot */}
+  {bookingType === "slot" && (
+    <div className="mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date</h3>
+      <input
+        type="date"
+        value={selectedDate}
+        onChange={handleDateSelection}
+        min={new Date().toISOString().split("T")[0]}
+        className="border border-gray-300 p-3 rounded-lg w-full mb-5"
+      />
+      {availableSlots.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {availableSlots.map((slot) => (
+            <div
+              key={slot.slotId}
+              className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${
+                selectedSlots.some((s) => s.slotId === slot.slotId)
+                  ? "border-blue-500 bg-blue-50 shadow-md"
+                  : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
               }`}
             >
-              Book the Room
-            </button>
-          </form>
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedSlots.some((s) => s.slotId === slot.slotId)}
+                  onChange={() => handleSlotSelection(slot)}
+                  className="sr-only"
+                />
+                <div
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                    selectedSlots.some((s) => s.slotId === slot.slotId)
+                      ? "bg-blue-500 border-blue-500"
+                      : "bg-gray-200 border-gray-300"
+                  }`}
+                >
+                  {selectedSlots.some((s) => s.slotId === slot.slotId) && (
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-gray-700 font-medium">{slot.slotStartTime} - {slot.slotEndTime}</span>
+              </label>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 text-center">No available slots</p>
+      )}
+    </div>
+  )}
+
+  {/* Booking by Date Range */}
+  {bookingType === "range" && (
+    <div className="mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-gray-800 text-center">Select Date Range</h3>
+      <div className="flex space-x-4">
+        <label className="block text-gray-700 w-full">
+          Start Date:
+          <input
+            type="date"
+            name="start"
+            value={dateRange.start}
+            onChange={handleDateChange}
+            min={new Date().toISOString().split("T")[0]}
+            className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+          />
+        </label>
+        <label className="block text-gray-700 w-full">
+          End Date:
+          <input
+            type="date"
+            name="end"
+            value={dateRange.end}
+            onChange={handleDateChange}
+            min={dateRange.start || new Date().toISOString().split("T")[0]}
+            className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+          />
+        </label>
+      </div>
+      {isRoomAvailable !== null && (
+        <p className={`mt-4 text-center ${isRoomAvailable ? "text-green-500" : "text-red-500"}`}>
+          {isRoomAvailable
+            ? "Room is available for the selected dates."
+            : "Room is not available for the selected dates. Please choose different dates."}
+        </p>
+      )}
+    </div>
+  )}
+
+  {/* Available Services Section */}
+  <div className="p-4 bg-gray-50 shadow-md rounded-lg mb-6">
+    <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Services</h2>
+    {services.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {services.map((service) => (
+          <div
+            key={service.serviceId}
+            onClick={() => {
+              const updatedServices = services.map((s) =>
+                s.serviceId === service.serviceId ? { ...s, selected: !s.selected } : s
+              );
+              setServices(updatedServices);
+            }}
+            className={`cursor-pointer border-2 rounded-lg px-4 py-2 text-center transition-colors ${
+              service.selected
+                ? "border-blue-500 text-blue-500 bg-blue-50"
+                : "border-gray-300 text-gray-700 bg-white"
+            }`}
+          >
+            {service.serviceName} (₫{service.servicePrice.toLocaleString("vi-VN")})
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-gray-500 text-center">No available services</p>
+    )}
+  </div>
+
+ {/* User Points Discount */}
+<div className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200 ease-in-out mb-6">
+  <label className="relative inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      checked={useUserPoints}
+      onChange={() => setUseUserPoints(!useUserPoints)}
+      className="sr-only peer"
+    />
+    <div
+      className={`w-11 h-6 bg-gray-800 rounded-full peer-checked:bg-blue-500 transition-colors duration-300`}
+    >
+      <span
+        className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transform transition-transform duration-300 ${
+          useUserPoints ? "translate-x-5" : ""
+        }`}
+      ></span>
+    </div>
+  </label>
+  <span className="text-gray-800 font-medium">
+    {useUserPoints
+      ? `You have ${userPoints} points after use`
+      : `Use ${userPoints} points for discount`}
+  </span>
+</div>
+
+
+
+
+
+
+  {/* Total Price Section */}
+  <div className="flex justify-between items-center mb-8">
+    <p className="text-2xl font-semibold text-red-600">Total: ₫{totalPrice.toLocaleString("vi-VN")}</p>
+  </div>
+
+  {/* Submit Button */}
+  <button
+    type="submit"
+    disabled={
+      (bookingType === "slot" && !selectedDate) ||
+      (bookingType === "range" && (!dateRange.start || !dateRange.end))
+    }
+    onClick={handleOpenPaymentModal}
+    className={`w-full py-3 px-4 rounded-md font-semibold transition duration-300 ${
+      (bookingType === "slot" && !selectedDate) ||
+      (bookingType === "range" && (!dateRange.start || !dateRange.end))
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-blue-600 text-white hover:bg-blue-700"
+    }`}
+  >
+    Book the Room
+  </button>
+</form>
+
         </div>
       </div>
       {showPaymentModal && (
