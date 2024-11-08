@@ -310,13 +310,13 @@ export default function RoomDetail() {
     const selectedDate = e.target.value;
     setSelectedDate(selectedDate);
     fetchAvailableSlots(selectedDate);
-  
+
     // Lấy ngày và giờ hiện tại
     const now = new Date();
     const currentDate = now.toISOString().split("T")[0];
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-  
+
     // Nếu người dùng chọn ngày hôm nay, kiểm tra các slot đã chọn
     if (selectedDate === currentDate) {
       const updatedSelectedSlots = selectedSlots.filter((slot) => {
@@ -324,17 +324,17 @@ export default function RoomDetail() {
         // Giữ lại các slot mà giờ bắt đầu chưa quá giờ hiện tại
         return startHour > currentHour || (startHour === currentHour && startMinute > currentMinute);
       });
-  
+
       // Cập nhật danh sách các slot đã chọn
       setSelectedSlots(updatedSelectedSlots);
-  
+
       // Thông báo nếu có slot đã bị loại bỏ do quá giờ
       if (updatedSelectedSlots.length < selectedSlots.length) {
         console.log("Một số slot đã quá giờ và bị loại bỏ.");
       }
     }
   };
-  
+
 
 
   const handleNavigateToPayment = (e) => {
@@ -458,7 +458,7 @@ export default function RoomDetail() {
       <div className="lg:flex justify-center mb-4">
         <div className="relative w-full lg:w-2/3 mx-auto">
           {/* Main image display with a horizontal frame */}
-          <div className="relative w-full h-96 rounded-lg overflow-hidden">
+          <div className="relative w-full max-h-115 rounded-lg overflow-hidden">
             <Image
               src={room?.images[currentImageIndex]}
               alt={`${room?.roomName} - Image ${currentImageIndex + 1}`}
@@ -599,7 +599,9 @@ export default function RoomDetail() {
                   value={selectedDate}
                   onChange={handleDateSelection}
                   min={new Date().toISOString().split("T")[0]}
-                  className="border border-gray-300 p-3 rounded-lg w-full mb-5"
+                  className="border border-gray-300 p-3 rounded-lg w-full mb-5 cursor-pointer"
+                  onKeyDown={(e) => e.preventDefault()}
+                  onClick={(e) => e.target.showPicker()}
                 />
                 {availableSlots.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -610,10 +612,10 @@ export default function RoomDetail() {
                         <div
                           key={slot.slotId}
                           className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${selectedSlots.some((s) => s.slotId === slot.slotId)
-                              ? "border-blue-500 bg-blue-50 shadow-md"
-                              : slot.isExpired && selectedDate
-                                ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
-                                : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
+                            ? "border-blue-500 bg-blue-50 shadow-md"
+                            : slot.isExpired && selectedDate
+                              ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
                             }`}
                         >
                           <label className="flex items-center space-x-3 cursor-pointer">
@@ -626,8 +628,8 @@ export default function RoomDetail() {
                             />
                             <div
                               className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedSlots.some((s) => s.slotId === slot.slotId)
-                                  ? "bg-blue-500 border-blue-500"
-                                  : "bg-gray-200 border-gray-300"
+                                ? "bg-blue-500 border-blue-500"
+                                : "bg-gray-200 border-gray-300"
                                 }`}
                             >
                               {selectedSlots.some((s) => s.slotId === slot.slotId) && (
@@ -672,7 +674,9 @@ export default function RoomDetail() {
                       value={dateRange.start}
                       onChange={handleDateChange}
                       min={new Date().toISOString().split("T")[0]}
-                      className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+                      className="border border-gray-300 p-3 rounded-lg w-full mt-1 cursor-pointer"
+                      onKeyDown={(e) => e.preventDefault()}
+                      onClick={(e) => e.target.showPicker()}
                     />
                   </label>
                   <label className="block text-gray-700 w-full">
@@ -683,7 +687,9 @@ export default function RoomDetail() {
                       value={dateRange.end}
                       onChange={handleDateChange}
                       min={dateRange.start || new Date().toISOString().split("T")[0]}
-                      className="border border-gray-300 p-3 rounded-lg w-full mt-1"
+                      className="border border-gray-300 p-3 rounded-lg w-full mt-1 cursor-pointer"
+                      onKeyDown={(e) => e.preventDefault()}
+                      onClick={(e) => e.target.showPicker()}
                     />
                   </label>
                 </div>
