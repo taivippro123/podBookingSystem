@@ -170,6 +170,7 @@ const ManageBookings = () => {
         visible={isDetailsModalOpen}
         onCancel={closeDetailsModal}
         footer={null}  // Xóa footer để không hiển thị nút "Close"
+        centered
       >
         {selectedBooking && (
           <div>

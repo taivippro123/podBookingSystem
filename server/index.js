@@ -1043,6 +1043,22 @@ app.get('/manage/bookings', (req, res) => {
     });
 });
 
+// View upcoming bookings
+app.get('/manage/bookings', (req, res) => {
+    const sql = `
+        SELECT bookingId, userId, roomId, bookingStartDay, bookingEndDay, totalPrice, bookingStatus, createdAt
+        FROM Booking
+        WHERE bookingStatus = 'Upcoming'
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching bookings' });
+
+        res.json(results);
+    });
+});
+
+
 //Edit booking status
 app.put('/manage/bookings/:bookingId/status', (req, res) => {
     const { bookingId } = req.params;
@@ -1302,7 +1318,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback",
+        callback_url: "https://bce7-2405-4802-93da-3ac0-a944-5bac-d45e-f06e.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1547,7 +1563,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://bce7-2405-4802-93da-3ac0-a944-5bac-d45e-f06e.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
