@@ -461,6 +461,26 @@ app.get('/services', (req, res) => {
         res.json(results);
     });
 });
+
+
+// Fetch services not yet booked for a specific bookingId
+app.get('/services/not-booked/:bookingId', (req, res) => {
+    const { bookingId } = req.params;
+    const sql = `
+        SELECT * FROM Services 
+        WHERE serviceStatus = 'Available' 
+        AND serviceId NOT IN (
+            SELECT serviceId FROM BookingServices WHERE bookingId = ?
+        )
+    `;
+    db.query(sql, [bookingId], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Error fetching services' });
+        res.json(results);
+    });
+});
+
+
+
 //For manage
 
 // Fetch services
