@@ -6,7 +6,9 @@
     background-color: #f8f9fa;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
+    margin-top: 70px;
+    border-radius: 50px;
+    box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.8);
   }
   
   /* Phong cách tiêu đề */
@@ -133,5 +135,12 @@
     background-color: red !important;
     color: white;
   }
+
+  /* Lớp CSS cho ngày hôm nay */
+.Today {
+  background-color: #ffeb3b; /* Màu nền vàng sáng cho ngày hôm nay */
+  font-weight: bold;
+}
+
   
   

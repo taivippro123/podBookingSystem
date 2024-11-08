@@ -31,9 +31,12 @@ const MyCalendar = ({ events }) => {
         initialView="dayGridMonth"
         events={events}
         eventClick={handleEventClick}
+        buttonText={{
+          today: 'Today' // Chỉnh sửa nút "Today" thành "Today" với chữ T viết hoa
+        }}
         // Chỉ định ngày hôm nay
         dayCellClassNames={(date) => {
-          return date.date === today ? styles.today : ''; // Nếu ngày là hôm nay, thêm lớp today
+          return date.date === today ? styles.Today : ''; // Nếu ngày là hôm nay, thêm lớp Today
         }}
       />
 

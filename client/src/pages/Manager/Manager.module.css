@@ -35,7 +35,9 @@ body {
     transition: transform 0.3s ease;
     /* Thêm hiệu ứng chuyển động */
     width: 300px;
-    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.6);
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
 }
 
 .manager-hidden {
@@ -109,7 +111,7 @@ body {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.8);
     /* Thêm bóng đổ cho header */
 }
 
@@ -139,6 +141,7 @@ h1 {
     /* Khoảng cách dưới tiêu đề */
     text-align: center;
     /* Căn giữa cho tất cả các h1 */
+    font-weight: bolder;
 }
 
 .logoutContainer {
@@ -264,7 +267,7 @@ h1 {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
     /* Thêm bóng đổ cho header */
     
 }
