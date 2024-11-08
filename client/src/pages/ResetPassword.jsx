@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [passwordError, setPasswordError] = useState(""); // State for password error message
   const navigate = useNavigate();
 
   const handleSendOtp = async () => {
@@ -22,6 +23,13 @@ export default function ResetPassword() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    // Check if the password meets the length requirement
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+      return;
+    }
+    setPasswordError(""); // Clear error if the password is valid
+
     try {
       await axios.post("http://localhost:5000/change-password", {
         email,
@@ -120,6 +128,10 @@ export default function ResetPassword() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
+                  {/* Error message for password */}
+                  {passwordError && (
+                    <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                  )}
                 </div>
               </>
             )}
