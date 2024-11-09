@@ -20,7 +20,8 @@ body {
     top: 0; /* Đưa lên trên cùng */
     left: 0; /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10; /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ cho header */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Thêm bóng đổ cho header */
+    
 }
 
 .Admin-nav {
@@ -38,6 +39,9 @@ body {
     height: 100%; /* Đảm bảo cột kéo dài hết trang */
     z-index: 20; /* Đặt z-index cao hơn header */
     transition: transform 0.3s ease; /* Thêm hiệu ứng chuyển động */
+    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.6);
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
     
 }
 
@@ -137,6 +141,7 @@ h1 {
     transition: background-color 0.3s ease; /* Thêm hiệu ứng cho link */
     width: 100%; /* Chiếm toàn bộ chiều rộng cho link */
     margin-bottom: 10px; /* Hiệu ứng cho các link */
+    border-radius: 30px;
 }
 
 .Admin-navLink:hover {

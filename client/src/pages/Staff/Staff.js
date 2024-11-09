@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { FaCalendarAlt, FaClipboardList, FaBars, FaHome } from 'react-icons/fa';
 import { CalendarIcon } from '@heroicons/react/24/outline'; // Cập nhật import cho Heroicons v2
 import styles from './Staff.module.css';
 import LogoutButton from '../../components/LogoutButton/LogoutButton';
+import MyCalendar from '../MyCalendar/MyCalendar';
+import axios from 'axios';
+import dayjs from 'dayjs';
 
 const Staff = () => {
     const [isMenuVisible, setIsMenuVisible] = useState(true);
     const [activeLink, setActiveLink] = useState('/staff'); // State cho link đang hoạt động
+    const location = useLocation(); // Lấy URL hiện tại
+    const [events, setEvents] = useState([]); // Dữ liệu sự kiện cho lịch
+    // Hàm định dạng giá tiền
 
     const toggleMenu = () => {
         setIsMenuVisible(prevState => !prevState);
@@ -16,6 +22,53 @@ const Staff = () => {
     const handleLinkClick = (link) => {
         setActiveLink(link); // Cập nhật link đang hoạt động
     };
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                // Fetch data from API
+                const response = await axios.get('http://localhost:5000/manage/bookings');
+    
+                // Hàm formatPrice giúp định dạng giá theo kiểu Việt Nam
+                const formatPrice = (price) => {
+                    // Đảm bảo price là một số và sau đó định dạng theo kiểu Việt Nam
+                    return Number(price).toLocaleString('vi-VN');  // Định dạng theo kiểu Việt Nam
+                };
+    
+                // Chỉ lấy các sự kiện với StartDay, không cần EndDay nữa
+                const bookings = response.data.map(booking => ({
+                    id: booking.bookingId,
+                    title: `Booking ID: ${booking.bookingId}`,
+                    start: dayjs(booking.bookingStartDay).format('YYYY-MM-DD'),
+                    description: (
+                        <div className={styles.description}>
+                            <h1 className={styles.upcomingBookings}>Upcoming Bookings</h1>
+                            <p><strong>User ID:</strong> {booking.userId}</p>
+                            <p><strong>Room ID:</strong> {booking.roomId}</p>
+                            <p><strong>Start Day:</strong> {dayjs(booking.bookingStartDay).format('YYYY-MM-DD')}</p>
+                            <p><strong>End Day:</strong> {dayjs(booking.bookingEndDay).format('YYYY-MM-DD')}</p>
+                            <p><strong>Total Price:</strong> {formatPrice(booking.totalPrice)} VND</p>
+                            <p><strong>Created At:</strong> {dayjs(booking.createdAt).format('YYYY-MM-DD')}</p>
+                        </div>
+                    ),
+                    className: styles.startEvent // Green background for start day
+                }));
+    
+                // Sắp xếp các sự kiện theo StartDay
+                bookings.sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+                // Loại bỏ sự kiện trùng lặp (nếu có) dựa trên bookingId
+                const uniqueEvents = Array.from(new Map(bookings.map(item => [item.id, item])).values());
+    
+                // Set the events state with unique events
+                setEvents(uniqueEvents);
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+            }
+        };
+    
+        fetchBookings();
+    }, []); // Empty dependency array to run once on mount
 
     return (
         <div className={styles.container}>
@@ -66,6 +119,7 @@ const Staff = () => {
             </button>
             <div className={`${styles.mainContent} ${isMenuVisible ? '' : styles.menuHidden}`}>
                 <Outlet />
+                {location.pathname === '/staff' && <MyCalendar events={events} />}
             </div>
         </div>
     );

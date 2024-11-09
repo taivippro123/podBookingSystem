@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import Modal from 'react-modal';
-import dayjs from 'dayjs'; // Nếu bạn dùng dayjs để xử lý ngày
+import dayjs from 'dayjs';
 import styles from './MyCalendar.module.css';
 
 Modal.setAppElement('#root');
@@ -12,8 +12,7 @@ const MyCalendar = ({ events }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Lấy ngày hiện tại
-  const today = dayjs().format('YYYY-MM-DD'); // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
+  const today = dayjs().format('YYYY-MM-DD');
 
   const handleEventClick = (info) => {
     setSelectedEvent({
@@ -32,12 +31,16 @@ const MyCalendar = ({ events }) => {
         events={events}
         eventClick={handleEventClick}
         buttonText={{
-          today: 'Today' // Chỉnh sửa nút "Today" thành "Today" với chữ T viết hoa
+          today: 'Today'
         }}
-        // Chỉ định ngày hôm nay
         dayCellClassNames={(date) => {
-          return date.date === today ? styles.Today : ''; // Nếu ngày là hôm nay, thêm lớp Today
+          return date.date === today ? styles.Today : '';
         }}
+        eventContent={(eventInfo) => (
+          <div className={styles.eventContainer}>
+            {eventInfo.event.title}
+          </div>
+        )}
       />
 
       <Modal

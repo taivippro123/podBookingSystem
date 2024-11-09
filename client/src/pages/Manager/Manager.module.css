@@ -230,6 +230,7 @@ h1 {
     /* Chiếm toàn bộ chiều rộng cho link */
     margin-bottom: 10px;
     /* Khoảng cách giữa các nút */
+    border-radius: 30px;
 }
 
 .manager-navLink:hover {

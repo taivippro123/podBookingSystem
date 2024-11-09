@@ -55,7 +55,7 @@
   .modalTitle {
     font-size: 20px;
     font-weight: bold;
-    color: #007bff;
+    
     margin-bottom: 15px;
     text-align: center;
   }
@@ -106,15 +106,16 @@
     width: 48%;
   }
   
-  .saveButton {
-    background-color: #007bff;
-    color: #fff;
-    transition: background-color 0.2s ease;
+  
+
+  .eventContainer {
+    
+    border-radius: 8px; /* Bo tròn sự kiện */
+    padding: 5px;
+    cursor: pointer; /* Con trỏ dạng pointer khi di chuột vào sự kiện */
   }
   
-  .saveButton:hover {
-    background-color: #0056b3;
-  }
+ 
   
   .cancelButton {
     background-color: #6c757d;
@@ -126,15 +127,7 @@
     background-color: #5a6268;
   }
 
-  .startEvent {
-    background-color: green !important;
-    color: white;
-  }
-  
-  .endEvent {
-    background-color: red !important;
-    color: white;
-  }
+
 
   /* Lớp CSS cho ngày hôm nay */
 .Today {
