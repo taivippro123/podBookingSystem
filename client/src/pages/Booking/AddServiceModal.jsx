@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Checkbox, List, message } from "antd";
+import { Modal, Button, Checkbox, List, Card, Divider, Typography, message, Avatar, Empty, notification } from "antd";
+import { ShoppingCartOutlined, CloseOutlined, InfoCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import PaymentAddService from './PaymentAddService';
+import PaymentAddService from "./PaymentAddService";
+
+const { Text, Title } = Typography;
 
 function AddServiceModal({ visible, onCancel, selectedBooking }) {
   const [services, setServices] = useState([]);
@@ -11,9 +14,14 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
   const [paymentData, setPaymentData] = useState(null);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchAvailableServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/services");
+        if (!selectedBooking?.bookingId) {
+          message.error("Invalid booking ID.");
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:5000/services/not-booked/${selectedBooking.bookingId}`);
         setServices(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -22,21 +30,15 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
     };
 
     if (visible) {
-      fetchServices();
+      fetchAvailableServices();
       setSelectedServiceIds([]);
       setTotalPrice(0);
     }
-  }, [visible]);
-
-  // Get booked service IDs based on the selected booking
-  const bookedServiceIds = selectedBooking?.services?.map(service => service.serviceId) || [];
-
-  // Filter to get only available services that are not booked
-  const availableServices = services.filter(service => !bookedServiceIds.includes(service.serviceId));
+  }, [visible, selectedBooking]);
 
   const handleServiceChange = (checkedValues) => {
-    const newTotalPrice = availableServices
-      .filter(service => checkedValues.includes(service.serviceId))
+    const newTotalPrice = services
+      .filter((service) => checkedValues.includes(service.serviceId))
       .reduce((sum, service) => sum + parseInt(service.servicePrice, 10), 0);
 
     setSelectedServiceIds(checkedValues);
@@ -48,91 +50,176 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
       message.warning("Please select at least one service.");
       return;
     }
-  
-    // Debugging: Log the selected booking to verify its structure
-    console.log("Selected Booking:", selectedBooking);
-  
-    // Check if userId is valid
-    if (selectedBooking.userId == null) {
-      message.error("Invalid user. Please ensure that the user is correctly selected.");
+
+    if (!selectedBooking?.userId) {
+      message.error("Invalid user. Please ensure the user is correctly selected.");
       return;
     }
-  
-    const selectedServices = availableServices
-      .filter(service => selectedServiceIds.includes(service.serviceId))
-      .map(service => ({
+
+    const selectedServices = services
+      .filter((service) => selectedServiceIds.includes(service.serviceId))
+      .map((service) => ({
         serviceId: service.serviceId,
         serviceName: service.serviceName,
         servicePrice: service.servicePrice,
       }));
-  
+
     const newPaymentData = {
       bookingId: selectedBooking.bookingId,
       userId: selectedBooking.userId,
-      selectedServices: selectedServices,
-      totalPrice: totalPrice,
-      methodId: null // Initially set to null, will be selected in payment modal
+      selectedServices,
+      totalPrice,
+      methodId: null,
     };
-  
+
     setPaymentData(newPaymentData);
     setPaymentModalVisible(true);
     onCancel();
   };
-  
 
   const handlePaymentModalClose = () => {
     setPaymentModalVisible(false);
   };
 
+  const handleCancel = () => {
+    onCancel();
+    notification.warning({
+      message: "Action Canceled",
+      description: "You have canceled the service selection process.",
+      placement: "topRight",
+      duration: 3,
+    });
+  };
+
   return (
     <>
       <Modal
-        title="Add Services"
+        title={
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "24px",
+              fontWeight: "bold",
+              color: "#1890ff",
+            }}
+          >
+            WorkZone Service
+          </div>
+        }
         visible={visible}
-        onCancel={onCancel}
+        onCancel={handleCancel}
         footer={[
-          <Button key="back" onClick={onCancel}>
+          <Button
+            key="reset"
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              setSelectedServiceIds([]);
+              notification.info({
+                message: "Selection Reset",
+                description: "All selected services have been cleared.",
+                placement: "topRight",
+                duration: 3,
+              });
+            }}
+            danger
+          >
+            Reset Selection
+          </Button>,
+          <Button
+            key="cancel"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
-            Add Services
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              handleOk();
+              notification.success({
+                message: "Services Added",
+                description: "The selected services have been successfully added.",
+                placement: "topRight",
+                duration: 3,
+              });
+            }}
+            disabled={services.length === 0}
+          >
+            <ShoppingCartOutlined /> Add Services
           </Button>,
         ]}
+        closeIcon={<CloseOutlined />}
+        bodyStyle={{ padding: "20px" }}
       >
-        <div>
-          <h3>Select Services to Add</h3>
+        <Title level={4} style={{ color: "#1890ff", marginBottom: "10px" }}>
+          <ShoppingCartOutlined /> Available Services
+        </Title>
+        <Divider />
+
+        {services.length === 0 ? (
+          <Empty description="No available services" />
+        ) : (
           <List
             bordered
-            dataSource={availableServices}
-            renderItem={service => (
-              <List.Item>
-                <Checkbox 
-                  value={service.serviceId} 
+            dataSource={services}
+            renderItem={(service) => (
+              <Card
+                key={service.serviceId}
+                style={{
+                  marginBottom: "10px",
+                  borderRadius: "8px",
+                  backgroundColor: selectedServiceIds.includes(service.serviceId) ? "#e6f7ff" : "#fff",
+                }}
+                hoverable
+                onClick={() => {
+                  const newSelectedIds = selectedServiceIds.includes(service.serviceId)
+                    ? selectedServiceIds.filter((id) => id !== service.serviceId)
+                    : [...selectedServiceIds, service.serviceId];
+                  handleServiceChange(newSelectedIds);
+                }}
+              >
+                <Card.Meta
+                  title={
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      {service.serviceName}
+                      <InfoCircleOutlined style={{ marginLeft: "8px", color: "#1890ff" }} />
+                    </div>
+                  }
+                  description={<Text strong>{Number(service.servicePrice).toLocaleString("vi-VN")} VND</Text>}
+                />
+                <Checkbox
                   checked={selectedServiceIds.includes(service.serviceId)}
                   onChange={(e) => {
-                    const value = service.serviceId;
-                    const newSelectedIds = e.target.checked
-                      ? [...selectedServiceIds, value]
-                      : selectedServiceIds.filter(id => id !== value);
+                    const checked = e.target.checked;
+                    const newSelectedIds = checked
+                      ? [...selectedServiceIds, service.serviceId]
+                      : selectedServiceIds.filter((id) => id !== service.serviceId);
                     handleServiceChange(newSelectedIds);
                   }}
+                  style={{ marginTop: "10px" }}
                 >
-                  {service.serviceName} - {service.servicePrice.toLocaleString("vi-VN")} VND
+                  Select
                 </Checkbox>
-              </List.Item>
+              </Card>
             )}
+            style={{ maxHeight: "300px", overflowY: "auto" }}
           />
-          <div style={{ marginTop: 16 }}>
-            <strong>Total Price: {totalPrice.toLocaleString("vi-VN")} VND</strong>
+        )}
+
+        {services.length > 0 && (
+          <div style={{ marginTop: "20px", textAlign: "right" }}>
+            <Text strong>Total Price: </Text>
+            <Text style={{ fontSize: "18px", color: "#ff4d4f" }}>{totalPrice.toLocaleString("vi-VN")} VND</Text>
           </div>
-        </div>
+        )}
       </Modal>
 
-      {/* Payment Modal */}
-      <PaymentAddService 
-        paymentData={paymentData} 
-        closeModal={handlePaymentModalClose} 
-        visible={isPaymentModalVisible} 
+      <PaymentAddService
+        paymentData={paymentData}
+        closeModal={handlePaymentModalClose}
+        visible={isPaymentModalVisible}
       />
     </>
   );

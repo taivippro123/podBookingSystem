@@ -1819,22 +1819,39 @@ app.post('/feedback', (req, res) => {
             return res.status(500).json({ error: 'Error creating feedback' });
         }
 
-        // Update the user's points, ensuring the total does not exceed 10,000
-        const updatePointsSql = `
-            UPDATE User
-            SET userPoint = LEAST(userPoint + ?, 10000)  
-            --------------------- MAXIMUM at 10,000 points to make sure the the points not bigger than the totalPrice leading to the negative payment
-            WHERE userId = ?
-        `;
+        // Get current user points
+        const checkPointsSql = `SELECT userPoint FROM User WHERE userId = ?`;
 
-        db.query(updatePointsSql, [pointsToAdd, userId], (err, updateResult) => {
+        db.query(checkPointsSql, [userId], (err, pointResult) => {
             if (err) {
-                return res.status(500).json({ error: 'Error updating user points' });
+                return res.status(500).json({ error: 'Error retrieving user points' });
             }
-            res.status(201).json({ message: 'Sent feedback successfully and awarded points', feedbackId: results.insertId });
+
+            const currentPoints = pointResult[0].userPoint;
+            if (currentPoints < 10000) {
+                // Calculate the new points, ensuring it does not exceed 10,000
+                const newPoints = Math.min(currentPoints + pointsToAdd, 10000);
+
+                // Update user points
+                const updatePointsSql = `
+                    UPDATE User
+                    SET userPoint = ?
+                    WHERE userId = ?
+                `;
+
+                db.query(updatePointsSql, [newPoints, userId], (err, updateResult) => {
+                    if (err) {
+                        return res.status(500).json({ error: 'Error updating user points' });
+                    }
+                    res.status(201).json({ message: 'Sent feedback successfully and awarded points', feedbackId: results.insertId });
+                });
+            } else {
+                res.status(201).json({ message: 'Sent feedback successfully but points not added as userPoint is at maximum' });
+            }
         });
     });
 });
+
 
 
 

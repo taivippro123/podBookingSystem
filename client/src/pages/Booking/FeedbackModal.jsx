@@ -1,119 +1,163 @@
-
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Rate, Input, message } from "antd";
+import { Modal, Form, Rate, Input, notification, Button } from "antd";
 import axios from "axios";
 
-const FeedbackModal = ({
-  visible,
-  onOk,
-  onCancel,
-  selectedBooking,
-  userId,
-}) => {
-  const [feedback, setFeedback] = useState("");
-  const [rating, setRating] = useState(0);
+const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
+  // Reset form when modal is closed
   useEffect(() => {
     if (!visible) {
-      setFeedback("");
-      setRating(0);
+      form.resetFields();
+      setFeedbackSubmitted(false); // Reset feedback status when modal closes
     }
-  }, [visible]);
+  }, [visible, form]);
 
+  // Function to extract bookingId from selectedBooking
   const extractBookingId = (booking) => {
-    // Prioritize bookingId over id
-    if (booking.bookingId) return booking.bookingId;
-    if (booking.id) return booking.id;
-    if (booking._id) return booking._id;
-    return null; // Return null if no ID is found
+    if (booking?.bookingId) return booking.bookingId;
+    if (booking?.id) return booking.id;
+    if (booking?._id) return booking._id;
+    return null;
   };
-  
-  console.log("Selected Booking:", selectedBooking);
+
+  // Function to submit feedback
   const handleSubmit = async () => {
-    if (rating === 0) {
-      message.warning("Please provide a rating.");
-      return;
-    }
-  
-    if (!feedback.trim()) {
-      message.warning("Please enter your feedback.");
-      return;
-    }
-  
-    if (!selectedBooking) {
-      message.error("No booking selected.");
-      return;
-    }
-  
-    const bookingId = extractBookingId(selectedBooking);
-  
-    if (!bookingId) {
-      console.error("Booking ID not found in selectedBooking:", selectedBooking);
-      message.error("Invalid booking ID. Please check the booking details.");
-      return;
-    }
-  
-    console.log("Submitting Feedback with the following data:");
-    console.log("bookingId:", bookingId);
-    console.log("userId:", userId);
-    console.log("rating:", rating);
-    console.log("feedback:", feedback);
-  
     try {
+      const values = await form.validateFields();
+      const { rating, feedback } = values;
+
+      if (!userId) {
+        notification.error({
+          message: "Missing User ID",
+          description: "User ID not found. Please log in again.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+
+      const bookingId = extractBookingId(selectedBooking);
+
+      if (!bookingId) {
+        notification.error({
+          message: "Invalid Booking ID",
+          description: "Booking ID not found. Please check again.",
+          placement: "topRight",
+          duration: 3,
+        });
+        return;
+      }
+
       const payload = {
         bookingId,
         userId,
         rating,
         feedback,
       };
-  
-      console.log("Payload being sent to the API:", payload);
-  
+
+      setLoading(true);
+
       const response = await axios.post("http://localhost:5000/feedback", payload);
-  
-      console.log("API Response:", response);
-  
+
       if (response.status === 201) {
-        message.success("Feedback submitted successfully!");
+        notification.success({
+          message: "Feedback Submitted Successfully",
+          description: "Thank you for your feedback. You have earned reward points!",
+          placement: "topRight",
+          duration: 3,
+        });
+        setFeedbackSubmitted(true); // Update state to indicate feedback submission
         onOk();
-        setFeedback("");
-        setRating(0);
       } else {
-        message.error("Failed to submit feedback.");
+        notification.error({
+          message: "Feedback Submission Failed",
+          description: "Unable to submit feedback. Please try again.",
+          placement: "topRight",
+          duration: 3,
+        });
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      if (error.response && error.response.data && error.response.data.error) {
-        message.error(`Failed to submit feedback: ${error.response.data.error}`);
+      if (error.response?.data?.error) {
+        notification.error({
+          message: "Error Submitting Feedback",
+          description: `Failed to submit feedback: ${error.response.data.error}`,
+          placement: "topRight",
+          duration: 3,
+        });
+      } else if (error.message) {
+        notification.error({
+          message: "Connection Error",
+          description: "Unable to connect to the server. Please check your network connection.",
+          placement: "topRight",
+          duration: 3,
+        });
       } else {
-        message.error("Failed to submit feedback. Please try again later.");
+        notification.error({
+          message: "Unknown Error",
+          description: "An unknown error occurred. Please try again later.",
+          placement: "topRight",
+          duration: 3,
+        });
       }
+    } finally {
+      setLoading(false);
     }
   };
-  
+
+  // Handle cancel action
+  const handleCancel = () => {
+    onCancel();
+    notification.warning({
+      message: "Feedback Submission Cancelled",
+      description: "You have cancelled feedback submission.",
+      placement: "topRight",
+      duration: 3,
+    });
+  };
 
   return (
     <Modal
-      title="Feedback"
+      title="Submit Feedback"
       visible={visible}
-      onOk={handleSubmit}
-      onCancel={onCancel}
-      okText="Submit"
+      onCancel={handleCancel}
+      footer={[
+        <Button key="cancel" danger onClick={handleCancel}>
+          Cancel
+        </Button>,
+        feedbackSubmitted ? (
+          <Button key="view" type="default" onClick={() => notification.info({
+            message: "View Feedback",
+            description: "You have already submitted feedback.",
+            placement: "topRight",
+            duration: 3,
+          })}>
+            View Feedback
+          </Button>
+        ) : (
+          <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
+            Submit
+          </Button>
+        ),
+      ]}
     >
-      <Form layout="vertical">
-        <Form.Item label="Your Rating" required>
-          <Rate
-            value={rating}
-            onChange={(value) => setRating(value)}
-          />
+      <Form form={form} layout="vertical">
+        <Form.Item
+          label="Your Rating"
+          name="rating"
+          rules={[{ required: true, message: "Please select a rating." }]}
+        >
+          <Rate />
         </Form.Item>
-        <Form.Item label="Your Feedback" required>
-          <Input.TextArea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            rows={4}
-            placeholder="Enter your feedback here..."
-          />
+        <Form.Item
+          label="Your Feedback"
+          name="feedback"
+          rules={[{ required: true, message: "Please enter your feedback." }]}
+        >
+          <Input.TextArea rows={4} placeholder="Enter your feedback..." />
         </Form.Item>
       </Form>
     </Modal>
