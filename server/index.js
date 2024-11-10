@@ -1773,6 +1773,40 @@ app.get('/viewbookings/:userId', async (req, res) => {
     }
 });
 
+//Cancel booking
+app.put('/cancelBooking', async (req, res) => {
+    const { bookingId } = req.body;
+
+    if (!bookingId) {
+        return res.status(400).json({
+            success: false,
+            message: 'Booking ID is required.'
+        });
+    }
+
+    try {
+        const query = 'UPDATE Booking SET bookingStatus = ? WHERE bookingId = ?';
+        const [result] = await db.promise().query(query, ["Cancelled", bookingId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Booking not found.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Booking successfully cancelled.'
+        });
+    } catch (err) {
+        console.error('Error updating booking status:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error cancelling booking.'
+        });
+    }
+});
 
 
 //Get payment method
