@@ -175,6 +175,12 @@ h2 {
     background-color: grey; /* Darker shade on hover */
 }
 
+.pagination .active {
+    background-color: #909294; /* Màu nền cho trang hiện tại */
+    color: white; /* Màu chữ khi trang hiện tại */
+    font-weight: bold; /* Làm chữ đậm */
+}
+
 /* Disabled button style */
 .pagination button:disabled {
     background-color: #ccc; /* Grey background for disabled button */

@@ -177,3 +177,9 @@
   text-align: center; /* Căn giữa văn bản */
   color: #666; /* Màu văn bản */
 }
+
+.pagination .active {
+  background-color: #909294; /* Màu nền cho trang hiện tại */
+  color: white; /* Màu chữ khi trang hiện tại */
+  font-weight: bold; /* Làm chữ đậm */
+}

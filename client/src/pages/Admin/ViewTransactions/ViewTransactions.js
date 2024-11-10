@@ -133,6 +133,7 @@ function ViewTransactions() {
                 <p><strong>Type:</strong> <span>{selectedTransaction.transactionType}</span></p>
                 <p><strong>Amount:</strong> <span>{formatCurrency(selectedTransaction.transactionAmount)}</span></p> {/* Hiển thị Amount ở đây */}
                 <p><strong>Status:</strong> <span>{selectedTransaction.transactionStatus}</span></p>
+                <p><strong>Event Date:</strong> <span>{new Date(selectedTransaction.eventDate).toLocaleString()}</span></p> {/* Hiển thị cả ngày và giờ */}
               </div>
             </div>
           </div>

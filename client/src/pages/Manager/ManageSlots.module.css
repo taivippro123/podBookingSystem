@@ -105,8 +105,8 @@ body{
 
 .addSlotButton {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 10px;
+    right: 10px;
     background-color: #007bff; /* Màu nền của nút */
     border-radius: 50%;
     width: 60px;

@@ -20,12 +20,12 @@
 }
 
 .activePage {
-    background-color: #e0e0e0; /* Màu nền khi nút đang hoạt động */
-    color: #000; /* Chữ đen */
-    border: 1px solid #bbb; /* Viền khi đang hoạt động */
+    background-color: #909294; /* Màu nền cho trang hiện tại */
+    color: white; /* Màu chữ khi trang hiện tại */
+    font-weight: bold; /* Làm chữ đậm */
 }
 
 .pageButton:hover {
-    background-color: #f0f0f0; /* Màu nền khi hover */
+    background-color: #5a5b5c; /* Màu nền khi hover */
     color: #000; /* Chữ đen khi hover */
 }

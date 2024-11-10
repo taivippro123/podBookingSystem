@@ -83,6 +83,13 @@
     transition: background-color 0.3s ease; /* Smooth background color transition */
 }
 
+.pagination .active {
+    background-color: #909294; /* Màu nền cho trang hiện tại */
+    color: white; /* Màu chữ khi trang hiện tại */
+    font-weight: bold; /* Làm chữ đậm */
+}
+
+
 /* Pagination button hover effect */
 .pagination button:hover {
     background-color: grey; /* Darker shade on hover */

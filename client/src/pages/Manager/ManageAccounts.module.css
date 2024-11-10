@@ -67,8 +67,8 @@
 
 .addAccountButton {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 5px;
+    right: 5px;
     background-color: #007bff; /* Màu nền của nút */
     border-radius: 50%;
     width: 60px;
@@ -296,6 +296,12 @@
     right: 20px; /* Đặt khoảng cách từ phải */
     width: 300px; /* Đặt chiều rộng cho thanh tìm kiếm */
     z-index: 10; /* Giúp nó nằm trên các thành phần khác */
+}
+
+.pagination .active {
+    background-color: #909294; /* Màu nền cho trang hiện tại */
+    color: white; /* Màu chữ khi trang hiện tại */
+    font-weight: bold; /* Làm chữ đậm */
 }
 
 

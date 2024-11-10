@@ -31,7 +31,7 @@ const MyCalendar = ({ events }) => {
         events={events}
         eventClick={handleEventClick}
         buttonText={{
-          today: 'Today'
+          today: 'This Month'
         }}
         dayCellClassNames={(date) => {
           return date.date === today ? styles.Today : '';
@@ -56,7 +56,7 @@ const MyCalendar = ({ events }) => {
           <strong>Description:</strong>
           <p>{selectedEvent?.description}</p>
         </div>
-        <button className={styles.cancelButton} onClick={() => setIsModalOpen(false)}>Cancel</button>
+        <button className={styles.cancelButton} onClick={() => setIsModalOpen(false)}>Close</button>
       </Modal>
     </div>
   );
