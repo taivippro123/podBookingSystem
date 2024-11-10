@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Layout, Input, Button, Typography, Card, message, Avatar } from 'antd';
+import { Layout, Input, Button, Typography, Card, message, Avatar, notification } from 'antd';
 import { UserOutlined, MailOutlined, PhoneOutlined, LockOutlined, HomeOutlined, DollarOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Content } = Layout;
 
 export default function Profile({ onProfileUpdate }) {
-  const { userId: userIdParam } = useParams();
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     userName: '',
     userEmail: '',
     userPhone: '',
-    userPassword: '',  // Ensure userPassword has a default value
+    userPassword: '',
     userPoint: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -24,20 +23,34 @@ export default function Profile({ onProfileUpdate }) {
   const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const userId = userIdParam || localStorage.getItem("userId");
+  // Lấy `userId` từ `localStorage`
+  const userId = localStorage.getItem("userId");
+  const openNotification = (type, message, description) => {
+    notification[type]({
+      message,
+      description,
+      placement: 'topRight',
+      duration: 3,
+    });
+  };
+
+
 
   useEffect(() => {
+    // Nếu không có `userId` trong `localStorage`, điều hướng về trang login
     if (!userId) {
       navigate("/login");
       return;
     }
 
+    // Gọi API để lấy thông tin hồ sơ người dùng
     axios.get(`http://localhost:5000/profile/${userId}`)
       .then(response => {
         setProfile(response.data);
       })
       .catch(error => {
         console.error('There was an error fetching the profile!', error);
+        message.error('Failed to fetch profile.');
       });
   }, [userId, navigate]);
 
@@ -45,15 +58,9 @@ export default function Profile({ onProfileUpdate }) {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
 
-    if (name === 'userEmail') {
-      setEmailError('');
-    }
-    if (name === 'userPhone') {
-      setPhoneError('');
-    }
-    if (name === 'userPassword') {
-      setPasswordError('');
-    }
+    if (name === 'userEmail') setEmailError('');
+    if (name === 'userPhone') setPhoneError('');
+    if (name === 'userPassword') setPasswordError('');
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -75,21 +82,25 @@ export default function Profile({ onProfileUpdate }) {
 
     if (profile.userPassword && profile.userPassword.length < 6) {
       setPasswordError('Password must be at least 6 characters long');
+      openNotification('error', 'Validation Error', 'Password must be at least 6 characters long');
       return;
     }
 
     if (profile.userPassword !== confirmPassword) {
       setError('Passwords do not match');
+      openNotification('error', 'Validation Error', 'Passwords do not match');
       return;
     }
 
     if (!validateEmail(profile.userEmail)) {
       setEmailError('Invalid email format');
+      openNotification('error', 'Validation Error', 'Invalid email format');
       return;
     }
 
     if (!validatePhoneNumber(profile.userPhone)) {
       setPhoneError('Phone number must start with 0 or +84 and contain 10 to 11 digits');
+      openNotification('error', 'Validation Error', 'Invalid phone number format');
       return;
     }
 
@@ -98,9 +109,11 @@ export default function Profile({ onProfileUpdate }) {
     setPhoneError('');
     setPasswordError('');
 
+    // Gọi API cập nhật hồ sơ người dùng
     axios.put(`http://localhost:5000/profile/${userId}`, profile)
       .then(() => {
         message.success('Profile updated successfully!');
+        openNotification('success', 'Success', 'Your profile has been updated successfully!');
         localStorage.setItem('user', JSON.stringify({ ...profile, userId }));
 
         if (onProfileUpdate) {
@@ -112,12 +125,13 @@ export default function Profile({ onProfileUpdate }) {
       })
       .catch(() => {
         message.error('Failed to update profile.');
+        openNotification('error', 'Update Failed', 'There was an error while updating your profile.');
       });
   };
 
-  return (
-    <Layout style={{ minHeight: "100vh", background: '#f7f7f7' }}>
 
+  return (
+    <Layout style={{ minHeight: "100vh", background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <Content style={{ padding: "24px 16px 0", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Card
           style={{
@@ -126,7 +140,6 @@ export default function Profile({ onProfileUpdate }) {
             borderRadius: 16,
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             background: '#ffffff',
-            border: '2px solid #8c8c8c', // Viền màu tối hơn
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -161,46 +174,58 @@ export default function Profile({ onProfileUpdate }) {
                 Save Changes
               </Button>
               <Button
-            type="default"
-            onClick={() => {
-              setIsEditing(false);
-              setConfirmPassword('');
-              setError('');
-              setEmailError('');
-              setPhoneError('');
-              setPasswordError('');
-            }}
-            style={{ marginTop: '8px', height: '40px', borderRadius: '20px', color: '#595959', border: '2px solid #595959' }}
-          >
-            Cancel Edit
-          </Button>
+                type="default"
+                onClick={() => {
+                  setIsEditing(false);
+                  setConfirmPassword('');
+                  setError('');
+                  setEmailError('');
+                  setPhoneError('');
+                  setPasswordError('');
+                  openNotification('warning', 'Edit Canceled', 'You have canceled editing your profile.');
+                }}
+                style={{
+                  marginTop: '8px',
+                  height: '40px',
+                  borderRadius: '20px',
+                  color: '#595959',
+                  border: '2px solid #595959',
+                }}
+              >
+                Cancel Edit
+              </Button>
+
+
             </form>
           )}
           <Button
-            icon={<HomeOutlined />}
-            onClick={() => navigate('/')}
-            style={{
-              marginTop: '16px',
-              width: '100%',
-              height: '40px',
-              borderRadius: '20px',
-              border: '2px solid #595959', // Viền đậm hơn
-              color: '#595959',
-              transition: 'all 0.3s ease', // Hiệu ứng chuyển màu mượt
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.backgroundColor = '#d9d9d9';
-              e.currentTarget.style.color = '#ffffff';
-              e.currentTarget.style.border = '2px solid #404040';
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = '#595959';
-              e.currentTarget.style.border = '2px solid #595959';
-            }}
-          >
-            Back To Home
-          </Button>
+  icon={<HomeOutlined />}
+  onClick={() => {
+    openNotification('info', 'Navigating Home', 'You are being redirected to the home page.');
+    navigate('/');
+  }}
+  style={{
+    marginTop: '16px',
+    width: '100%',
+    height: '40px',
+    borderRadius: '20px',
+    border: '2px solid #595959',
+    color: '#595959',
+    transition: 'all 0.3s ease',
+  }}
+  onMouseDown={(e) => {
+    e.currentTarget.style.backgroundColor = '#d9d9d9';
+    e.currentTarget.style.color = '#ffffff';
+    e.currentTarget.style.border = '2px solid #404040';
+  }}
+  onMouseUp={(e) => {
+    e.currentTarget.style.backgroundColor = 'transparent';
+    e.currentTarget.style.color = '#595959';
+    e.currentTarget.style.border = '2px solid #595959';
+  }}
+>
+  Back To Home
+</Button>
 
         </Card>
       </Content>

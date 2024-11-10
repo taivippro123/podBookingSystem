@@ -15,7 +15,8 @@ import {
   Col,
   message,
   Modal,
-  notification 
+  notification,
+  Empty
 } from "antd";
 import {
   LoadingOutlined,
@@ -61,31 +62,31 @@ function ViewBookings() {
 
   const { Meta } = Card;
   // Hàm hiển thị thông báo thành công
-const showSuccessNotification = (message, description) => {
-  notification.success({
-    message,
-    description,
-    duration: 3,
-  });
-};
+  const showSuccessNotification = (message, description) => {
+    notification.success({
+      message,
+      description,
+      duration: 3,
+    });
+  };
 
-// Hàm hiển thị thông báo lỗi
-const showErrorNotification = (message, description) => {
-  notification.error({
-    message,
-    description,
-    duration: 3,
-  });
-};
+  // Hàm hiển thị thông báo lỗi
+  const showErrorNotification = (message, description) => {
+    notification.error({
+      message,
+      description,
+      duration: 3,
+    });
+  };
 
-// Hàm hiển thị thông báo cảnh báo
-const showWarningNotification = (message, description) => {
-  notification.warning({
-    message,
-    description,
-    duration: 3,
-  });
-};
+  // Hàm hiển thị thông báo cảnh báo
+  const showWarningNotification = (message, description) => {
+    notification.warning({
+      message,
+      description,
+      duration: 3,
+    });
+  };
 
 
   // Kiểm tra xem booking có feedback hay không
@@ -109,8 +110,11 @@ const showWarningNotification = (message, description) => {
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/viewbookings/${userId}`);
+  
+      // Lấy dữ liệu lịch sử và sắp tới
       const { history, upcoming } = response.data;
   
+      // Kiểm tra nếu không có dữ liệu, trả về mảng rỗng
       const transformBookings = async (bookings) => {
         return await Promise.all(
           bookings.map(async (booking) => {
@@ -120,16 +124,25 @@ const showWarningNotification = (message, description) => {
         );
       };
   
-      setHistoryBookings(await transformBookings(history));
-      setUpcomingBookings(await transformBookings(upcoming));
+      setHistoryBookings(await transformBookings(history || []));
+      setUpcomingBookings(await transformBookings(upcoming || []));
     } catch (error) {
-      showErrorNotification("Error", "Failed to fetch bookings. Please try again later.");
-      setError(error.message || "Unknown error occurred.");
+      // Kiểm tra nếu lỗi là 404
+      if (error.response && error.response.status === 404) {
+        showWarningNotification("No Data", "No bookings found for this user.");
+        // Đặt bookings là mảng rỗng
+        setHistoryBookings([]);
+        setUpcomingBookings([]);
+      } else {
+        showErrorNotification("Error", "Failed to fetch bookings. Please try again later.");
+        setError(error.message || "Unknown error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   };
   
+
   // Hàm cập nhật trạng thái feedback của booking
   const updateBookingFeedbackStatus = async (bookingId) => {
     try {
@@ -183,13 +196,13 @@ const showWarningNotification = (message, description) => {
   const handleAddServiceSuccess = async (addedServiceIds) => {
     setIsAddServiceModalVisible(false);
     setSelectedBooking(null);
-  
+
     const successfulAdds = await Promise.all(
       addedServiceIds.map(async (serviceId) => {
         return await addServiceToBooking(selectedBooking.id, serviceId);
       })
     );
-  
+
     if (successfulAdds.every((success) => success)) {
       showSuccessNotification("Success", "Services added to booking successfully.");
       const updatedUpcomingBookings = upcomingBookings.map((booking) => {
@@ -200,13 +213,13 @@ const showWarningNotification = (message, description) => {
         }
         return booking;
       });
-  
+
       setUpcomingBookings(updatedUpcomingBookings);
     } else {
       showErrorNotification("Error", "Failed to add some services.");
     }
   };
-  
+
 
   //hiện thị refundModal
   const showRefundModal = () => {
@@ -217,7 +230,7 @@ const showWarningNotification = (message, description) => {
     setIsRefundModalVisible(false);
   };
 
- 
+
 
   // Function to cancel a booking
   const cancelBooking = async (bookingId) => {
@@ -225,7 +238,7 @@ const showWarningNotification = (message, description) => {
       showErrorNotification("Error", "Booking ID and User ID are required.");
       return;
     }
-  
+
     try {
       const response = await axios.put(
         "http://localhost:5000/cancelBooking",
@@ -236,7 +249,7 @@ const showWarningNotification = (message, description) => {
           },
         }
       );
-  
+
       if (response.data.success) {
         showSuccessNotification("Success", "Booking successfully cancelled.");
         await fetchBookings();
@@ -248,7 +261,7 @@ const showWarningNotification = (message, description) => {
       showErrorNotification("Error", error.response?.data?.message || "Error cancelling booking.");
     }
   };
-  
+
 
 
   const confirmCancelBooking = (booking) => {
@@ -274,7 +287,7 @@ const showWarningNotification = (message, description) => {
       },
     });
   };
-  
+
 
 
 
@@ -485,6 +498,14 @@ const showWarningNotification = (message, description) => {
   );
 
   const renderBookings = (bookings) => {
+    if (bookings.length === 0) {
+      return (
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          <Empty description="No bookings found." />
+        </div>
+      );
+    }
+  
     return (
       <Row gutter={16} style={{ display: "flex", alignItems: "stretch" }}>
         {bookings.map((booking, index) => (
@@ -496,6 +517,7 @@ const showWarningNotification = (message, description) => {
       </Row>
     );
   };
+  
 
   if (loading) {
     return (
@@ -534,34 +556,40 @@ const showWarningNotification = (message, description) => {
                 onChange={(key) => setActiveTabKey(key)}
                 defaultActiveKey="1"
               >
-                <Tabs.TabPane tab="Upcoming Bookings" key="1">
-                  {upcomingBookings.length > 0 ? (
-                    renderBookings(upcomingBookingsPaginated)
-                  ) : (
-                    <p style={{ textAlign: 'center', color: '#999' }}>No upcoming bookings found.</p>
-                  )}
-                  <Pagination
-                    current={upcomingCurrentPage}
-                    pageSize={itemsPerPage}
-                    total={upcomingBookings.length}
-                    onChange={(page) => setUpcomingCurrentPage(page)}
-                    style={{ marginTop: 16, textAlign: "center" }}
-                  />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Booking History" key="2">
-                  {historyBookings.length > 0 ? (
-                    renderBookings(historyBookingsPaginated)
-                  ) : (
-                    <p style={{ textAlign: 'center', color: '#999' }}>No booking history found.</p>
-                  )}
-                  <Pagination
-                    current={historyCurrentPage}
-                    pageSize={itemsPerPage}
-                    total={historyBookings.length}
-                    onChange={(page) => setHistoryCurrentPage(page)}
-                    style={{ marginTop: 16, textAlign: "center" }}
-                  />
-                </Tabs.TabPane>
+               <Tabs.TabPane tab="Upcoming Bookings" key="1">
+  {upcomingBookings.length > 0 ? (
+    renderBookings(upcomingBookingsPaginated)
+  ) : (
+    <Empty description="No upcoming bookings found." style={{ padding: "20px" }} />
+  )}
+  {upcomingBookings.length > 0 && (
+    <Pagination
+      current={upcomingCurrentPage}
+      pageSize={itemsPerPage}
+      total={upcomingBookings.length}
+      onChange={(page) => setUpcomingCurrentPage(page)}
+      style={{ marginTop: 16, textAlign: "center" }}
+    />
+  )}
+</Tabs.TabPane>
+
+<Tabs.TabPane tab="Booking History" key="2">
+  {historyBookings.length > 0 ? (
+    renderBookings(historyBookingsPaginated)
+  ) : (
+    <Empty description="No booking history found." style={{ padding: "20px" }} />
+  )}
+  {historyBookings.length > 0 && (
+    <Pagination
+      current={historyCurrentPage}
+      pageSize={itemsPerPage}
+      total={historyBookings.length}
+      onChange={(page) => setHistoryCurrentPage(page)}
+      style={{ marginTop: 16, textAlign: "center" }}
+    />
+  )}
+</Tabs.TabPane>
+
               </Tabs>
 
             </div>
