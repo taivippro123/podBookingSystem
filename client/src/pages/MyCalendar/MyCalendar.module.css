@@ -95,7 +95,7 @@
     margin-top: 20px;
   }
   
-  .saveButton,
+  
   .cancelButton {
     padding: 10px 15px;
     font-size: 14px;
@@ -103,7 +103,13 @@
     border-radius: 5px;
     cursor: pointer;
     border: none;
-    width: 48%;
+    width: 100%;
+    background-color: #2051f0;
+    color: #ddd;
+  }
+
+  .cancelButton:hover {
+    background-color: #15359c;
   }
   
   
@@ -117,15 +123,9 @@
   
  
   
-  .cancelButton {
-    background-color: #6c757d;
-    color: #fff;
-    transition: background-color 0.2s ease;
-  }
+
   
-  .cancelButton:hover {
-    background-color: #5a6268;
-  }
+
 
 
 
