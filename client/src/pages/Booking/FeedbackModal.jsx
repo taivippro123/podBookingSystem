@@ -6,14 +6,61 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [existingFeedback, setExistingFeedback] = useState(null);
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
+  
 
-  // Reset form when modal is closed
+
   useEffect(() => {
-    if (!visible) {
-      form.resetFields();
-      setFeedbackSubmitted(false); // Reset feedback status when modal closes
+    const fetchExistingFeedback = async () => {
+      if (!selectedBooking || !visible) return;
+  
+      const bookingId = extractBookingId(selectedBooking);
+      if (!bookingId) {
+        console.log("Booking ID not found.");
+        return;
+      }
+  
+      console.log("Fetching feedback for booking ID:", bookingId);
+  
+      setLoadingFeedback(true);
+      try {
+        // Gọi API để kiểm tra feedback
+        const response = await axios.get(`http://localhost:5000/feedback/booking/${bookingId}`);
+        console.log("Feedback API response:", response.data);
+  
+        if (response.data.length > 0) {
+          // Nếu có dữ liệu feedback, lưu vào state và ghi log
+          console.log("Existing feedback found:", response.data[0]);
+          setExistingFeedback(response.data[0]);
+        } else {
+          // Nếu không có feedback, đặt lại state
+          console.log("No existing feedback found.");
+          setExistingFeedback(null);
+        }
+      } catch (error) {
+        console.error("Error fetching existing feedback:", error);
+        setExistingFeedback(null);
+      } finally {
+        setLoadingFeedback(false);
+      }
+    };
+  
+    if (visible) {
+      fetchExistingFeedback();
     }
-  }, [visible, form]);
+  }, [selectedBooking, visible]);
+
+  //Thêm log để kiểm tra giá trị của existingFeedback khi modal mở ra:
+  
+  useEffect(() => {
+    if (visible) {
+      console.log("Modal is open. Existing feedback state:", existingFeedback);
+    }
+  }, [visible, existingFeedback]);
+  
+  
+  
 
   // Function to extract bookingId from selectedBooking
   const extractBookingId = (booking) => {
@@ -119,31 +166,32 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
     });
   };
 
-  return (
-    <Modal
-      title="Submit Feedback"
-      visible={visible}
-      onCancel={handleCancel}
-      footer={[
-        <Button key="cancel" danger onClick={handleCancel}>
-          Cancel
-        </Button>,
-        feedbackSubmitted ? (
-          <Button key="view" type="default" onClick={() => notification.info({
-            message: "View Feedback",
-            description: "You have already submitted feedback.",
-            placement: "topRight",
-            duration: 3,
-          })}>
-            View Feedback
-          </Button>
-        ) : (
-          <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
-            Submit
-          </Button>
-        ),
-      ]}
-    >
+return (
+  <Modal
+    title={existingFeedback ? "View Feedback" : "Submit Feedback"}
+    visible={visible}
+    onCancel={handleCancel}
+    footer={[
+      <Button key="cancel" danger onClick={handleCancel}>
+        Close
+      </Button>,
+      !existingFeedback && (
+        <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
+          Submit
+        </Button>
+      ),
+    ]}
+  >
+    {loadingFeedback ? (
+      <p>Loading feedback...</p>
+    ) : existingFeedback ? (
+      <div>
+        <h3>Rating:</h3>
+        <Rate disabled value={existingFeedback.rating} />
+        <h3>Feedback:</h3>
+        <p>{existingFeedback.feedback}</p>
+      </div>
+    ) : (
       <Form form={form} layout="vertical">
         <Form.Item
           label="Your Rating"
@@ -160,8 +208,10 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
           <Input.TextArea rows={4} placeholder="Enter your feedback..." />
         </Form.Item>
       </Form>
-    </Modal>
-  );
+    )}
+  </Modal>
+);
+
 };
 
 export default FeedbackModal;

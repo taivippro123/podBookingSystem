@@ -1322,7 +1322,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback",
+        callback_url: "https://8e06-113-161-52-4.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1567,7 +1567,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://63bc-2402-800-63af-f7a4-380d-9e37-191b-9e9e.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://8e06-113-161-52-4.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
