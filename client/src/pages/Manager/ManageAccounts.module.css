@@ -289,11 +289,13 @@
 
 .search {
     display: flex;
-    justify-content: flex-end;  /* Căn thanh tìm kiếm sang bên phải */
-    align-items: left;  /* Căn giữa thanh tìm kiếm theo chiều dọc */
-    width: 20%;  /* Đảm bảo chiếm hết chiều rộng của container */
-    
-    margin-bottom:-50px;
-    margin-left: 1100px;
+    justify-content: flex-end; /* Căn thanh tìm kiếm sang bên phải */
+    align-items: center; /* Căn giữa thanh tìm kiếm theo chiều dọc */
+    position: absolute;
+    top: 80px; /* Đặt khoảng cách từ trên */
+    right: 20px; /* Đặt khoảng cách từ phải */
+    width: 300px; /* Đặt chiều rộng cho thanh tìm kiếm */
+    z-index: 10; /* Giúp nó nằm trên các thành phần khác */
 }
+
 

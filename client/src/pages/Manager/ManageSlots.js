@@ -11,8 +11,8 @@ function ManageSlots() {
     const [isAddingSlot, setIsAddingSlot] = useState(false);
     const [currentSlot, setCurrentSlot] = useState(null);
     const [formData, setFormData] = useState({
-        slotStartTime: '00:00:00',
-        slotEndTime: '00:00:00',
+        slotStartTime: '00:00',
+        slotEndTime: '00:00',
         slotStatus: 'Available'
     });
     const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
@@ -39,23 +39,24 @@ function ManageSlots() {
     const handleEditClick = (slot) => {
         setCurrentSlot(slot);
         setFormData({
-            slotStartTime: slot.slotStartTime,
-            slotEndTime: slot.slotEndTime,
+            slotStartTime: slot.slotStartTime.slice(0, 5), // Chỉ lấy hh:mm
+            slotEndTime: slot.slotEndTime.slice(0, 5),     // Chỉ lấy hh:mm
             slotStatus: slot.slotStatus.charAt(0).toUpperCase() + slot.slotStatus.slice(1)
         });
         setIsEditMode(true);
         setHoveredSlotId(slot.slotId);
     };
+    
 
     const handleAddSlot = async () => {
         const lastSlot = slots[slots.length - 1];
-        const newStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
-        const newEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
+        const newStartTime = new Date(`1970-01-01T${formData.slotStartTime.slice(0, 5)}`);
+        const newEndTime = new Date(`1970-01-01T${formData.slotEndTime.slice(0, 5)}`);
         const oneHourInMillis = 60 * 60 * 1000; // 1 giờ tính bằng mili giây
     
         // Kiểm tra nếu thời gian nhập vào là số âm hoặc vượt quá 24 giờ
-        const startHours = parseInt(formData.slotStartTime.split(":")[0], 10);
-        const endHours = parseInt(formData.slotEndTime.split(":")[0], 10);
+        const startHours = parseInt(formData.slotStartTime.slice(0, 5).split(":")[0], 10);
+        const endHours = parseInt(formData.slotEndTime.slice(0, 5).split(":")[0], 10);
         if (startHours < 0 || endHours < 0 || startHours >= 24 || endHours >= 24) {
             notification.error({ message: 'Error', description: 'Start time and end time must be between 00:00 and 24:00!' });
             setIsPopupVisible(true);
@@ -64,9 +65,9 @@ function ManageSlots() {
     
         // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
         if (lastSlot) {
-            const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime}`);
+            const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime.slice(0, 5)}`);
             if (newStartTime < new Date(lastEndTime.getTime() + oneHourInMillis)) {
-                notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime})!` });
+                notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime.slice(0, 5)})!` });
                 setIsPopupVisible(true);
                 return;
             }
@@ -81,8 +82,8 @@ function ManageSlots() {
     
         // Kiểm tra trùng lặp hoặc chồng chéo với các slot hiện tại
         const isDuplicate = slots.some(slot => {
-            const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
-            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
+            const existingStart = new Date(`1970-01-01T${slot.slotStartTime.slice(0, 5)}`);
+            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime.slice(0, 5)}`);
     
             return (
                 (newStartTime >= existingStart && newStartTime < existingEnd) ||
@@ -118,13 +119,13 @@ function ManageSlots() {
     const handleUpdateSlot = async () => {
         if (!currentSlot) return;
     
-        const updatedStartTime = new Date(`1970-01-01T${formData.slotStartTime}`);
-        const updatedEndTime = new Date(`1970-01-01T${formData.slotEndTime}`);
+        const updatedStartTime = new Date(`1970-01-01T${formData.slotStartTime.slice(0, 5)}`);
+        const updatedEndTime = new Date(`1970-01-01T${formData.slotEndTime.slice(0, 5)}`);
         const oneHourInMillis = 60 * 60 * 1000; // 1 giờ tính bằng mili giây
     
         // Kiểm tra nếu thời gian nhập vào là số âm hoặc vượt quá 24 giờ
-        const startHours = parseInt(formData.slotStartTime.split(":")[0], 10);
-        const endHours = parseInt(formData.slotEndTime.split(":")[0], 10);
+        const startHours = parseInt(formData.slotStartTime.slice(0, 5).split(":")[0], 10);
+        const endHours = parseInt(formData.slotEndTime.slice(0, 5).split(":")[0], 10);
         if (startHours < 0 || endHours < 0 || startHours >= 24 || endHours >= 24) {
             notification.error({ message: 'Error', description: 'Start time and end time must be between 00:00 and 24:00!' });
             return;
@@ -140,8 +141,8 @@ function ManageSlots() {
         const isDuplicate = slots.some(slot => {
             if (slot.slotId === currentSlot.slotId) return false;
     
-            const existingStart = new Date(`1970-01-01T${slot.slotStartTime}`);
-            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime}`);
+            const existingStart = new Date(`1970-01-01T${slot.slotStartTime.slice(0, 5)}`);
+            const existingEnd = new Date(`1970-01-01T${slot.slotEndTime.slice(0, 5)}`);
     
             return (
                 (updatedStartTime >= existingStart && updatedStartTime < existingEnd) ||
@@ -172,6 +173,8 @@ function ManageSlots() {
             console.error('Error updating slot:', error);
         }
     };
+    
+    
     
 
 
@@ -210,7 +213,7 @@ function ManageSlots() {
 
     const resetForm = () => {
         setFormData({
-            slotStartTime: '00:00:00',
+            slotStartTime: '00:00',
             slotEndTime: '00:00:00',
             slotStatus: 'Available'
         });
@@ -226,7 +229,7 @@ function ManageSlots() {
     return (
         <div className={styles.manageSlotsContainer}>
             <h1 className={styles.headerTitle}>MANAGE SLOTS</h1>
-
+    
             <table className={styles.slotTable}>
                 <thead>
                     <tr>
@@ -241,8 +244,8 @@ function ManageSlots() {
                     {slots.map(slot => (
                         <tr key={slot.slotId} className={hoveredSlotId === slot.slotId ? styles.hoveredRow : ''}>
                             <td>{slot.slotId}</td>
-                            <td>{slot.slotStartTime}</td>
-                            <td>{slot.slotEndTime}</td>
+                            <td>{slot.slotStartTime.slice(0, 5)}</td> {/* Hiển thị chỉ hh:mm */}
+                            <td>{slot.slotEndTime.slice(0, 5)}</td> {/* Hiển thị chỉ hh:mm */}
                             <td>{slot.slotStatus}</td>
                             <td className={styles.actionIcons}>
                                 <FaEdit
@@ -262,9 +265,7 @@ function ManageSlots() {
                     ))}
                 </tbody>
             </table>
-
-
-
+    
             {isAddingSlot && (
                 <div className={styles.manageSlotsPopup}>
                     <div className={styles.manageSlotsPopupContent}>
@@ -309,7 +310,7 @@ function ManageSlots() {
                     </div>
                 </div>
             )}
-
+    
             {isEditMode && (
                 <div className={styles.manageSlotsPopup}>
                     <div className={styles.manageSlotsPopupContent}>
@@ -354,26 +355,23 @@ function ManageSlots() {
                     </div>
                 </div>
             )}
-
+    
             {isDeleteConfirmVisible && (
                 <div className={styles.deleteConfirmPopup}>
                     <div className={styles.modalContent}>
-                    <h2>Are you sure you want to delete this slot?</h2>
-                    
+                        <h2>Are you sure you want to delete this slot?</h2>
                         <button onClick={confirmDelete} className={styles.confirmDeleteButton}>Yes</button>
                         <button onClick={cancelDelete} className={styles.cancelDeleteButton}>No</button>
                     </div>
                 </div>
-
             )}
-
-
-           
+    
             <div className={styles.addSlotButton} onClick={() => setIsAddingSlot(true)}>
-            <FaPlus size={30} color="white" />
+                <FaPlus size={30} color="white" />
             </div>
         </div>
     );
+    
 }
 
 export default ManageSlots;
