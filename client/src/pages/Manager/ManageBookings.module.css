@@ -88,6 +88,7 @@
   background-color: #415c77; /* Màu nền cho tiêu đề bảng */
   color: white; /* Màu chữ trắng */
   font-weight: bold; /* Đậm chữ */
+  cursor: pointer;
 }
 
 .table tr:nth-child(even) {

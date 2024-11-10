@@ -35,6 +35,9 @@ body {
     transition: transform 0.3s ease;
     /* Thêm hiệu ứng chuyển động */
     width: 300px;
+    box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.6);
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
 }
 
 .manager-hidden {
@@ -108,7 +111,7 @@ body {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.8);
     /* Thêm bóng đổ cho header */
 }
 
@@ -138,6 +141,7 @@ h1 {
     /* Khoảng cách dưới tiêu đề */
     text-align: center;
     /* Căn giữa cho tất cả các h1 */
+    font-weight: bolder;
 }
 
 .logoutContainer {
@@ -226,6 +230,7 @@ h1 {
     /* Chiếm toàn bộ chiều rộng cho link */
     margin-bottom: 10px;
     /* Khoảng cách giữa các nút */
+    border-radius: 30px;
 }
 
 .manager-navLink:hover {
@@ -263,8 +268,9 @@ h1 {
     /* Đảm bảo không có khoảng cách ở bên trái */
     z-index: 10;
     /* Đặt z-index thấp hơn navigation */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
     /* Thêm bóng đổ cho header */
+    
 }
 
 .hidden {
@@ -275,4 +281,33 @@ h1 {
 .visible {
     transform: translateX(0);
     /* Hiện cột */
+}
+
+/* Cập nhật phần description */
+.description p {
+    margin-bottom: 10px; /* Khoảng cách giữa các dòng thông tin */
+    font-size: 14px; /* Điều chỉnh kích thước chữ nếu cần */
+}
+
+.description strong {
+    font-weight: bold;
+    color: #2c3e50; /* Màu sắc cho tiêu đề thông tin */
+}
+
+/* Mở rộng cửa sổ Modal */
+.modal {
+    width: 80%; /* Mở rộng chiều rộng modal */
+    max-width: 800px; /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto; /* Căn giữa modal */
+    padding: 20px; /* Padding bên trong modal */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng cho modal */
+}
+
+/* Định nghĩa màu đỏ cho chữ Upcoming Bookings */
+.upcomingBookings {
+    color: red; /* Màu chữ đỏ */
+    font-size: larger;
+    font-weight: bolder;
 }

@@ -11,6 +11,7 @@ const ManageBookings = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [bookingsPerPage] = useState(10);
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -89,6 +90,21 @@ const ManageBookings = () => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' VND';
   };
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+        direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+
+    const sortedData = [...filteredBookings].sort((a, b) => {
+        if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+        if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+    setFilteredBookings(sortedData);
+};
+
   return (
     <div className={styles.container}>
       <h1 className={styles.headerTitle}>MANAGE BOOKINGS</h1>
@@ -105,7 +121,9 @@ const ManageBookings = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Booking ID</th>
+          <th onClick={() => handleSort('bookingId')}>
+                                    Booking ID {sortConfig.key === 'bookingId' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                                </th>
             <th>User ID</th>
             <th>Room ID</th>
             <th>Status</th>
@@ -170,6 +188,7 @@ const ManageBookings = () => {
         visible={isDetailsModalOpen}
         onCancel={closeDetailsModal}
         footer={null}  // Xóa footer để không hiển thị nút "Close"
+        centered
       >
         {selectedBooking && (
           <div>
