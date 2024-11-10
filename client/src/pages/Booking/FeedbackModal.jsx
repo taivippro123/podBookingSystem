@@ -75,7 +75,7 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
     try {
       const values = await form.validateFields();
       const { rating, feedback } = values;
-
+  
       if (!userId) {
         notification.error({
           message: "Missing User ID",
@@ -85,9 +85,9 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
         });
         return;
       }
-
+  
       const bookingId = extractBookingId(selectedBooking);
-
+  
       if (!bookingId) {
         notification.error({
           message: "Invalid Booking ID",
@@ -97,18 +97,18 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
         });
         return;
       }
-
+  
       const payload = {
         bookingId,
         userId,
         rating,
         feedback,
       };
-
+  
       setLoading(true);
-
+  
       const response = await axios.post("http://localhost:5000/feedback", payload);
-
+  
       if (response.status === 201) {
         notification.success({
           message: "Feedback Submitted Successfully",
@@ -116,7 +116,10 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
           placement: "topRight",
           duration: 3,
         });
-        setFeedbackSubmitted(true); // Update state to indicate feedback submission
+  
+        // Cập nhật state existingFeedback sau khi gửi feedback thành công
+        setExistingFeedback({ rating, feedback });
+        setFeedbackSubmitted(true);
         onOk();
       } else {
         notification.error({
@@ -154,34 +157,46 @@ const FeedbackModal = ({ visible, onOk, onCancel, selectedBooking, userId }) => 
       setLoading(false);
     }
   };
+  
 
-  // Handle cancel action accc
-  const handleCancel = () => {
-    onCancel();
+ // Handle cancel action
+const handleCancel = () => {
+  if (existingFeedback) {
+    notification.info({
+      message: "Feedback Viewed",
+      description: "You have closed the feedback view.",
+      placement: "topRight",
+      duration: 3,
+    });
+  } else {
     notification.warning({
       message: "Feedback Submission Cancelled",
       description: "You have cancelled feedback submission.",
       placement: "topRight",
       duration: 3,
     });
-  };
+  }
+  onCancel();
+};
+
 
 return (
   <Modal
-    title={existingFeedback ? "View Feedback" : "Submit Feedback"}
-    visible={visible}
-    onCancel={handleCancel}
-    footer={[
-      <Button key="cancel" danger onClick={handleCancel}>
-        Cancel
-      </Button>,
-      !existingFeedback && (
-        <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
-          Submit
-        </Button>
-      ),
-    ]}
-  >
+  title={existingFeedback ? "View Feedback" : "Submit Feedback"}
+  visible={visible}
+  onCancel={handleCancel}
+  footer={[
+    <Button key="close" type="primary" onClick={handleCancel}>
+      {existingFeedback ? "Close" : "Cancel"}
+    </Button>,
+    !existingFeedback && (
+      <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
+        Submit
+      </Button>
+    ),
+  ]}
+>
+
     {loadingFeedback ? (
       <p>Loading feedback...</p>
     ) : existingFeedback ? (
