@@ -29,6 +29,7 @@ body {
     box-shadow: 6px 0px 20px rgba(0, 0, 0, 0.6);
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
+    width: 300px;
 }
 
 .menuToggle {

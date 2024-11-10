@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FaCalendarAlt, FaClipboardList, FaBars, FaHome } from 'react-icons/fa';
+import { FaCalendarAlt, FaClipboardList, FaBars } from 'react-icons/fa';
 import { CalendarIcon } from '@heroicons/react/24/outline'; // Cập nhật import cho Heroicons v2
 import styles from './Staff.module.css';
 import LogoutButton from '../../components/LogoutButton/LogoutButton';
@@ -31,44 +31,52 @@ const Staff = () => {
     
                 // Hàm formatPrice giúp định dạng giá theo kiểu Việt Nam
                 const formatPrice = (price) => {
-                    // Đảm bảo price là một số và sau đó định dạng theo kiểu Việt Nam
                     return Number(price).toLocaleString('vi-VN');  // Định dạng theo kiểu Việt Nam
                 };
     
-                // Chỉ lấy các sự kiện với StartDay, không cần EndDay nữa
-                const bookings = response.data.map(booking => ({
-                    id: booking.bookingId,
-                    title: `Booking ID: ${booking.bookingId}`,
-                    start: dayjs(booking.bookingStartDay).format('YYYY-MM-DD'),
-                    description: (
-                        <div className={styles.description}>
-                            <h1 className={styles.upcomingBookings}>Upcoming Bookings</h1>
-                            <p><strong>User ID:</strong> {booking.userId}</p>
-                            <p><strong>Room ID:</strong> {booking.roomId}</p>
-                            <p><strong>Start Day:</strong> {dayjs(booking.bookingStartDay).format('YYYY-MM-DD')}</p>
-                            <p><strong>End Day:</strong> {dayjs(booking.bookingEndDay).format('YYYY-MM-DD')}</p>
-                            <p><strong>Total Price:</strong> {formatPrice(booking.totalPrice)} VND</p>
-                            <p><strong>Created At:</strong> {dayjs(booking.createdAt).format('YYYY-MM-DD')}</p>
-                        </div>
-                    ),
-                    className: styles.startEvent // Green background for start day
-                }));
+                // Tạo mảng các sự kiện từ StartDay đến EndDay
+                const bookings = response.data.flatMap(booking => {
+                    const startDay = dayjs(booking.bookingStartDay);
+                    const endDay = dayjs(booking.bookingEndDay);
+                    const eventDays = [];
     
-                // Sắp xếp các sự kiện theo StartDay
+                    // Lặp qua các ngày từ StartDay đến EndDay
+                    for (let day = startDay; day.isBefore(endDay) || day.isSame(endDay, 'day'); day = day.add(1, 'day')) {
+                        eventDays.push({
+                            id: `${booking.bookingId}-${day.format('YYYY-MM-DD')}`, // Tạo id duy nhất cho từng ngày của booking
+                            title: `Booking ID: ${booking.bookingId}`,
+                            start: day.format('YYYY-MM-DD'),
+                            description: (
+                                <div className={styles.description}>
+                                    <h1 className={styles.upcomingBookings}>Upcoming Bookings</h1>
+                                    <p><strong>User ID:</strong> {booking.userId}</p>
+                                    <p><strong>Room ID:</strong> {booking.roomId}</p>
+                                    <p><strong>Start Day:</strong> {dayjs(booking.bookingStartDay).format('YYYY-MM-DD')}</p>
+                                    <p><strong>End Day:</strong> {dayjs(booking.bookingEndDay).format('YYYY-MM-DD')}</p>
+                                    <p><strong>Total Price:</strong> {formatPrice(booking.totalPrice)} VND</p>
+                                    <p><strong>Created At:</strong> {dayjs(booking.createdAt).format('YYYY-MM-DD')}</p>
+                                </div>
+                            ),
+                            className: styles.startEvent // Đặt màu nền cho các ngày trong khoảng
+                        });
+                    }
+    
+                    return eventDays;
+                });
+    
+                // Sắp xếp các sự kiện theo ngày bắt đầu
                 bookings.sort((a, b) => new Date(a.start) - new Date(b.start));
     
-                // Loại bỏ sự kiện trùng lặp (nếu có) dựa trên bookingId
-                const uniqueEvents = Array.from(new Map(bookings.map(item => [item.id, item])).values());
-    
-                // Set the events state with unique events
-                setEvents(uniqueEvents);
+                // Cập nhật state events với danh sách sự kiện
+                setEvents(bookings);
             } catch (error) {
                 console.error('Error fetching bookings:', error);
             }
         };
     
         fetchBookings();
-    }, []); // Empty dependency array to run once on mount
+    }, []); // Chạy một lần khi component được mount
+    
 
     return (
         <div className={styles.container}>
