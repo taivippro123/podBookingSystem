@@ -134,21 +134,22 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
             Cancel
           </Button>,
           <Button
-            key="submit"
-            type="primary"
-            onClick={() => {
-              handleOk();
-              notification.success({
-                message: "Services Added",
-                description: "The selected services have been successfully added.",
-                placement: "topRight",
-                duration: 3,
-              });
-            }}
-            disabled={services.length === 0}
-          >
-            <ShoppingCartOutlined /> Add Services
-          </Button>,
+          key="submit"
+          type="primary"
+          onClick={() => {
+            handleOk();
+            notification.success({
+              message: "Services Added",
+              description: "The selected services have been successfully added.",
+              placement: "topRight",
+              duration: 3,
+            });
+          }}
+          disabled={selectedServiceIds.length === 0} // Nút sẽ bị disable nếu chưa chọn dịch vụ nào
+        >
+          <ShoppingCartOutlined /> Add Services
+        </Button>
+        
         ]}
         closeIcon={<CloseOutlined />}
         bodyStyle={{ padding: "20px" }}
