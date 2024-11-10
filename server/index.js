@@ -1775,38 +1775,59 @@ app.get('/viewbookings/:userId', async (req, res) => {
 
 //Cancel booking
 app.put('/cancelBooking', async (req, res) => {
-    const { bookingId } = req.body;
+    const { bookingId, userId } = req.body;
 
-    if (!bookingId) {
+    if (!bookingId || !userId) {
         return res.status(400).json({
             success: false,
-            message: 'Booking ID is required.'
+            message: 'Booking ID and User ID are required.'
         });
     }
 
     try {
-        const query = 'UPDATE Booking SET bookingStatus = ? WHERE bookingId = ?';
-        const [result] = await db.promise().query(query, ["Cancelled", bookingId]);
+        // Step 1: Update booking status
+        const updateQuery = 'UPDATE Booking SET bookingStatus = ? WHERE bookingId = ?';
+        const [updateResult] = await db.promise().query(updateQuery, ["Cancelled", bookingId]);
 
-        if (result.affectedRows === 0) {
+        if (updateResult.affectedRows === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Booking not found.'
             });
         }
 
+        // Step 2: Insert into Transaction table
+        const transactionQuery = `
+            INSERT INTO Transaction (bookingId, userId, eventDescription, transactionType, transactionAmount, transactionStatus)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        const eventDescription = "Booking cancelled";
+        const transactionType = "Cancellation";
+        const transactionAmount = 0; // Assuming no amount for cancellation
+        const transactionStatus = "Completed";
+
+        await db.promise().query(transactionQuery, [
+            bookingId,
+            userId,
+            eventDescription,
+            transactionType,
+            transactionAmount,
+            transactionStatus
+        ]);
+
         res.json({
             success: true,
-            message: 'Booking successfully cancelled.'
+            message: 'Booking successfully cancelled and transaction recorded.'
         });
     } catch (err) {
-        console.error('Error updating booking status:', err);
+        console.error('Error cancelling booking or inserting transaction:', err);
         res.status(500).json({
             success: false,
-            message: 'Error cancelling booking.'
+            message: 'Error processing request.'
         });
     }
 });
+
 
 
 //Get payment method
