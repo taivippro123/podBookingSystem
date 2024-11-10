@@ -14,6 +14,8 @@ import {
   Row,
   Col,
   message,
+  Modal,
+  notification 
 } from "antd";
 import {
   LoadingOutlined,
@@ -27,6 +29,8 @@ import {
 import { Header } from "antd/es/layout/layout";
 import AddServiceModal from "../pages/Booking/AddServiceModal";
 import FeedbackModal from "../pages/Booking/FeedbackModal";
+import RefundModal from "../pages/Booking/RefundModal";
+
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 
@@ -41,17 +45,48 @@ function ViewBookings() {
   const [collapsed, setCollapsed] = useState(false);
   const [isAddServiceModalVisible, setIsAddServiceModalVisible] = useState(false);
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false);
+  const [isRefundModalVisible, setIsRefundModalVisible] = useState(false);
+
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [services, setServices] = useState([]);
   const navigate = useNavigate();
+  const [activeTabKey, setActiveTabKey] = useState("1");
+
 
 
   // Pagination states
   const [upcomingCurrentPage, setUpcomingCurrentPage] = useState(1);
   const [historyCurrentPage, setHistoryCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   const { Meta } = Card;
+  // Hàm hiển thị thông báo thành công
+const showSuccessNotification = (message, description) => {
+  notification.success({
+    message,
+    description,
+    duration: 3,
+  });
+};
+
+// Hàm hiển thị thông báo lỗi
+const showErrorNotification = (message, description) => {
+  notification.error({
+    message,
+    description,
+    duration: 3,
+  });
+};
+
+// Hàm hiển thị thông báo cảnh báo
+const showWarningNotification = (message, description) => {
+  notification.warning({
+    message,
+    description,
+    duration: 3,
+  });
+};
+
 
   // Kiểm tra xem booking có feedback hay không
   const checkFeedbackStatus = async (bookingId) => {
@@ -67,17 +102,15 @@ function ViewBookings() {
   // Fetch bookings from API
   const fetchBookings = async () => {
     if (!userId) {
-      console.error("User ID is missing from URL.");
-      alert("User ID is missing from URL.");
+      showErrorNotification("Error", "User ID is missing from URL.");
       return;
     }
-
+  
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/viewbookings/${userId}`);
       const { history, upcoming } = response.data;
-
-      // Kiểm tra trạng thái feedback cho từng booking
+  
       const transformBookings = async (bookings) => {
         return await Promise.all(
           bookings.map(async (booking) => {
@@ -86,18 +119,17 @@ function ViewBookings() {
           })
         );
       };
-
+  
       setHistoryBookings(await transformBookings(history));
       setUpcomingBookings(await transformBookings(upcoming));
     } catch (error) {
-      console.error("Error fetching view bookings:", error);
-      setHistoryBookings([]);
-      setUpcomingBookings([]);
-      setError(null);
+      showErrorNotification("Error", "Failed to fetch bookings. Please try again later.");
+      setError(error.message || "Unknown error occurred.");
     } finally {
       setLoading(false);
     }
   };
+  
   // Hàm cập nhật trạng thái feedback của booking
   const updateBookingFeedbackStatus = async (bookingId) => {
     try {
@@ -151,29 +183,89 @@ function ViewBookings() {
   const handleAddServiceSuccess = async (addedServiceIds) => {
     setIsAddServiceModalVisible(false);
     setSelectedBooking(null);
-
-    // Logic to integrate added services with the selected booking
+  
     const successfulAdds = await Promise.all(
       addedServiceIds.map(async (serviceId) => {
         return await addServiceToBooking(selectedBooking.id, serviceId);
       })
     );
-
-    // Update the upcoming bookings state if all adds were successful
-    if (successfulAdds.every(success => success)) {
-      const updatedUpcomingBookings = upcomingBookings.map(booking => {
+  
+    if (successfulAdds.every((success) => success)) {
+      showSuccessNotification("Success", "Services added to booking successfully.");
+      const updatedUpcomingBookings = upcomingBookings.map((booking) => {
         if (booking.id === selectedBooking.id) {
-          const newServices = selectedBooking.services.filter(service => addedServiceIds.includes(service.id)); // Example logic
-          booking.services = [...booking.services, ...newServices]; // Append new services
-          // Update total price
+          const newServices = selectedBooking.services.filter((service) => addedServiceIds.includes(service.id));
+          booking.services = [...booking.services, ...newServices];
           booking.totalPrice += newServices.reduce((total, service) => total + service.servicePrice, 0);
         }
         return booking;
       });
-
-      setUpcomingBookings(updatedUpcomingBookings); // Update state
+  
+      setUpcomingBookings(updatedUpcomingBookings);
+    } else {
+      showErrorNotification("Error", "Failed to add some services.");
     }
   };
+  
+
+  //hiện thị refundModal
+  const showRefundModal = () => {
+    setIsRefundModalVisible(true);
+  };
+
+  const handleRefundModalOk = () => {
+    setIsRefundModalVisible(false);
+  };
+
+ 
+
+  // Function to cancel a booking
+  const cancelBooking = async (bookingId) => {
+    if (!bookingId || !userId) {
+      showErrorNotification("Error", "Booking ID and User ID are required.");
+      return;
+    }
+  
+    try {
+      const response = await axios.put(
+        "http://localhost:5000/cancelBooking",
+        { bookingId, userId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        showSuccessNotification("Success", "Booking successfully cancelled.");
+        await fetchBookings();
+        setActiveTabKey("2");
+      } else {
+        showErrorNotification("Cancellation Failed", response.data.message || "Failed to cancel booking.");
+      }
+    } catch (error) {
+      showErrorNotification("Error", error.response?.data?.message || "Error cancelling booking.");
+    }
+  };
+  
+
+
+  const confirmCancelBooking = (booking) => {
+    Modal.confirm({
+      title: "Confirm Cancellation",
+      content: "Are you sure you want to cancel this booking?",
+      okText: "Yes, Cancel it",
+      cancelText: "No",
+      onOk: () => cancelBooking(booking.bookingId), // Gọi hàm cancelBooking nếu người dùng ấn "Yes"
+      onCancel: () => {
+        console.log("User cancelled the cancellation request.");
+      },
+    });
+  };
+
+
+
 
   const showAddServiceModal = (booking) => {
     console.log("Selected Booking for Add Service:", booking);
@@ -225,30 +317,72 @@ function ViewBookings() {
     console.log("Rendering booking:", booking);
     let actionButton = null;
 
+
     if (booking.bookingStatus === "Completed") {
       if (booking.hasFeedback) {
-        // Đã có feedback, hiển thị nút "View Feedback"
         actionButton = (
           <Button type="default" onClick={() => showFeedbackModal(booking)}>
             View Feedback
           </Button>
         );
       } else {
-        // Chưa có feedback, hiển thị nút "Feedback"
         actionButton = (
           <Button type="primary" onClick={() => showFeedbackModal(booking)}>
             Feedback
           </Button>
         );
       }
-    } else if (
-      booking.bookingStatus === "Upcoming" ||
-      booking.bookingStatus === "Using"
-    ) {
+    } else if (booking.bookingStatus === "Upcoming" || booking.bookingStatus === "Using") {
       actionButton = (
-        <Button type="primary" onClick={() => showAddServiceModal(booking)}>
-          Add Service
-        </Button>
+        <>
+          <Button
+            type="primary"
+            style={{
+              width: "112px",
+              height: "32px",
+              marginRight: "8px",
+            }}
+            onClick={() => showAddServiceModal(booking)}
+          >
+            Add Service
+          </Button>
+          <Button
+            type="danger"
+            style={{
+              width: "112px",
+              height: "32px",
+              marginRight: "8px",
+              backgroundColor: "rgb(188 187 187)", // Màu nền xám đậm
+              borderColor: "rgb(188 187 187)",
+              color: "#fff",
+            }}
+            onClick={() => {
+              console.log("Cancel button clicked. Booking:", booking);
+              confirmCancelBooking(booking);
+            }}
+          >
+            Cancel
+          </Button>
+        </>
+
+      );
+    } else if (booking.bookingStatus === "Cancelled") {
+      actionButton = (
+        <>
+          <Button
+            type="primary"
+            style={{
+              width: "112px",
+              height: "32px",
+              marginRight: "8px",
+            }}
+            onClick={showRefundModal}
+          >
+            Refunded
+          </Button>
+
+        </>
+
       );
     } else {
       console.log("Unrecognized booking status:", booking.bookingStatus);
@@ -327,6 +461,7 @@ function ViewBookings() {
 
 
 
+
   const upcomingBookingsPaginated = upcomingBookings.slice(
     (upcomingCurrentPage - 1) * itemsPerPage,
     upcomingCurrentPage * itemsPerPage
@@ -360,27 +495,11 @@ function ViewBookings() {
     return <Alert message="Error" description={error} type="error" showIcon />;
   }
 
+
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Layout>
-        {/* <Sider trigger={null} collapsible collapsed={collapsed}>
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={["3"]}
-            onClick={(item) => {
-              if (item.key === "2") {
-                navigate(`/profile/${userId}`); // Điều hướng tới trang Profile
-              } else if (item.key === "3") {
-                navigate(`/viewbookings/${userId}`); // Điều hướng tới trang View Bookings
-              }
-            }}
-            items={[
-              { key: "2", icon: <ProfileOutlined />, label: "Profile" },
-              { key: "3", icon: <BellOutlined />, label: "Bookings" },
-            ]}
-          />
-        </Sider> */}
         <Layout>
           <Header
             style={{
@@ -391,14 +510,18 @@ function ViewBookings() {
               justifyContent: "center",
             }}
           >
-            
+
             <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "bold" }}>View Bookings</h2>
           </Header>
 
 
           <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
             <div style={{ padding: 24, background: "#fff", minHeight: 360 }}>
-              <Tabs defaultActiveKey="1">
+              <Tabs
+                activeKey={activeTabKey}
+                onChange={(key) => setActiveTabKey(key)}
+                defaultActiveKey="1"
+              >
                 <Tabs.TabPane tab="Upcoming Bookings" key="1">
                   {upcomingBookings.length > 0 ? (
                     renderBookings(upcomingBookingsPaginated)
@@ -428,6 +551,7 @@ function ViewBookings() {
                   />
                 </Tabs.TabPane>
               </Tabs>
+
             </div>
           </Content>
         </Layout>
@@ -454,6 +578,12 @@ function ViewBookings() {
         selectedBooking={selectedBooking}
         userId={userId}
       />
+      {/* Feedback Modal */}
+      <RefundModal
+        visible={isRefundModalVisible}
+        onOk={handleRefundModalOk}
+      />
+
     </Layout>
   );
 }

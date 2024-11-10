@@ -173,7 +173,7 @@ return (
     onCancel={handleCancel}
     footer={[
       <Button key="cancel" danger onClick={handleCancel}>
-        Close
+        Cancel
       </Button>,
       !existingFeedback && (
         <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
