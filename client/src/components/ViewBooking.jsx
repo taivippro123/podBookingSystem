@@ -50,6 +50,17 @@ function ViewBookings() {
   const itemsPerPage = 5;
 
   const { Meta } = Card;
+  
+  // Kiểm tra xem booking có feedback hay không
+  const checkFeedbackStatus = async (bookingId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/feedback/booking/${bookingId}`);
+      return response.data.length > 0; // True nếu đã có feedback
+    } catch (error) {
+      console.error(`Error checking feedback for booking ${bookingId}:`, error);
+      return false;
+    }
+  };
 
   // Fetch bookings from API
   const fetchBookings = async () => {
@@ -58,32 +69,54 @@ function ViewBookings() {
       alert("User ID is missing from URL.");
       return;
     }
-
+  
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:5000/viewbookings/${userId}`
-      );
+      const response = await axios.get(`http://localhost:5000/viewbookings/${userId}`);
       const { history, upcoming } = response.data;
-
-      const transformBookings = (bookings) =>
-        bookings.map((booking) => ({
-          ...booking,
-          id: userId, // Alias '_id' to 'id'
-        }));
-
-      setHistoryBookings(transformBookings(history));
-      setUpcomingBookings(transformBookings(upcoming));
+  
+      // Kiểm tra trạng thái feedback cho từng booking
+      const transformBookings = async (bookings) => {
+        return await Promise.all(
+          bookings.map(async (booking) => {
+            const hasFeedback = await checkFeedbackStatus(booking.id);
+            return { ...booking, hasFeedback };
+          })
+        );
+      };
+  
+      setHistoryBookings(await transformBookings(history));
+      setUpcomingBookings(await transformBookings(upcoming));
     } catch (error) {
       console.error("Error fetching view bookings:", error);
-      setHistoryBookings([]); // Set to empty on error
-      setUpcomingBookings([]); // Set to empty on error
-      setError(null); // Clear the error state
+      setHistoryBookings([]);
+      setUpcomingBookings([]);
+      setError(null);
     } finally {
       setLoading(false);
     }
   };
+  // Hàm cập nhật trạng thái feedback của booking
+const updateBookingFeedbackStatus = async (bookingId) => {
+  try {
+    const hasFeedback = await checkFeedbackStatus(bookingId);
 
+    // Cập nhật trạng thái trong danh sách bookings
+    setUpcomingBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking.id === bookingId ? { ...booking, hasFeedback } : booking
+      )
+    );
+
+    setHistoryBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking.id === bookingId ? { ...booking, hasFeedback } : booking
+      )
+    );
+  } catch (error) {
+    console.error("Error updating booking feedback status:", error);
+  }
+};
 
   const fetchServices = async () => {
     try {
@@ -152,24 +185,65 @@ function ViewBookings() {
     setIsFeedbackModalVisible(true);
   };
 
-  const handleFeedbackSuccess = () => {
+  const handleFeedbackSuccess = async () => {
     setIsFeedbackModalVisible(false);
-    setSelectedBooking(null);
+  
+    if (selectedBooking?.id) {
+      const bookingId = selectedBooking.id;
+  
+      console.log("Selected Booking ID:", bookingId);
+  
+      // Cập nhật trực tiếp state của upcomingBookings
+      setUpcomingBookings((prevBookings) => {
+        const updatedBookings = prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, hasFeedback: true } : booking
+        );
+        console.log("Updated Upcoming Bookings:", updatedBookings);
+        return updatedBookings;
+      });
+  
+      // Cập nhật trực tiếp state của historyBookings
+      setHistoryBookings((prevBookings) => {
+        const updatedBookings = prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, hasFeedback: true } : booking
+        );
+        console.log("Updated History Bookings:", updatedBookings);
+        return updatedBookings;
+      });
+  
+      // Gọi fetchBookings để làm mới dữ liệu từ API
+      console.log("Fetching bookings from API...");
+      await fetchBookings();
+  
+      // Xóa selectedBooking sau khi cập nhật xong
+      setSelectedBooking(null);
+    }
   };
+  
+  
+  
+  
 
   const renderBookingItem = (booking) => {
     console.log("Rendering booking:", booking);
     let actionButton = null;
-
-    if (
-      booking.bookingStatus === "Completed" ||
-      booking.bookingStatus === "Refunded"
-    ) {
-      actionButton = (
-        <Button type="primary" onClick={() => showFeedbackModal(booking)}>
-          Feedback
-        </Button>
-      );
+  
+    if (booking.bookingStatus === "Completed") {
+      if (booking.hasFeedback) {
+        // Đã có feedback, hiển thị nút "View Feedback"
+        actionButton = (
+          <Button type="default" onClick={() => showFeedbackModal(booking)}>
+            View Feedback
+          </Button>
+        );
+      } else {
+        // Chưa có feedback, hiển thị nút "Feedback"
+        actionButton = (
+          <Button type="primary" onClick={() => showFeedbackModal(booking)}>
+            Feedback
+          </Button>
+        );
+      }
     } else if (
       booking.bookingStatus === "Upcoming" ||
       booking.bookingStatus === "Using"
@@ -182,9 +256,9 @@ function ViewBookings() {
     } else {
       console.log("Unrecognized booking status:", booking.bookingStatus);
     }
-
+  
     const bookingKey = booking.id;
-
+  
     return (
       <Col span={12} key={bookingKey}>
         <Card
@@ -212,16 +286,12 @@ function ViewBookings() {
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {booking.slots.map((slot, index) => (
                   <li key={index}>
-                    {new Date(
-                      `1970-01-01T${slot.slotStartTime}`
-                    ).toLocaleTimeString([], {
+                    {new Date(`1970-01-01T${slot.slotStartTime}`).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}{" "}
                     -{" "}
-                    {new Date(
-                      `1970-01-01T${slot.slotEndTime}`
-                    ).toLocaleTimeString([], {
+                    {new Date(`1970-01-01T${slot.slotEndTime}`).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
@@ -234,8 +304,7 @@ function ViewBookings() {
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {booking.services.map((service, index) => (
                   <li key={index}>
-                    {service.serviceName}:{" "}
-                    {Number(service.servicePrice).toLocaleString("vi-VN")} VND
+                    {service.serviceName}: {Number(service.servicePrice).toLocaleString("vi-VN")} VND
                   </li>
                 ))}
               </ul>
@@ -257,6 +326,9 @@ function ViewBookings() {
       </Col>
     );
   };
+  
+  
+  
 
   const upcomingBookingsPaginated = upcomingBookings.slice(
     (upcomingCurrentPage - 1) * itemsPerPage,
