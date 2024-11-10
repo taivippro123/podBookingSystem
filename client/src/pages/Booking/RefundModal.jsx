@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button } from "antd";
+import { Modal, Button, notification } from "antd";
 
 const RefundModal = ({ visible, onOk }) => {
   return (
@@ -15,10 +15,18 @@ const RefundModal = ({ visible, onOk }) => {
             height: "32px",
             marginRight: "8px",
           }}
-          onClick={onOk}
+          onClick={() => {
+            onOk(); // Gọi hàm onOk
+            notification.success({
+              message: "Action Confirmed",
+              description: "You have successfully confirmed the action.",
+              duration: 3,
+            });
+          }}
         >
           OK
-        </Button>,
+        </Button>
+
       ]}
     >
       <p>Your booking will be refunded in 24 hours!</p>

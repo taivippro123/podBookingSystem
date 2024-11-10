@@ -257,12 +257,24 @@ const showWarningNotification = (message, description) => {
       content: "Are you sure you want to cancel this booking?",
       okText: "Yes, Cancel it",
       cancelText: "No",
-      onOk: () => cancelBooking(booking.bookingId), // Gọi hàm cancelBooking nếu người dùng ấn "Yes"
+      onOk: async () => {
+        await cancelBooking(booking.bookingId);
+        notification.success({
+          message: "Cancellation Confirmed",
+          description: "The booking has been successfully cancelled.",
+          duration: 3,
+        });
+      },
       onCancel: () => {
-        console.log("User cancelled the cancellation request.");
+        notification.warning({
+          message: "Cancellation Aborted",
+          description: "You have chosen not to cancel the booking.",
+          duration: 3,
+        });
       },
     });
   };
+  
 
 
 
