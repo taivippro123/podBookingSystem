@@ -43,6 +43,8 @@ function ViewBookings() {
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [services, setServices] = useState([]);
+  const navigate = useNavigate();
+
 
   // Pagination states
   const [upcomingCurrentPage, setUpcomingCurrentPage] = useState(1);
@@ -50,7 +52,7 @@ function ViewBookings() {
   const itemsPerPage = 5;
 
   const { Meta } = Card;
-  
+
   // Kiểm tra xem booking có feedback hay không
   const checkFeedbackStatus = async (bookingId) => {
     try {
@@ -69,12 +71,12 @@ function ViewBookings() {
       alert("User ID is missing from URL.");
       return;
     }
-  
+
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:5000/viewbookings/${userId}`);
       const { history, upcoming } = response.data;
-  
+
       // Kiểm tra trạng thái feedback cho từng booking
       const transformBookings = async (bookings) => {
         return await Promise.all(
@@ -84,7 +86,7 @@ function ViewBookings() {
           })
         );
       };
-  
+
       setHistoryBookings(await transformBookings(history));
       setUpcomingBookings(await transformBookings(upcoming));
     } catch (error) {
@@ -97,26 +99,26 @@ function ViewBookings() {
     }
   };
   // Hàm cập nhật trạng thái feedback của booking
-const updateBookingFeedbackStatus = async (bookingId) => {
-  try {
-    const hasFeedback = await checkFeedbackStatus(bookingId);
+  const updateBookingFeedbackStatus = async (bookingId) => {
+    try {
+      const hasFeedback = await checkFeedbackStatus(bookingId);
 
-    // Cập nhật trạng thái trong danh sách bookings
-    setUpcomingBookings((prevBookings) =>
-      prevBookings.map((booking) =>
-        booking.id === bookingId ? { ...booking, hasFeedback } : booking
-      )
-    );
+      // Cập nhật trạng thái trong danh sách bookings
+      setUpcomingBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, hasFeedback } : booking
+        )
+      );
 
-    setHistoryBookings((prevBookings) =>
-      prevBookings.map((booking) =>
-        booking.id === bookingId ? { ...booking, hasFeedback } : booking
-      )
-    );
-  } catch (error) {
-    console.error("Error updating booking feedback status:", error);
-  }
-};
+      setHistoryBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, hasFeedback } : booking
+        )
+      );
+    } catch (error) {
+      console.error("Error updating booking feedback status:", error);
+    }
+  };
 
   const fetchServices = async () => {
     try {
@@ -187,12 +189,12 @@ const updateBookingFeedbackStatus = async (bookingId) => {
 
   const handleFeedbackSuccess = async () => {
     setIsFeedbackModalVisible(false);
-  
+
     if (selectedBooking?.id) {
       const bookingId = selectedBooking.id;
-  
+
       console.log("Selected Booking ID:", bookingId);
-  
+
       // Cập nhật trực tiếp state của upcomingBookings
       setUpcomingBookings((prevBookings) => {
         const updatedBookings = prevBookings.map((booking) =>
@@ -201,7 +203,7 @@ const updateBookingFeedbackStatus = async (bookingId) => {
         console.log("Updated Upcoming Bookings:", updatedBookings);
         return updatedBookings;
       });
-  
+
       // Cập nhật trực tiếp state của historyBookings
       setHistoryBookings((prevBookings) => {
         const updatedBookings = prevBookings.map((booking) =>
@@ -210,24 +212,19 @@ const updateBookingFeedbackStatus = async (bookingId) => {
         console.log("Updated History Bookings:", updatedBookings);
         return updatedBookings;
       });
-  
+
       // Gọi fetchBookings để làm mới dữ liệu từ API
       console.log("Fetching bookings from API...");
       await fetchBookings();
-  
+
       // Xóa selectedBooking sau khi cập nhật xong
       setSelectedBooking(null);
     }
   };
-  
-  
-  
-  
-
   const renderBookingItem = (booking) => {
     console.log("Rendering booking:", booking);
     let actionButton = null;
-  
+
     if (booking.bookingStatus === "Completed") {
       if (booking.hasFeedback) {
         // Đã có feedback, hiển thị nút "View Feedback"
@@ -256,9 +253,9 @@ const updateBookingFeedbackStatus = async (bookingId) => {
     } else {
       console.log("Unrecognized booking status:", booking.bookingStatus);
     }
-  
+
     const bookingKey = booking.id;
-  
+
     return (
       <Col span={12} key={bookingKey}>
         <Card
@@ -326,9 +323,9 @@ const updateBookingFeedbackStatus = async (bookingId) => {
       </Col>
     );
   };
-  
-  
-  
+
+
+
 
   const upcomingBookingsPaginated = upcomingBookings.slice(
     (upcomingCurrentPage - 1) * itemsPerPage,
@@ -366,29 +363,39 @@ const updateBookingFeedbackStatus = async (bookingId) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
+        {/* <Sider trigger={null} collapsible collapsed={collapsed}>
           <Menu
             theme="dark"
             mode="inline"
             defaultSelectedKeys={["3"]}
+            onClick={(item) => {
+              if (item.key === "2") {
+                navigate(`/profile/${userId}`); // Điều hướng tới trang Profile
+              } else if (item.key === "3") {
+                navigate(`/viewbookings/${userId}`); // Điều hướng tới trang View Bookings
+              }
+            }}
             items={[
-              { key: "1", icon: <UserOutlined />, label: "Account" },
               { key: "2", icon: <ProfileOutlined />, label: "Profile" },
               { key: "3", icon: <BellOutlined />, label: "Bookings" },
-              { key: "4", icon: <CreditCardOutlined />, label: "Payments" },
             ]}
           />
-        </Sider>
+        </Sider> */}
         <Layout>
-          <Header style={{ padding: 0, background: "#fff" }}>
-            {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                className: "trigger",
-                onClick: () => setCollapsed(!collapsed),
-              }
-            )}
+          <Header
+            style={{
+              padding: "0 16px",
+              background: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            
+            <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "bold" }}>View Bookings</h2>
           </Header>
+
+
           <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
             <div style={{ padding: 24, background: "#fff", minHeight: 360 }}>
               <Tabs defaultActiveKey="1">

@@ -135,7 +135,8 @@ function ComHeader({ children }) {
                       <li>
                         <Link
                           to="/rooms"
-                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                          className={`text-blue-900 hover:text-blue-700 text-center ${currentPath === "/rooms" ? "border-b-2 border-blue-700" : ""
+                            }`}
                         >
                           ROOM
                         </Link>
@@ -143,7 +144,8 @@ function ComHeader({ children }) {
                       <li>
                         <Link
                           to="/about"
-                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                          className={`text-blue-900 hover:text-blue-700 text-center ${currentPath === "/about" ? "border-b-2 border-blue-700" : ""
+                            }`}
                         >
                           ABOUT US
                         </Link>
@@ -151,7 +153,8 @@ function ComHeader({ children }) {
                       <li>
                         <Link
                           to="/contact"
-                          className="text-blue-900 hover:text-blue-700 hover:border-b-2 border-blue-700 text-center"
+                          className={`text-blue-900 hover:text-blue-700 text-center ${currentPath === "/contact" ? "border-b-2 border-blue-700" : ""
+                            }`}
                         >
                           CONTACT US
                         </Link>
@@ -160,6 +163,7 @@ function ComHeader({ children }) {
                   </div>
                 </nav>
               </div>
+
 
             </div>
           </div>

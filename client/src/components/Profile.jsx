@@ -116,7 +116,8 @@ export default function Profile({ onProfileUpdate }) {
   };
 
   return (
-    <Layout style={{ minHeight: "100vh", background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+    <Layout style={{ minHeight: "100vh", background: '#f7f7f7' }}>
+
       <Content style={{ padding: "24px 16px 0", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Card
           style={{
@@ -125,6 +126,7 @@ export default function Profile({ onProfileUpdate }) {
             borderRadius: 16,
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             background: '#ffffff',
+            border: '2px solid #8c8c8c', // Viền màu tối hơn
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -158,15 +160,48 @@ export default function Profile({ onProfileUpdate }) {
               <Button type="primary" htmlType="submit" style={{ marginTop: '8px', height: '40px', borderRadius: '20px' }}>
                 Save Changes
               </Button>
+              <Button
+            type="default"
+            onClick={() => {
+              setIsEditing(false);
+              setConfirmPassword('');
+              setError('');
+              setEmailError('');
+              setPhoneError('');
+              setPasswordError('');
+            }}
+            style={{ marginTop: '8px', height: '40px', borderRadius: '20px', color: '#595959', border: '2px solid #595959' }}
+          >
+            Cancel Edit
+          </Button>
             </form>
           )}
           <Button
             icon={<HomeOutlined />}
             onClick={() => navigate('/')}
-            style={{ marginTop: '16px', width: '100%', height: '40px', borderRadius: '20px' }}
+            style={{
+              marginTop: '16px',
+              width: '100%',
+              height: '40px',
+              borderRadius: '20px',
+              border: '2px solid #595959', // Viền đậm hơn
+              color: '#595959',
+              transition: 'all 0.3s ease', // Hiệu ứng chuyển màu mượt
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.backgroundColor = '#d9d9d9';
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.border = '2px solid #404040';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#595959';
+              e.currentTarget.style.border = '2px solid #595959';
+            }}
           >
             Back To Home
           </Button>
+
         </Card>
       </Content>
     </Layout>
