@@ -125,11 +125,11 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
           <div className="border rounded-lg p-4 w-full text-left mb-4">
             <h4 className="text-lg font-bold mb-2">Payment Summary</h4>
             <div>
-              <div><strong>Total Price:</strong> {paymentData?.totalPrice.toLocaleString("vi-VN")} VND</div>
+              <div><strong>Total Price:</strong> ₫{paymentData?.totalPrice.toLocaleString("vi-VN")}</div>
               <div><strong>Selected Services:</strong></div>
               <ul>
                 {paymentData?.selectedServices.map((service, index) => (
-                  <li key={index}>{service.serviceName} - {Number(service.servicePrice).toLocaleString("vi-VN")} VND</li>
+                  <li key={index}>{service.serviceName} - ₫{Number(service.servicePrice).toLocaleString("vi-VN")}</li>
                 ))}
               </ul>
             </div>

@@ -3,6 +3,7 @@ import { Modal, Button, Checkbox, List, Card, Divider, Typography, message, Avat
 import { ShoppingCartOutlined, CloseOutlined, InfoCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import PaymentAddService from "./PaymentAddService";
+import {  Popover } from "antd";
 
 const { Text, Title } = Typography;
 
@@ -62,6 +63,7 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
         serviceId: service.serviceId,
         serviceName: service.serviceName,
         servicePrice: service.servicePrice,
+        serviceDescription: service.serviceDescription
       }));
 
     const newPaymentData = {
@@ -185,10 +187,16 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
                   title={
                     <div style={{ display: "flex", alignItems: "center" }}>
                       {service.serviceName}
-                      <InfoCircleOutlined style={{ marginLeft: "8px", color: "#1890ff" }} />
+                      <Popover
+                        content={service.serviceDescription}
+                        trigger="click"
+                      >
+                        <InfoCircleOutlined style={{ marginLeft: "8px", color: "#1890ff", cursor: "pointer" }} />
+                      </Popover>
                     </div>
                   }
-                  description={<Text strong>{Number(service.servicePrice).toLocaleString("vi-VN")} VND</Text>}
+                  
+                  description={<Text strong>₫{Number(service.servicePrice).toLocaleString("vi-VN")}</Text>}
                 />
                 <Checkbox
                   checked={selectedServiceIds.includes(service.serviceId)}
@@ -212,7 +220,7 @@ function AddServiceModal({ visible, onCancel, selectedBooking }) {
         {services.length > 0 && (
           <div style={{ marginTop: "20px", textAlign: "right" }}>
             <Text strong>Total Price: </Text>
-            <Text style={{ fontSize: "18px", color: "#ff4d4f" }}>{totalPrice.toLocaleString("vi-VN")} VND</Text>
+            <Text style={{ fontSize: "18px", color: "#ff4d4f" }}>₫{totalPrice.toLocaleString("vi-VN")}</Text>
           </div>
         )}
       </Modal>

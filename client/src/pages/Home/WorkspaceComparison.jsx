@@ -134,8 +134,10 @@ const WorkspaceComparison = () => {
           "Premium Standard members' focused workspace with plenty of natural light and equipped with premium amenities.",
         images: [
           "https://workflow.com.vn/wp-content/uploads/2024/07/cb9919c99f173cf042d4e2a81fd5b031.jpg",
-          "https://scontent.fhan4-5.fna.fbcdn.net/v/t39.30808-6/458471773_489507413853854_6954341591030780317_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=OU5iogRKpowQ7kNvgGwMZJP&_nc_zt=23&_nc_ht=scontent.fhan4-5.fna&_nc_gid=AwSJ5qMIezpRyocrSMNNv9C&oh=00_AYC61VnC7WHPkjm6aCczuY40D6G25mKFbfGIE2-5UoqdVQ&oe=6721C98B",
-          "https://scontent.fhan4-5.fna.fbcdn.net/v/t39.30808-6/450536770_455334883937774_3115143974553655545_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=1bGT-qs6pmQQ7kNvgHOpJVM&_nc_zt=23&_nc_ht=scontent.fhan4-5.fna&_nc_gid=AilgSx6XRNFhIoe7tpFUgsj&oh=00_AYAoDsd2P3s04ntojWB1ZASXUYaRl7WlrEZiVAp-243cbQ&oe=6721BEDF"],
+          "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/466083648_535248555946406_8448144157984193108_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Gf6U5FsrefAQ7kNvgGb2Zrl&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=AdOm6s60XWlzOrzdKtBrhYB&oh=00_AYCjZHV_2UYeYbVy2tLlPuzNrS7zeQpKY-Y7gquu2iQsyQ&oe=673803B9",
+          "https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/466015170_535248579279737_2628973194447171832_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=-VEW8LpEw2sQ7kNvgFqAgpN&_nc_zt=23&_nc_ht=scontent.fhan3-2.fna&_nc_gid=A0OMV4Fd-9wZRbJe7i2bTBa&oh=00_AYDc9WyCCjfX54bRqnhnOmiuxqhgRiFyQBYevaXa8vxvRg&oe=6738027D"
+
+      ],
         amenities: [,
           { name: "High-end desk", icon: <Monitor size={16} /> },
           { name: "Ergonomic chair", icon: <UserCheck size={16} /> },
@@ -151,9 +153,10 @@ const WorkspaceComparison = () => {
         description:
           "Flexible coworking space, suitable for small working groups or freelancers.",
         images: [
-          "https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/456239374_479672844837311_8650304803946247848_n.jpg?stp=cp6_dst-jpg&_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=1MVuLLOK3NEQ7kNvgEzVj82&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=AfJjTbKp47yj0ZqpCNZOo_2&oh=00_AYDmoJ-Jcr3adcn6Wg5nm80ONjRlgUXDFWv12aP_FR_F3g&oe=6721CE31",
-          "https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/441413538_415533531251243_6629055787023152661_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Gxl9_67vI0UQ7kNvgFpu97d&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=Aek_jpVa2hh7MvR4lk5KS-_&oh=00_AYAvjzLpJDU6XL1r0yowbgTPiLlhxW3QyOfgHIkeQEeRjw&oe=6721C382",
-          "https://scontent.fhan4-3.fna.fbcdn.net/v/t39.30808-6/448660970_441741191963810_3834770917648020539_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=78voRcF2G68Q7kNvgG0XWn4&_nc_zt=23&_nc_ht=scontent.fhan4-3.fna&_nc_gid=AgD2G5zyZVSQ1oiWG4f717h&oh=00_AYAVYJaWLov2srT-Y51nsZ6o6OIv4uqUl9n47oIhGvCOiw&oe=6721A4C3"],
+          "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/464224196_523789297092332_5862053461834756687_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=xON00hNQnjsQ7kNvgFjEs8h&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=AFdmGm6KBWK8EBGUaJhWTx_&oh=00_AYDHACTZydB-RX70kVBqLykLJvQ_EEQLzmXvOHjlI0oGTw&oe=673800AB",
+          "https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/464175268_523789263759002_4205542199570869864_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=12LcdL2yHB0Q7kNvgG6cpfv&_nc_zt=23&_nc_ht=scontent.fhan3-2.fna&_nc_gid=AUkEfOzvGT2AgGvR-ypkX2c&oh=00_AYCvn0U6Fk2FT0lsaKDAh8wiXwohc2O4nhZczGXM8Wg4zg&oe=67381E32",
+          "https://scontent.fhan3-2.fna.fbcdn.net/v/t39.30808-6/462776884_515660227905239_4430707227393017648_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=3zxbJoma1bMQ7kNvgGrs8Sh&_nc_zt=23&_nc_ht=scontent.fhan3-2.fna&_nc_gid=ARpeEdK11jNa9QdtCxutP8d&oh=00_AYDRj7Xsq42ZuFvatqmMH9F27utbgNjw3TWaOYL9By7EmQ&oe=6737FB4E"
+          ],
         amenities: [
           { name: "Shared desk", icon: <Monitor size={16} /> },
           { name: "Meeting room", icon: <UserCheck size={16} /> },
