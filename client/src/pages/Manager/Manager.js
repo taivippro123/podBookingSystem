@@ -23,7 +23,7 @@ const Manager = () => {
         const fetchBookings = async () => {
             try {
                 // Fetch data from API
-                const response = await axios.get('http://localhost:5000/manage/bookings');
+                const response = await axios.get('http://localhost:5000/staff/upcoming-bookings');
     
                 // Hàm formatPrice giúp định dạng giá theo kiểu Việt Nam
                 const formatPrice = (price) => {
