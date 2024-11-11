@@ -514,7 +514,7 @@ export default function RoomDetail() {
             </div>
             <div className="flex items-center">
               <Clock className="w-6 h-6 text-gray-400 mr-2" />
-              <span>Available hours: 9:00AM - 5:00 PM</span>
+              <span>Open 24/7</span>
             </div>
           </div>
           <div className="mb-4">

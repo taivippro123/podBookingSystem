@@ -46,7 +46,7 @@ export default function ResetPassword() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md border-2 border-gray-300">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-900">
             Reset Your Password
@@ -55,7 +55,7 @@ export default function ResetPassword() {
             Enter your email to receive an OTP
           </p>
         </div>
-
+  
         <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
           <div className="space-y-4">
             {/* Email Field */}
@@ -72,7 +72,7 @@ export default function ResetPassword() {
                   name="email"
                   type="email"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -86,7 +86,7 @@ export default function ResetPassword() {
                 </button>
               </div>
             </div>
-
+  
             {/* OTP and New Password Fields */}
             {otpSent && (
               <>
@@ -103,13 +103,13 @@ export default function ResetPassword() {
                     name="otp"
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Enter OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                   />
                 </div>
-
+  
                 {/* New Password Field */}
                 <div>
                   <label
@@ -123,7 +123,7 @@ export default function ResetPassword() {
                     name="newPassword"
                     type="password"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -136,7 +136,7 @@ export default function ResetPassword() {
               </>
             )}
           </div>
-
+  
           {/* Reset Password Button */}
           {otpSent && (
             <button
@@ -150,4 +150,5 @@ export default function ResetPassword() {
       </div>
     </div>
   );
+  
 }
