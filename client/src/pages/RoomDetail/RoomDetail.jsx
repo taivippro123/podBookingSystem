@@ -23,7 +23,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import PaymentModal from "./PaymentModal"; // Import the PaymentModal component
 import RoomListDetail from "./RoomListDetail";
-import { Image } from "antd";
+import { Image, Modal } from "antd";
 
 export default function RoomDetail() {
   const [userId, setUserId] = useState(null);
@@ -44,6 +44,7 @@ export default function RoomDetail() {
   const [originalUserPoints, setOriginalUserPoints] = useState(0);
   const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
+  const [isSlotModalVisible, setIsSlotModalVisible] = useState(false);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -186,6 +187,7 @@ export default function RoomDetail() {
     setDateRange(newDateRange);
   };
 
+  
   const handleSlotSelection = (slot) => {
     setSelectedSlots((prevSelectedSlots) => {
       if (prevSelectedSlots.some((s) => s.slotId === slot.slotId)) {
@@ -455,6 +457,14 @@ export default function RoomDetail() {
     setShowPaymentModal(true);
   };
 
+  const handleSlotModalOpen = () => {
+    if (!selectedDate) {
+      setError("Please select a date first");
+      return;
+    }
+    setIsSlotModalVisible(true);
+  };
+
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden mt-4 container mx-auto p-4">
       <div className="lg:flex justify-center mb-4">
@@ -604,61 +614,27 @@ export default function RoomDetail() {
                   onKeyDown={(e) => e.preventDefault()}
                   onClick={(e) => e.target.showPicker()}
                 />
-                {availableSlots.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {availableSlots.map((slot) => {
-                      const canSelectSlot = !selectedDate || !slot.isExpired;
-
-                      return (
-                        <div
-                          key={slot.slotId}
-                          className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${selectedSlots.some((s) => s.slotId === slot.slotId)
-                            ? "border-blue-500 bg-blue-50 shadow-md"
-                            : slot.isExpired && selectedDate
-                              ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
-                            }`}
-                        >
-                          <label className="flex items-center space-x-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selectedSlots.some((s) => s.slotId === slot.slotId)}
-                              onChange={() => handleSlotSelection(slot)}
-                              disabled={!canSelectSlot}
-                              className="sr-only"
-                            />
-                            <div
-                              className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedSlots.some((s) => s.slotId === slot.slotId)
-                                ? "bg-blue-500 border-blue-500"
-                                : "bg-gray-200 border-gray-300"
-                                }`}
-                            >
-                              {selectedSlots.some((s) => s.slotId === slot.slotId) && (
-                                <svg
-                                  className="w-3 h-3 text-white"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
-                              )}
-                            </div>
-                            <span className="text-gray-700 font-medium">
-                              {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
-                            </span>
-                          </label>
-                        </div>
-                      );
-                    })}
+                
+                <button
+                  type="button"
+                  onClick={handleSlotModalOpen}
+                  className="w-full py-3 px-4 rounded-md font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                >
+                  Select Time Slots ({selectedSlots.length} selected)
+                </button>
+                
+                {selectedSlots.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold mb-2">Selected Slots:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedSlots.map((slot) => (
+                        <span key={slot.slotId} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                          {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-gray-500 text-center">No available slots</p>
                 )}
-
-
-
               </div>
             )}
 
@@ -826,6 +802,77 @@ export default function RoomDetail() {
       </div>
 
       <RoomListDetail />
+
+      <Modal
+        title="Select Time Slots"
+        open={isSlotModalVisible}
+        onCancel={() => setIsSlotModalVisible(false)}
+        footer={[
+          <button
+            key="close"
+            onClick={() => setIsSlotModalVisible(false)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Done
+          </button>
+        ]}
+        width={800}
+      >
+        {availableSlots.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {availableSlots.map((slot) => {
+              const canSelectSlot = !selectedDate || !slot.isExpired;
+
+              return (
+                <div
+                  key={slot.slotId}
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 ease-in-out ${
+                    selectedSlots.some((s) => s.slotId === slot.slotId)
+                      ? "border-blue-500 bg-blue-50 shadow-md"
+                      : slot.isExpired && selectedDate
+                      ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
+                  }`}
+                >
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedSlots.some((s) => s.slotId === slot.slotId)}
+                      onChange={() => handleSlotSelection(slot)}
+                      disabled={!canSelectSlot}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                        selectedSlots.some((s) => s.slotId === slot.slotId)
+                          ? "bg-blue-500 border-blue-500"
+                          : "bg-gray-200 border-gray-300"
+                      }`}
+                    >
+                      {selectedSlots.some((s) => s.slotId === slot.slotId) && (
+                        <svg
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-gray-700 font-medium">
+                      {formatTime(slot.slotStartTime)} - {formatTime(slot.slotEndTime)}
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center">No available slots</p>
+        )}
+      </Modal>
     </div>
   );
 }

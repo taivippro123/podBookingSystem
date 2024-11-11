@@ -8,7 +8,7 @@ function PaymentAddService({ paymentData, closeModal, visible }) {
 
   const handleSelectMethod = (methodId) => {
     if (methodId !== 3) {
-      toast.warning("Please select ZaloPay payment method.", {
+      toast.warning("This gateway is coming soon, please choose another gateway!.", {
         position: "top-center",
         autoClose: 3000,
       });

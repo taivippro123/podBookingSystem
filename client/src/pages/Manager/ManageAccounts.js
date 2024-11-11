@@ -206,12 +206,16 @@ const ManageAccounts = () => {
     // Lọc tài khoản dựa trên vai trò và tìm kiếm theo tên/email/phone
     const filteredAccounts = accounts.filter(account => {
         return (
-            (filterRole ? account.userRole.toString() === filterRole : true) &&
-            (account.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-             account.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) || 
-             account.userPhone.includes(searchTerm))
+            (filterRole ? account.userRole?.toString() === filterRole : true) &&
+            (
+                account.userName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                account.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                account.userPhone?.includes(searchTerm) ||
+                account.userId?.toString().includes(searchTerm)
+            )
         );
     });
+    
 
     const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
 
@@ -236,7 +240,7 @@ const ManageAccounts = () => {
 
             <div className={styles.search}>
                 <Input
-                    placeholder="Search by Name, Email, or Phone"
+                    placeholder="Search by ID, Name, Email, or Phone"
                     value={searchTerm}
                     onChange={handleSearchChange}
                     allowClear
@@ -246,6 +250,7 @@ const ManageAccounts = () => {
             <table className={styles.table}>
                 <thead>
                     <tr>
+                        <th>User ID</th>
                         <th>User Name</th>
                         <th>Email</th>
                         <th>Phone</th>
@@ -256,6 +261,7 @@ const ManageAccounts = () => {
                 <tbody>
                     {currentAccounts.map((account) => (
                         <tr key={account.userId}>
+                            <td>{account.userId}</td>
                             <td>{account.userName}</td>
                             <td>{account.userEmail}</td>
                             <td>{account.userPhone}</td>

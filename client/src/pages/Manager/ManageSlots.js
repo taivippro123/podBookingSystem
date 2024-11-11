@@ -57,21 +57,21 @@ function ManageSlots() {
         // Kiểm tra nếu thời gian nhập vào là số âm hoặc vượt quá 24 giờ
         const startHours = parseInt(formData.slotStartTime.slice(0, 5).split(":")[0], 10);
         const endHours = parseInt(formData.slotEndTime.slice(0, 5).split(":")[0], 10);
-        if (startHours < 0 || endHours < 0 || startHours >= 24 || endHours >= 24) {
+        if (startHours < 0 || endHours < 0 || startHours > 24 || endHours > 24) {
             notification.error({ message: 'Error', description: 'Start time and end time must be between 00:00 and 24:00!' });
             setIsPopupVisible(true);
             return;
         }
     
-        // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
-        if (lastSlot) {
-            const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime.slice(0, 5)}`);
-            if (newStartTime < new Date(lastEndTime.getTime() + oneHourInMillis)) {
-                notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime.slice(0, 5)})!` });
-                setIsPopupVisible(true);
-                return;
-            }
-        }
+        // // Kiểm tra nếu Start Time của slot mới cách End Time của slot cũ ít nhất 1 giờ
+        // if (lastSlot) {
+        //     const lastEndTime = new Date(`1970-01-01T${lastSlot.slotEndTime.slice(0, 5)}`);
+        //     if (newStartTime < new Date(lastEndTime.getTime() + oneHourInMillis)) {
+        //         notification.error({ message: 'Error', description: `Start time must be at least 1 hour after the end time of the last slot (${lastSlot.slotEndTime.slice(0, 5)})!` });
+        //         setIsPopupVisible(true);
+        //         return;
+        //     }
+        // }
     
         // Kiểm tra nếu End Time lớn hơn Start Time ít nhất 1 tiếng
         if (newEndTime <= newStartTime || (newEndTime - newStartTime) < oneHourInMillis) {

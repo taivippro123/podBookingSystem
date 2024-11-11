@@ -109,7 +109,8 @@ const ManageAllAccounts = () => {
     // Filter and search accounts based on role and search query
     const filteredAccounts = accounts.filter(account => {
         const matchesRole = selectedRole === 'All' || getRoleName(account.userRole) === selectedRole;
-        const matchesSearch = account.userName.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = account.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              account.userId.toString().includes(searchQuery);
         return matchesRole && matchesSearch;
     });
 
@@ -122,6 +123,13 @@ const ManageAllAccounts = () => {
         }
         return 0;
     });
+
+    const toggleSort = (key) => {
+        setSortConfig(prevConfig => ({
+            key,
+            direction: prevConfig.direction === 'ascending' ? 'descending' : 'ascending'
+        }));
+    };
 
     const indexOfLastAccount = currentPage * accountsPerPage;
     const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
@@ -140,7 +148,7 @@ const ManageAllAccounts = () => {
                 <div className={styles.searchContainer}>
                     <input
                         type="text"
-                        placeholder="Search by name"
+                        placeholder="Search by name or ID"
                         value={searchQuery}
                         onChange={handleSearchChange}
                         className={styles.searchInput}
@@ -168,7 +176,9 @@ const ManageAllAccounts = () => {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                    <th onClick={() => toggleSort('userId')} style={{ cursor: 'pointer' }}>
+                            User ID 
+                    {sortConfig.key === 'userId' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}</th>
                         <th>Name</th>
                         <th>Email</th> {/* New column for Email */}
                         <th>Phone</th> {/* New column for Phone */}
