@@ -1241,6 +1241,33 @@ app.get('/admin/popular-services', (req, res) => {
     });
 });
 
+app.get('/getMonthlyRevenue', async (req, res) => {
+    try {
+        const query = `
+            SELECT DATE_FORMAT(eventDate, '%Y-%m') AS month, 
+                   SUM(transactionAmount) AS totalRevenue
+            FROM Transaction
+            WHERE transactionStatus = 'Success'  -- Only include successful transactions
+            GROUP BY month
+            ORDER BY month ASC
+        `;
+        
+        const [results] = await db.promise().query(query);
+        
+        res.json({
+            success: true,
+            monthlyRevenue: results  // Array of objects with `month` and `totalRevenue`
+        });
+    } catch (err) {
+        console.error('Error calculating monthly revenue:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Error calculating monthly revenue.'
+        });
+    }
+});
+
+
 
 
 
@@ -1338,7 +1365,7 @@ app.post("/payment", async (req, res) => {
         description: `Payment for the room: ${roomName}, Transaction #${transID}`,
         bank_code: methodId, // Pass methodId as bank_code or as part of other metadata
 
-        callback_url: "https://29a2-2405-4802-93da-3ac0-112e-d608-2549-62aa.ngrok-free.app/callback",
+        callback_url: "https://f3c1-116-110-40-72.ngrok-free.app/callback",
         selectedDate
     };
 
@@ -1583,7 +1610,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://29a2-2405-4802-93da-3ac0-112e-d608-2549-62aa.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://7f9b-104-28-205-71.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
