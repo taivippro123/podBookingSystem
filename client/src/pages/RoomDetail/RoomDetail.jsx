@@ -17,6 +17,8 @@ import {
   Music,
   Zap,
   Droplet,
+  ParkingCircle,
+  ConciergeBell,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import PaymentModal from "./PaymentModal"; // Import the PaymentModal component
@@ -524,13 +526,12 @@ export default function RoomDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center">
                 <Airplay className="w-5 h-5 text-gray-500 mr-2" />
-                <span>Lighting:Adjustable lighting </span>
+                <span>Lighting: Adjustable lighting </span>
               </div>
               <div className="flex items-center">
-                <Music className="w-5 h-5 text-gray-500 mr-2" />
+                <ParkingCircle  className="w-7 h-7 text-gray-500 mr-2" />
                 <span>
-                  Sound System:Easy to install, it replaces low quality on-board
-                  audio with high quality connectivity options.{" "}
+                Parking: Provide parking for employees and customers.
                 </span>
               </div>
               <div className="flex items-center">
@@ -538,9 +539,9 @@ export default function RoomDetail() {
                 <span>Power Outlets: International standard power socket </span>
               </div>
               <div className="flex items-center">
-                <Droplet className="w-5 h-5 text-gray-500 mr-2" />
+                <ConciergeBell  className="w-10 h-10 text-gray-500 mr-2" />
                 <span>
-                  Water Dispenser:Three water spouts hot, room temperature, cold{" "}
+                Reception services: Support welcoming guests, answering phones, arranging appointments.{" "}
                 </span>
               </div>
             </div>
