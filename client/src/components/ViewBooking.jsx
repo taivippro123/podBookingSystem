@@ -371,23 +371,25 @@ function ViewBookings() {
           >
             Add Service
           </Button>
-          <Button
-            type="danger"
-            style={{
-              width: "112px",
-              height: "32px",
-              marginRight: "8px",
-              backgroundColor: "rgb(188 187 187)", // Màu nền xám đậm
-              borderColor: "rgb(188 187 187)",
-              color: "#fff",
-            }}
-            onClick={() => {
-              console.log("Cancel button clicked. Booking:", booking);
-              confirmCancelBooking(booking);
-            }}
-          >
-            Cancel
-          </Button>
+          {booking.bookingStatus === "Upcoming" && (
+        <Button
+          type="danger"
+          style={{
+            width: "112px",
+            height: "32px",
+            marginRight: "8px",
+            backgroundColor: "rgb(188 187 187)", // Màu nền xám đậm
+            borderColor: "rgb(188 187 187)",
+            color: "#fff",
+          }}
+          onClick={() => {
+            console.log("Cancel button clicked. Booking:", booking);
+            confirmCancelBooking(booking);
+          }}
+        >
+          Cancel
+        </Button>
+      )}
         </>
 
       );

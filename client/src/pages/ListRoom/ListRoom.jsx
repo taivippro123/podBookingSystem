@@ -151,11 +151,11 @@ export default function ListRoom() {
               </div>
               <div className="flex items-center text-gray-600 mb-2">
                 <Clock className="w-4 h-4 mr-1" />
-                <span>Available hours: 9:00AM - 5:00 PM</span>
+                <span>Available hours: Open 24/7</span>
               </div>
               <div className="flex items-center text-red-500 mb-4">
                 <DollarSign className="w-4 h-4 mr-1" />
-                <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} VND/Slot</span>
+                <span>Price: {(Number(room.roomPricePerSlot)).toLocaleString('vi-VN')} ₫/Slot</span>
               </div>
 
               <Link to={`/room/${room.roomId}`} className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300">
