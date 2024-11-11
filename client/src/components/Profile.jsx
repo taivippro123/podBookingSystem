@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Layout, Input, Button, Typography, Card, message, Avatar, notification } from 'antd';
 import { UserOutlined, MailOutlined, PhoneOutlined, LockOutlined, HomeOutlined, DollarOutlined } from '@ant-design/icons';
@@ -23,8 +23,8 @@ export default function Profile({ onProfileUpdate }) {
   const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  // Lấy `userId` từ `localStorage`
-  const userId = localStorage.getItem("userId");
+  // Lấy `userId` 
+  const { userId } = useParams();
   const openNotification = (type, message, description) => {
     notification[type]({
       message,
