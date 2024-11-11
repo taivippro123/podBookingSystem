@@ -74,6 +74,9 @@ export default function LoginPage() {
 
           // Navigate to the Home page
           navigate("/");
+
+          // Reload the page to reflect changes and fetch updated state
+          window.location.reload();
         } else {
           console.error("Error:", response.statusText);
           alert("Failed to log in. Please try again.");
@@ -83,7 +86,8 @@ export default function LoginPage() {
         console.error("Google login error:", error);
         alert("Google sign-in failed. Please try again.");
       });
-  };
+};
+
 
   const navigateBasedOnRole = (userRole) => {
     switch (userRole) {

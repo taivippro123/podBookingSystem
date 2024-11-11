@@ -462,7 +462,7 @@ function ViewBookings() {
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {booking.services.map((service, index) => (
                   <li key={index}>
-                    {service.serviceName}: {Number(service.servicePrice).toLocaleString("vi-VN")} VND
+                    {service.serviceName}: ₫{Number(service.servicePrice).toLocaleString("vi-VN")}
                   </li>
                 ))}
               </ul>
@@ -474,9 +474,9 @@ function ViewBookings() {
                 alignItems: "center",
               }}
             >
-              <strong style={{ marginRight: "4px" }}>Total Price:</strong>
-              <p style={{ margin: 0 }}>
-                {Number(booking.totalPrice).toLocaleString("vi-VN")} VND
+              <strong style={{ marginRight: "4px",color: "#ff4d4f" }}>Total Price:</strong>
+              <p style={{ margin: 0 ,color: "#ff4d4f" }}>
+              ₫{Number(booking.totalPrice).toLocaleString("vi-VN")}
               </p>
             </div>
           </div>
