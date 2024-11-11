@@ -21,7 +21,7 @@ const MonthlyRevenue = () => {
             const response = await axios.get('http://localhost:5000/getMonthlyRevenue');
             const formattedData = response.data.monthlyRevenue.map(item => ({
                 month: item.month,
-                totalRevenue: parseInt(item.totalRevenue, 10), // Chuyển giá trị thành số
+                MonthlyRevenue: parseInt(item.totalRevenue, 10), // Convert to number and rename to MonthlyRevenue
             }));
             setData(formattedData);
         } catch (error) {
@@ -39,20 +39,24 @@ const MonthlyRevenue = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
+    const formatCurrency = (value) => 
+        new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND', minimumFractionDigits: 0 }).format(value);
+
     return (
         <div>
             <h2>Monthly Revenue</h2>
-            <ResponsiveContainer width="105%" height={400} >
+            <ResponsiveContainer width="105%" height={400}>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis 
-            padding={{ top: 20, bottom: 20 }}  // Thêm padding để tạo khoảng cách
-            tick={{ angle: 0, fontSize: 12 }}  // Điều chỉnh kích thước và góc của số liệu
-        />
-                    <Tooltip />
+                        padding={{ top: 20, bottom: 20 }}
+                        tick={{ angle: 0, fontSize: 12 }}
+                        tickFormatter={formatCurrency}
+                    />
+                    <Tooltip formatter={(value) => formatCurrency(value)} />
                     <Legend />
-                    <Bar dataKey="totalRevenue" fill="#82ca9d" />
+                    <Bar dataKey="MonthlyRevenue" fill="#82ca9d" />
                 </BarChart>
             </ResponsiveContainer>
         </div>
