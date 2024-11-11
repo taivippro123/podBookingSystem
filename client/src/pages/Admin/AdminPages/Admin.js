@@ -7,9 +7,10 @@ import { BsPeopleFill } from 'react-icons/bs';
 import styles from './Admin.module.css';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import LogoutButton from '../../../components/LogoutButton/LogoutButton';
-import ViewNumberAccounts from '../ViewNumberAccounts/ViewNumberAccounts'; 
-import ViewPopularRooms from '../ViewPopularRooms/ViewPopularRooms';     
-import ViewPopularServices from '../ViewPopularServices/ViewPopularServices'; 
+import ViewNumberAccounts from '../ViewNumberAccounts/ViewNumberAccounts';
+import ViewPopularRooms from '../ViewPopularRooms/ViewPopularRooms';
+import ViewPopularServices from '../ViewPopularServices/ViewPopularServices';
+import MonthlyRevenue from '../MonthlyRevenue/MonthlyRevenue';
 
 const Admin = () => {
     const [isMenuVisible, setIsMenuVisible] = useState(true);
@@ -25,7 +26,7 @@ const Admin = () => {
     return (
         <div className={styles['Admin-container']}>
             <header className={styles['Admin-header']}>
-            <div className="container mx-auto flex justify-center">
+                <div className="container mx-auto flex justify-center">
                     <Link to="/" className="text-2xl font-bold text-blue-900 flex justify-center items-center">
                         <CalendarIcon className="h-6 w-6" /> Work
                         <span className="text-blue-500"> Zone</span>
@@ -109,6 +110,9 @@ const Admin = () => {
                         <div className={styles.chartItem}>
                             <ViewPopularRooms />
                         </div>
+                        <div className={styles.chartItems}> {/* Căn giữa biểu đồ MonthlyRevenue */}
+                            <MonthlyRevenue />
+                        </div>
                         <div className={styles.chartItem}>
                             <ViewPopularServices />
                         </div>
@@ -116,6 +120,7 @@ const Admin = () => {
                             <ViewNumberAccounts />
                         </div>
                     </div>
+
                 )}
                 <Outlet />
             </main>

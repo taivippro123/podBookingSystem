@@ -190,20 +190,34 @@ h1 {
     margin: 40px 0 0; /* Thêm khoảng cách trên để lùi tất cả biểu đồ xuống */
     padding: 0; /* Bỏ padding */
     width: 100%; /* Chiếm toàn bộ chiều rộng của trang */
+    align-items: center; /* Căn giữa theo chiều dọc */
 }
-
 
 .chartItem {
     flex: 1; /* Mỗi biểu đồ chiếm 1 phần không gian */
-    min-width: 300px; /* Chiều rộng tối thiểu cho mỗi biểu đồ */
+    min-width: 200px; /* Chiều rộng tối thiểu cho mỗi biểu đồ */
     max-width: calc(33.33% - 20px); /* Đặt chiều rộng tối đa để không quá lớn, với khoảng cách giữa các biểu đồ */
-    margin: 10px; /* Khoảng cách giữa các biểu đồ */
+    margin: 40px; /* Khoảng cách giữa các biểu đồ */
+}
+
+.chartItem:first-child {  /* Nếu "ViewPopularRooms" là phần tử đầu tiên */
+    margin-left: -20px; /* Dịch chuyển sang trái 20px (bạn có thể điều chỉnh giá trị này) */
 }
 
 .chartTotalAccounts {
     width: 100%; /* Đặt chiều rộng để chiếm hết không gian có thể */
     padding: 20px;
-    
-    
     border-radius: 8px;
+    margin-top: 50px;
+}
+
+.chartItems {
+    flex: 2; /* Đảm bảo MonthlyRevenue chiếm không gian lớn hơn */
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center; /* Căn giữa biểu đồ MonthlyRevenue */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    margin: 0 10px; /* Thêm margin để tạo khoảng cách giữa các phần tử */
+    margin-top:30px;
 }

@@ -1610,7 +1610,7 @@ app.post("/add-service", async (req, res) => {
         amount: totalPrice,
         description: `Payment for services in booking ID: ${bookingId}`,
         bank_code: methodId,
-        callback_url: "https://f3c1-116-110-40-72.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
+        callback_url: "https://7f9b-104-28-205-71.ngrok-free.app/callback-add-service" // Callback endpoint for payment success
     };
 
     // Generate MAC for security
